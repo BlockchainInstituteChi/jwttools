@@ -6,6 +6,10 @@ The Lookup process accepts a dynamic multi-network identifier (MNID) value and a
 
 did:< method >:< mnid >
 
+where Alex's testnet did is 
+
+did:uport:2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575
+
 # To-Do's
 
 1. Handle eaeDecode Step to properly format MNID 
