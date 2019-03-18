@@ -45,31 +45,28 @@ function callRegistry ($registrationIdentifier, $issuerId, $subjectId, $callback
 }
 
 function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
-	echo "\r\nencodeFunctionCall\r\n", $functionSignature, " ", $registrationIdentifier, " ", $issuer,  " ", $subject;
 	$callString = $functionSignature;
 
 	$regStub = String2Hex($registrationIdentifier);
 	$issStub = subStr($issuer, (-1)*(sizeof($issuer) - 3));
 	$subStub = subStr($subject, (-1)*(sizeof($issuer) - 3));
 
-	echo "\r\nStubs: ", $regStub, $issStub, $subStub, "\r\n"; 
-
 	$callString .= pad('0000000000000000000000000000000000000000000000000000000000000000', $regStub, false);
 	$callString .= pad('0000000000000000000000000000000000000000000000000000000000000000', $issStub, true);
 	$callString .= pad('0000000000000000000000000000000000000000000000000000000000000000', $subStub, true);
+	
 	return $callString;
 
 }
 
 function pad ($pad, $str, $padLeft) {
-	echo "\r\n\r\npad triggered\r\n", $pad, " ",  $str,  " ", $padLeft;
 	if ( gettype($str) == "undefined" ) {
 		return $pad;
 	}
 	if ( $padLeft ) {
-		return substr( ($pad . $str), (-1)*sizeof($pad) );
+		return substr( ($pad . $str), (-1)*strlen($pad) );
 	} else {
-		return substr( ($str . $pad), 0, (-1)*sizeof($pad) );
+		return substr( ($str . $pad), 0, (-1)*strlen($pad) );
 	}
 }
 
