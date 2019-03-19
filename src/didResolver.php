@@ -52,14 +52,8 @@ class didResolver
         $return = callRegistry ("uPortProfileIPFS1220", $encodedMNID, $encodedMNID, 'placeHolderCallback');
         echo "resolved did: " . $return;
         return $return;
-    }
-
-
-    public function placeholderCallback ($result) {
-        echo $result;
-    }
-
-    public function callRegistry ($registrationIdentifier, $issuerId, $subjectId, $callback) {
+    
+     function callRegistry ($registrationIdentifier, $issuerId, $subjectId, $callback) {
 
         $issuer = eaeDecode($issuerId);
         $subject = eaeDecode($subjectId);
@@ -88,9 +82,12 @@ class didResolver
 
 
 
-    }
+     }
+     function placeholderCallback ($result) {
+        echo $result;
+     }
 
-    public function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
+     function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
         $callString = $functionSignature;
 
         $regStub = String2Hex($registrationIdentifier);
@@ -103,9 +100,9 @@ class didResolver
         
         return $callString;
 
-    }
+     }
 
-    public function pad ($pad, $str, $padLeft) {
+     function pad ($pad, $str, $padLeft) {
         if ( gettype($str) == "undefined" ) {
             return $pad;
         }
@@ -114,18 +111,18 @@ class didResolver
         } else {
             return substr( ($str . $pad), 0, (-1)*strlen($pad) );
         }
-    }
+     }
 
-    public function String2Hex($string){
+     function String2Hex($string){
         $hex='';
         for ($i=0; $i < strlen($string); $i++){
             $hex .= dechex(ord($string[$i]));
         }
         return $hex;
-    }
+     }
      
 
-    public function eaeDecode ($payload) {
+     function eaeDecode ($payload) {
         $base58 = new Base58([
             "characters" => Base58::IPFS,
             "version" => 0x00
@@ -140,9 +137,9 @@ class didResolver
             "address" => $address,
             "network" => $network
         ];              
-    }
+     }
 
-    public function getNetworks () {
+     function getNetworks () {
         return [
               '0x01' => [
                     'registry' => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
@@ -161,9 +158,9 @@ class didResolver
                     'rpcUrl' => 'https://rinkeby.infura.io'
               ]
         ];
-    }
+     }
 
-    public function encodeByteArrayToHex ($byteArray) {
+     function encodeByteArrayToHex ($byteArray) {
 
         $chars = array_map("chr", $byteArray);
         $bin = join($chars);
@@ -171,6 +168,7 @@ class didResolver
 
         return $hex;
 
+     }
     }
 }
 
