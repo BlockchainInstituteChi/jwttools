@@ -18,6 +18,10 @@ class ComposerStaticInit41541a1343046e72af5bba92d4ff614d
         array (
             0 => __DIR__ . '/..' . '/tuupola/base58/src',
         ),
+        'Blockchaininstitute\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/blockchaininstitute/didResolver/src',
+        ),
     );
 
     public static function getInitializer(ClassLoader $loader)
