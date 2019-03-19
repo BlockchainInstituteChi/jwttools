@@ -48,7 +48,10 @@ class didResolver
 
     public function resolve_did($mnid)
     {
-        return callRegistry ("uPortProfileIPFS1220", $encodedMNID, $encodedMNID, 'placeHolderCallback');
+        echo "didResolver received " . $mnid;
+        $return = callRegistry ("uPortProfileIPFS1220", $encodedMNID, $encodedMNID, 'placeHolderCallback');
+        echo "resolved did: " . $return;
+        return $return;
     }
 
 
@@ -56,7 +59,7 @@ class didResolver
         echo $result;
     }
 
-    private function callRegistry ($registrationIdentifier, $issuerId, $subjectId, $callback) {
+    public function callRegistry ($registrationIdentifier, $issuerId, $subjectId, $callback) {
 
         $issuer = eaeDecode($issuerId);
         $subject = eaeDecode($subjectId);
@@ -79,7 +82,9 @@ class didResolver
         $callString = encodeFunctionCall($functionSignature, $registrationIdentifier, $issuer['address'], $subject['address']);
 
 
-        echo "\r\n\r\n" . $callString . "\r\n";
+        // echo "\r\n\r\n" . $callString . "\r\n";
+
+        return $callString
 
 
 
