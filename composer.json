@@ -1,6 +1,13 @@
 {
     "require": {
         "tuupola/base58": "^0.4.0",
-        "blockchaininstitute/didResolver": "^0.0"
+        "blockchaininstitute/did-resolver" : "master"
+    },
+    "minimum-stability": "dev",
+    "repositories": {
+        "did-resolver": {
+            "type": "vcs",
+            "url": "https://github.com/BlockchainInstituteChi/php-did-resolver.git"
+        }
     }
 }

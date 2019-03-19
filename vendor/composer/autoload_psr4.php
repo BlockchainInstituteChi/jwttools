@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Tuupola\\' => array($vendorDir . '/tuupola/base58/src'),
-    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/didResolver/src')
+    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/did-resolver/src'),
 );

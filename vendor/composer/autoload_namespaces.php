@@ -5,7 +5,5 @@
 $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
-return array(    
-	'Tuupola\\' => array($vendorDir . '/tuupola/base58/src'),
-    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/didResolver/src')
+return array(
 );

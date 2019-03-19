@@ -11,6 +11,10 @@ class ComposerStaticInit41541a1343046e72af5bba92d4ff614d
         array (
             'Tuupola\\' => 8,
         ),
+        'B' => 
+        array (
+            'Blockchaininstitute\\' => 20,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -20,7 +24,7 @@ class ComposerStaticInit41541a1343046e72af5bba92d4ff614d
         ),
         'Blockchaininstitute\\' => 
         array (
-            0 => __DIR__ . '/..' . '/blockchaininstitute/didResolver/src',
+            0 => __DIR__ . '/..' . '/blockchaininstitute/did-resolver/src',
         ),
     );
 

@@ -4,10 +4,10 @@
 	// use Tuupola\Base58;
 	require 'vendor/autoload.php';
 
-	use Blockchaininstitute\didResolver;
+	use Blockchaininstitute\did-resolver;
 
 	$didResolver = new didResolver();
 
-	echo didResolver.resolve_did('test');
+	echo did-resolver.resolve_did('test');
 
 ?>
