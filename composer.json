@@ -1,5 +1,5 @@
 {
-    "name": "blockchaininstitute/didResolver",
+    "name": "blockchaininstitute/did-resolver",
     "description": "This module provides a solution for resolving decentralized IDs (DIDs) with PHP.",
     "keywords": ["decentralized","web3","did","uport"],
     "homepage": "https://theblockchaininstitute.org/",
