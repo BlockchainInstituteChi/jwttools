@@ -55,7 +55,7 @@ class didResolver
     }
 
 
-    private function placeholderCallback ($result) {
+    public function placeholderCallback ($result) {
         echo $result;
     }
 
@@ -90,7 +90,7 @@ class didResolver
 
     }
 
-    private function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
+    public function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
         $callString = $functionSignature;
 
         $regStub = String2Hex($registrationIdentifier);
@@ -105,7 +105,7 @@ class didResolver
 
     }
 
-    private function pad ($pad, $str, $padLeft) {
+    public function pad ($pad, $str, $padLeft) {
         if ( gettype($str) == "undefined" ) {
             return $pad;
         }
@@ -116,7 +116,7 @@ class didResolver
         }
     }
 
-    private function String2Hex($string){
+    public function String2Hex($string){
         $hex='';
         for ($i=0; $i < strlen($string); $i++){
             $hex .= dechex(ord($string[$i]));
@@ -125,7 +125,7 @@ class didResolver
     }
      
 
-    private function eaeDecode ($payload) {
+    public function eaeDecode ($payload) {
         $base58 = new Base58([
             "characters" => Base58::IPFS,
             "version" => 0x00
@@ -142,7 +142,7 @@ class didResolver
         ];              
     }
 
-    private function getNetworks () {
+    public function getNetworks () {
         return [
               '0x01' => [
                     'registry' => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
@@ -163,7 +163,7 @@ class didResolver
         ];
     }
 
-    private function encodeByteArrayToHex ($byteArray) {
+    public function encodeByteArrayToHex ($byteArray) {
 
         $chars = array_map("chr", $byteArray);
         $bin = join($chars);
