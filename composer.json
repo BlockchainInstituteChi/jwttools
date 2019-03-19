@@ -1,0 +1,29 @@
+{
+    "name": "blockchaininstitute/didResolver",
+    "description": "This module provides a solution for resolving decentralized IDs (DIDs) with PHP.",
+    "keywords": ["decentralized","web3","did","uport"],
+    "homepage": "https://theblockchaininstitute.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Morris",
+            "email": "alex@theblockchaininstitute.org",
+            "homepage": "http://theblockchaininstitute.org/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : "^5.6|^7.0"
+    },
+    "suggest": {
+        "ext-gmp": "GMP extension provides the fastest encoding and decoding."
+    },
+    "autoload": {
+        "psr-4": {
+            "Blockchaininstitute\\": "src"
+        }
+    },
+    "require-dev": {
+        "tuupola/base58": "^0.4.0"
+    }
+}
