@@ -84,7 +84,7 @@ class didResolver
 
         // echo "\r\n\r\n" . $callString . "\r\n";
 
-        return $callString
+        return $callString;
 
 
 
