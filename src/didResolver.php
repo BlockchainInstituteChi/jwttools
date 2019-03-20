@@ -38,20 +38,52 @@ class didResolver
     {
     }
 
-    public function callRegistry($registrationIdentifier, $issuerId, $subjectId, $callback) {
+
+    /**
+     * Friendly welcome
+     *
+     * @param string $phrase Phrase to return
+     *
+     * @return string Returns the phrase passed in
+     */
+
+    public function resolve_did($profileId, $mnid, $callback)
+    {
+        // echo "didResolver received " . $mnid;
+
+        $return = $this->callRegistry($profileId, $mnid, $mnid, $callback);
+
+        // echo "resolved did: " . $return;
+
+        return $return;
+    }
+
+    // private function call_user_func($s1, $s2) {
+    //     echo "Triggered call_user_func {\r\n s1:\r\n " . $s1 . " \r\n \r\ns2: \r\n" . $s2;
+    // }
+
+
+
+
+    private function placeholderCallback ($result) {
+        echo $result;
+    }
+
+
+    private function callRegistry($registrationIdentifier, $issuerId, $subjectId, $callback) {
 
         $issuer = $this->eaeDecode($issuerId);
         $subject = $this->eaeDecode($subjectId);
 
         $networks = $this->getNetworks();
-        echo "at call registry, networks: ", var_dump($networks), " issuer: ", var_dump($issuer), " subject ", var_dump($subject);
+        // echo "at call registry, networks: ", var_dump($networks), " issuer: ", var_dump($issuer), " subject ", var_dump($subject);
 
         if ( $issuer['network'] !== $subject['network'] ) {
-            $this->call_user_func($callback, "Error: Subject and Issuer must be in the same network!");
+            call_user_func($callback, "Error: Subject and Issuer must be in the same network!");
         }
 
         if (!$networks[$issuer['network']]) {
-          $this->call_user_func($callback, 'Network id ' . $issuer['network'] . ' is not configured');
+            call_user_func($callback, 'Network id ' . $issuer['network'] . ' is not configured');
         } 
         
         $rpcUrl = $networks[$issuer['network']]['registry'];
@@ -62,41 +94,11 @@ class didResolver
         $callString = $this->encodeFunctionCall($functionSignature, $registrationIdentifier, $issuer['address'], $subject['address']);
 
 
-        // echo "\r\n\r\n" . $callString . "\r\n";
+        call_user_func($callback, $callString);
 
-        return $callString;
+        // return $callString;
 
     }
-
-    /**
-     * Friendly welcome
-     *
-     * @param string $phrase Phrase to return
-     *
-     * @return string Returns the phrase passed in
-     */
-
-    private function call_user_func($s1, $s2) {
-        echo "Triggered call_user_func {\r\n s1:\r\n " . $s1 . " \r\n \r\ns2: \r\n" . $s2;
-    }
-
-    public function resolve_did($mnid)
-    {
-        echo "didResolver received " . $mnid;
-
-        $return = $this->callRegistry("uPortProfileIPFS1220", $encodedMNID, $encodedMNID, 'placeHolderCallback');
-
-        echo "resolved did: " . $return;
-
-        return $return;
-    }
-
-
-    private function placeholderCallback ($result) {
-        echo $result;
-    }
-
-
 
     private function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
         $callString = $functionSignature;
