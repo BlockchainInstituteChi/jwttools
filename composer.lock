@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/BlockchainInstituteChi/php-did-resolver.git",
-                "reference": "23ab2283ca62883834ee44471a1730968077de53"
+                "reference": "9e07fb13252a740fe6d6b5bef64777255e18be5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BlockchainInstituteChi/php-did-resolver/zipball/23ab2283ca62883834ee44471a1730968077de53",
-                "reference": "23ab2283ca62883834ee44471a1730968077de53",
+                "url": "https://api.github.com/repos/BlockchainInstituteChi/php-did-resolver/zipball/9e07fb13252a740fe6d6b5bef64777255e18be5c",
+                "reference": "9e07fb13252a740fe6d6b5bef64777255e18be5c",
                 "shasum": ""
             },
             "require": {
@@ -58,7 +58,7 @@
                 "source": "https://github.com/BlockchainInstituteChi/php-did-resolver/tree/master",
                 "issues": "https://github.com/BlockchainInstituteChi/php-did-resolver/issues"
             },
-            "time": "2019-03-19T20:55:34+00:00"
+            "time": "2019-03-19T21:45:59+00:00"
         },
         {
             "name": "tuupola/base58",

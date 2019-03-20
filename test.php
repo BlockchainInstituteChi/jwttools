@@ -27,7 +27,7 @@ function callRegistry ($registrationIdentifier, $issuerId, $subjectId, $callback
 	}
 
 	if (!$networks[$issuer['network']]) {
-      call_user_func($callback, 'Network id ' . $issuer['network'] . ' is not configured');
+    	call_user_func($callback, 'Network id ' . $issuer['network'] . ' is not configured');
     } 
     
     $rpcUrl = $networks[$issuer['network']]['registry'];
@@ -80,6 +80,7 @@ function String2Hex($string){
  
 
 function eaeDecode ($payload) {
+	
 	$base58 = new Base58([
 	    "characters" => Base58::IPFS,
 	    "version" => 0x00
