@@ -9,7 +9,7 @@ use Tuupola\Base58;
 $encodedMNID = "2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575";
 $BCIencodedMNID = "2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ";
 
-callRegistry ("uPortProfileIPFS1220", $encodedMNID, $encodedMNID, 'placeHolderCallback');
+callRegistry ("uPortProfileIPFS1220", $BCIencodedMNID, $encodedMNID, 'placeHolderCallback');
 
 function placeholderCallback ($result) {
 	echo $result;

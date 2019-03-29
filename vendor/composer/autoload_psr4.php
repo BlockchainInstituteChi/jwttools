@@ -6,6 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Tuupola\\' => array($vendorDir . '/tuupola/base58/src'),
-    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/did-resolver/src'),
+    'kornrunner\\' => array($vendorDir . '/kornrunner/secp256k1/src'),
+    'Phactor\\' => array($vendorDir . '/ionux/phactor/src'),
+    'Mdanter\\Ecc\\' => array($vendorDir . '/mdanter/ecc/src'),
+    'FG\\' => array($vendorDir . '/fgrosse/phpasn1/lib'),
 );

@@ -4,35 +4,51 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit41541a1343046e72af5bba92d4ff614d
+class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
 {
     public static $prefixLengthsPsr4 = array (
-        'T' => 
+        'k' => 
         array (
-            'Tuupola\\' => 8,
+            'kornrunner\\' => 11,
         ),
-        'B' => 
+        'P' => 
         array (
-            'Blockchaininstitute\\' => 20,
+            'Phactor\\' => 8,
+        ),
+        'M' => 
+        array (
+            'Mdanter\\Ecc\\' => 12,
+        ),
+        'F' => 
+        array (
+            'FG\\' => 3,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Tuupola\\' => 
+        'kornrunner\\' => 
         array (
-            0 => __DIR__ . '/..' . '/tuupola/base58/src',
+            0 => __DIR__ . '/..' . '/kornrunner/secp256k1/src',
         ),
-        'Blockchaininstitute\\' => 
+        'Phactor\\' => 
         array (
-            0 => __DIR__ . '/..' . '/blockchaininstitute/did-resolver/src',
+            0 => __DIR__ . '/..' . '/ionux/phactor/src',
+        ),
+        'Mdanter\\Ecc\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mdanter/ecc/src',
+        ),
+        'FG\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/fgrosse/phpasn1/lib',
         ),
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit41541a1343046e72af5bba92d4ff614d::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit41541a1343046e72af5bba92d4ff614d::$prefixDirsPsr4;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }
