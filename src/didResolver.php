@@ -26,9 +26,28 @@ SOFTWARE.
 
 namespace Blockchaininstitute;
 
-use Tuupola\Base58;
+require __DIR__ . "/vendor/autoload.php";
+use Mdanter\Ecc\Crypto\Signature\SignHasher;
+use Mdanter\Ecc\EccFactory;
+use Mdanter\Ecc\Curves\CurveFactory;
+use Mdanter\Ecc\Crypto\Signature\Signer;
+use Mdanter\Ecc\Crypto\Signature\Signature;
+use Mdanter\Ecc\Crypto\Key\PublicKey;
+use Mdanter\Ecc\Curves\SecgCurve;
+// use Mdanter\Ecc\Crypto\Curves\CurveFactory;
+use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
+use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
+use Mdanter\Ecc\Math\GmpMathInterface;
+use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
+use Mdanter\Ecc\Serializer\Signature\SimpleEthSerializer;
+use Mdanter\Ecc\Serializer\PublicKey\Der\Parser as publicKeyParser;
 
-class didResolver
+use kornrunner\Secp256k1;
+use kornrunner\Serializer\HexSignatureSerializer;
+use kornrunner\Signature\Signature as kSig;
+use ionux\Phactor;
+
+class jwtValidator
 {
 
     /**

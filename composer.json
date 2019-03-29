@@ -24,6 +24,9 @@
         }
     },
     "require-dev": {
-        "tuupola/base58": "^0.4.0"
+        "mdanter/ecc": "^0.5.2",
+        "kornrunner/secp256k1": "^0.1.2",
+        "ionux/phactor": "1.0.8"
     }
+
 }
