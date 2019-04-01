@@ -21,7 +21,6 @@ $publicKey = "04315249bd0eac98917004d01e71cac4c7954829c0301c97df8e17dbce425c07c0
 
 
 // 4. Verify signature using serialized data
-
 $isVerified = verifyJWT($jwt, $publicKey);
 
 echo "isVerified:\r\n" , $isVerified;
@@ -112,42 +111,3 @@ function String2Hex($string){
     }
     return $hex;
 }
-
-
-// // Parse signature
-// $sigSerializer = new SimpleEthSerializer();
-
-// $sig = $sigSerializer->parse($sigData);
-
-// // Parse public key
-// $keyData = file_get_contents(__DIR__ . '/alex-pub.pem');
-// // $keyData = $opt["key"];
-
-// $derSerializer = new DerPublicKeySerializer($adapter);
-
-// $pemSerializer = new PemPublicKeySerializer($derSerializer);
-
-// $key = $pemSerializer->parse($keyData);
-
-// $hasher = new SignHasher($algorithm);
-
-// $hash = $hasher->makeHash($document, $generator);
-
-// $signer = new Signer($adapter);
-
-// echo "Signer: ";
-// var_dump($signer);
-
-// echo "Sig object just before check: ";
-// var_dump($sig);
-
-// $check = $signer->verify($key, $sig, $hash);
-
-// Echo "Signature check: ";
-// var_dump($check);
-
-// if ($check) {
-//     echo "Signature verified\n";
-// } else {
-//     echo "Signature validation failed\n";
-// }
