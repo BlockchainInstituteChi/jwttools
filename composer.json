@@ -1,13 +1,13 @@
 {
     "require": {
-        "tuupola/base58": "^0.4.0",
+        "tuupola/base58": "dev-master",
         "blockchaininstitute/did-resolver" : "master"
     },
     "minimum-stability": "dev",
     "repositories": {
         "did-resolver": {
             "type": "vcs",
-            "url": "https://github.com/BlockchainInstituteChi/php-did-resolver.git"
+            "url": "https://github.com/BlockchainInstituteChi/phpJwtTools.git"
         }
     }
 }

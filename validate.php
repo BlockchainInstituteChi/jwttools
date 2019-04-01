@@ -41,10 +41,9 @@ function verifyJWT ($jwt, $publicKey) {
 	$signatureK = new kSig ($signatureSet["rGMP"], $signatureSet["sGMP"], $signatureSet["v"]);
 
 	$algorithm = 'sha256';
-	$hasher = new SignHasher($algorithm);
-
+	
 	$document = $opt['header'] . "." . $opt['body'];	
-	$hash = hash('sha256', $document);
+	$hash = hash($algorithm, $document);
 
 	return $secp256k1->verify($hash, $signatureK, $publicKey);
 

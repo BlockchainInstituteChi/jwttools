@@ -1,5 +1,58 @@
 [
     {
+        "name": "blockchaininstitute/did-resolver",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/BlockchainInstituteChi/php-did-resolver.git",
+            "reference": "7abf1ae417d09a574358a4d09e5c485542256458"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/BlockchainInstituteChi/php-did-resolver/zipball/7abf1ae417d09a574358a4d09e5c485542256458",
+            "reference": "7abf1ae417d09a574358a4d09e5c485542256458",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.6|^7.0"
+        },
+        "require-dev": {
+            "tuupola/base58": "^0.4.0"
+        },
+        "suggest": {
+            "ext-gmp": "GMP extension provides the fastest encoding and decoding."
+        },
+        "time": "2019-03-20T15:46:34+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Blockchaininstitute\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Alexander Morris",
+                "email": "alex@theblockchaininstitute.org",
+                "homepage": "http://theblockchaininstitute.org/",
+                "role": "Developer"
+            }
+        ],
+        "description": "This module provides a solution for resolving decentralized IDs (DIDs) with PHP.",
+        "homepage": "https://theblockchaininstitute.org/",
+        "keywords": [
+            "decentralized",
+            "did",
+            "uport",
+            "web3"
+        ]
+    },
+    {
         "name": "fgrosse/phpasn1",
         "version": "v2.1.1",
         "version_normalized": "2.1.1.0",
@@ -286,6 +339,60 @@
             "phpecc",
             "secp256k1",
             "secp256r1"
+        ]
+    },
+    {
+        "name": "tuupola/base58",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/tuupola/base58.git",
+            "reference": "2bf8d47e4ecc3ab8399c5c758a5d1959211c621b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/tuupola/base58/zipball/2bf8d47e4ecc3ab8399c5c758a5d1959211c621b",
+            "reference": "2bf8d47e4ecc3ab8399c5c758a5d1959211c621b",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.6|^7.0"
+        },
+        "require-dev": {
+            "overtrue/phplint": "^0.2.4",
+            "paragonie/random_compat": "^2.0",
+            "phpbench/phpbench": "^0.13.0",
+            "phpunit/phpunit": "^5.0|^6.0|^7.0",
+            "squizlabs/php_codesniffer": "^2.5"
+        },
+        "suggest": {
+            "ext-gmp": "GMP extension provides the fastest encoding and decoding."
+        },
+        "time": "2019-03-30T16:21:14+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Tuupola\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Mika Tuupola",
+                "email": "tuupola@appelsiini.net",
+                "homepage": "https://appelsiini.net/",
+                "role": "Developer"
+            }
+        ],
+        "description": "Base58 encoder and decoder for arbitrary data",
+        "homepage": "https://github.com/tuupola/base58",
+        "keywords": [
+            "base58"
         ]
     }
 ]

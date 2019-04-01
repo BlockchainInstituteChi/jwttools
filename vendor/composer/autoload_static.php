@@ -11,6 +11,10 @@ class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
         array (
             'kornrunner\\' => 11,
         ),
+        'T' => 
+        array (
+            'Tuupola\\' => 8,
+        ),
         'P' => 
         array (
             'Phactor\\' => 8,
@@ -23,12 +27,20 @@ class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
         array (
             'FG\\' => 3,
         ),
+        'B' => 
+        array (
+            'Blockchaininstitute\\' => 20,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'kornrunner\\' => 
         array (
             0 => __DIR__ . '/..' . '/kornrunner/secp256k1/src',
+        ),
+        'Tuupola\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/tuupola/base58/src',
         ),
         'Phactor\\' => 
         array (
@@ -42,6 +54,14 @@ class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
         array (
             0 => __DIR__ . '/..' . '/fgrosse/phpasn1/lib',
         ),
+        'Blockchaininstitute\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/blockchaininstitute/did-resolver/src',
+        ),
+        'Blockchaininstitute\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/blockchaininstitute/phpJwtTools/src',
+        )
     );
 
     public static function getInitializer(ClassLoader $loader)

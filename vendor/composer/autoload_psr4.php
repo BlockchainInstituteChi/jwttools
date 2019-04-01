@@ -7,7 +7,11 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'kornrunner\\' => array($vendorDir . '/kornrunner/secp256k1/src'),
+    'Tuupola\\' => array($vendorDir . '/tuupola/base58/src'),
     'Phactor\\' => array($vendorDir . '/ionux/phactor/src'),
     'Mdanter\\Ecc\\' => array($vendorDir . '/mdanter/ecc/src'),
     'FG\\' => array($vendorDir . '/fgrosse/phpasn1/lib'),
+    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/did-resolver/src'),
+    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/phpJwtTools/src'),
+
 );
