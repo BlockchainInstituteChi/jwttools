@@ -26,7 +26,6 @@ SOFTWARE.
 
 namespace Blockchaininstitute;
 
-require __DIR__ . "/vendor/autoload.php";
 use Mdanter\Ecc\Crypto\Signature\SignHasher;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Curves\CurveFactory;
@@ -66,29 +65,90 @@ class jwtValidator
      * @return string Returns the phrase passed in
      */
 
-    public function resolve_did($profileId, $mnid, $callback)
-    {
-        // echo "didResolver received " . $mnid;
+    public function verifyJWT ($jwt, $publicKey) {
 
-        $return = $this->callRegistry($profileId, $mnid, $mnid, $callback);
+        $opt = deconstructAndDecode($jwt);
 
-        // echo "resolved did: " . $return;
+        $secp256k1 = new Secp256k1();
+        $CurveFactory = new CurveFactory;
+        $adapter = EccFactory::getAdapter();
+        $generator = CurveFactory::getGeneratorByName('secp256k1');
 
-        return $return;
+        $signatureSet = createSignatureObject($opt['signature']);   
+        $signatureK = new kSig ($signatureSet["rGMP"], $signatureSet["sGMP"], $signatureSet["v"]);
+
+        $algorithm = 'sha256';
+        $hasher = new SignHasher($algorithm);
+
+        $document = $opt['header'] . "." . $opt['body'];    
+        $hash = hash('sha256', $document);
+
+        return $secp256k1->verify($hash, $signatureK, $publicKey);
+
     }
 
-    // private function call_user_func($s1, $s2) {
-    //     echo "Triggered call_user_func {\r\n s1:\r\n " . $s1 . " \r\n \r\ns2: \r\n" . $s2;
-    // }
 
+    public function deconstructAndDecode ($jwt) {
 
+        $exp = explode(".", $jwt);
 
+        $decodedParts = [
+            "header" => $exp[0],
+            "body" => $exp[1],
+            "signature" => $exp[2]
+        ];
 
-    private function placeholderCallback ($result) {
-        echo $result;
+        return $decodedParts;
+
     }
 
 
+    public function base64url_decode( $payload ){
+        // converts from base64url to base64, then decodes
+        return base64_decode( strtr( $payload, '-_', '+/') . str_repeat('=', 3 - ( 3 + strlen( $payload )) % 4 ));
+
+    }
+
+    private function createSignatureObject ($signature) {
+
+        $rawSig = base64url_decode($signature);
+
+        $sigObj = [
+            "v" => 0,
+            "rGMP" => gmp_init("0x" . String2Hex(substr( $rawSig, 0, 32 )), 16),
+            "sGMP" => gmp_init("0x" . String2Hex(substr( $rawSig, 32, 64 )), 16)
+        ];
+
+        return $sigObj;
+
+    }
+
+    public function encodeByteArrayToHex ($byteArray) {
+
+        $chars = array_map("chr", $byteArray);
+        $bin = join($chars);
+        $hex = bin2hex($bin);
+
+        return $hex;
+
+    }
+
+    public function String2Hex($string){
+        $hex='';
+        for ($i=0; $i < strlen($string); $i++){
+            // echo "\r\nconverting " . $string[$i] . " to " . dechex(ord($string[$i]));
+
+            $newBit = dechex(ord($string[$i]));
+
+            if ( strlen($newBit) == 1 ) {
+                $newBit = "0" . $newBit;
+            }
+
+            $hex .= $newBit;
+        }
+        return $hex;
+    }
+    
     private function callRegistry($registrationIdentifier, $issuerId, $subjectId, $callback) {
 
         $issuer = $this->eaeDecode($issuerId);

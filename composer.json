@@ -16,7 +16,7 @@
         "php" : "^5.6|^7.0"
     },
     "suggest": {
-        "ext-gmp": "GMP extension provides the fastest encoding and decoding."
+        "ext-gmp": "Must install php-gmp before using validation function."
     },
     "autoload": {
         "psr-4": {
@@ -26,7 +26,7 @@
     "require-dev": {
         "mdanter/ecc": "^0.5.2",
         "kornrunner/secp256k1": "^0.1.2",
-        "ionux/phactor": "1.0.8"
+        "tuupola/base58": "^0.4.0"
     }
 
 }
