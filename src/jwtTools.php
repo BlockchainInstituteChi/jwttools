@@ -91,15 +91,14 @@ class jwtTools
     }
 
 
-    public function resolve_did($profileId, $jwt, $callback)
+    public function resolve_did($profileId, $jwt)
     {
 
         $mnid = $this->getSenderMnid($jwt);
 
-        // echo "didResolver received " . $mnid;
-        $return = $this->callRegistry($profileId, $mnid, $mnid, $callback);
-        // echo "resolved did: " . $return;
-        return $return;
+        $callstring = $this->prepareRegistryCallString($profileId, $mnid, $mnid);
+
+        return $callstring;
     }
 
     public function getSenderMnid ($jwt) {
@@ -165,20 +164,19 @@ class jwtTools
 
     }
 
-    private function callRegistry($registrationIdentifier, $issuerId, $subjectId, $callback) {
+    private function prepareRegistryCallString($registrationIdentifier, $issuerId, $subjectId) {
 
         $issuer = $this->eaeDecode($issuerId);
         $subject = $this->eaeDecode($subjectId);
 
         $networks = $this->getNetworks();
-        // echo "at call registry, networks: ", var_dump($networks), " issuer: ", var_dump($issuer), " subject ", var_dump($subject);
 
         if ( $issuer['network'] !== $subject['network'] ) {
-            call_user_func($callback, "Error: Subject and Issuer must be in the same network!");
+            return "Error: Subject and Issuer must be in the same network!";
         }
 
         if (!$networks[$issuer['network']]) {
-            call_user_func($callback, 'Network id ' . $issuer['network'] . ' is not configured');
+           return 'Network id ' . $issuer['network'] . ' is not configured';
         } 
         
         $rpcUrl = $networks[$issuer['network']]['registry'];
@@ -188,10 +186,7 @@ class jwtTools
 
         $callString = $this->encodeFunctionCall($functionSignature, $registrationIdentifier, $issuer['address'], $subject['address']);
 
-
-        call_user_func($callback, $callString);
-
-        // return $callString;
+        return $callString;
 
     }
 

@@ -79,7 +79,9 @@ params:  [ { to: '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
 }
 ```
 
-2. Create example in examples branch with a properly formatted http call in the callback function for didResolver
+2. Create example in examples branch with a properly formatted http call in the callback function for didResolver 
 
 3. Create an example that shows the full validation process including the infura callback and address retrieval (update verifyJWT to properly use the resolve_did function and implement an appropriate callback scenario)
+
+4. Need to update constructor configuration to include things like the uport default settings and functionSignature value
 
