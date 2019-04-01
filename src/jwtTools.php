@@ -35,7 +35,6 @@ use Mdanter\Ecc\Math\GmpMathInterface;
 use kornrunner\Secp256k1;
 use kornrunner\Signature\Signature as kSig;
 
-
 use Tuupola\Base58;
 
 class jwtTools
@@ -59,21 +58,20 @@ class jwtTools
 
     public function verifyJWT ($jwt, $publicKey) {
 
-        $opt = deconstructAndDecode($jwt);
+        $opt = $this->deconstructAndDecode($jwt);
 
         $secp256k1 = new Secp256k1();
         $CurveFactory = new CurveFactory;
         $adapter = EccFactory::getAdapter();
         $generator = CurveFactory::getGeneratorByName('secp256k1');
 
-        $signatureSet = createSignatureObject($opt['signature']);   
+        $signatureSet = $this->createSignatureObject($opt['signature']);   
         $signatureK = new kSig ($signatureSet["rGMP"], $signatureSet["sGMP"], $signatureSet["v"]);
 
         $algorithm = 'sha256';
-        $hasher = new SignHasher($algorithm);
-
+        
         $document = $opt['header'] . "." . $opt['body'];    
-        $hash = hash('sha256', $document);
+        $hash = hash($algorithm, $document);
 
         return $secp256k1->verify($hash, $signatureK, $publicKey);
 
@@ -95,25 +93,21 @@ class jwtTools
     }
 
 
+    public function resolve_did($profileId, $mnid, $callback)
+    {
+        // echo "didResolver received " . $mnid;
+        $return = $this->callRegistry($profileId, $mnid, $mnid, $callback);
+        // echo "resolved did: " . $return;
+        return $return;
+    }
+
+
+    // Utilities Functionality
     public function base64url_decode( $payload ){
         // converts from base64url to base64, then decodes
         return base64_decode( strtr( $payload, '-_', '+/') . str_repeat('=', 3 - ( 3 + strlen( $payload )) % 4 ));
 
-    }
-
-    private function createSignatureObject ($signature) {
-
-        $rawSig = base64url_decode($signature);
-
-        $sigObj = [
-            "v" => 0,
-            "rGMP" => gmp_init("0x" . String2Hex(substr( $rawSig, 0, 32 )), 16),
-            "sGMP" => gmp_init("0x" . String2Hex(substr( $rawSig, 32, 64 )), 16)
-        ];
-
-        return $sigObj;
-
-    }
+    }    
 
     public function encodeByteArrayToHex ($byteArray) {
 
@@ -139,6 +133,20 @@ class jwtTools
             $hex .= $newBit;
         }
         return $hex;
+    }
+
+    private function createSignatureObject ($signature) {
+
+        $rawSig = $this->base64url_decode($signature);
+
+        $sigObj = [
+            "v" => 0,
+            "rGMP" => gmp_init("0x" . $this->String2Hex(substr( $rawSig, 0, 32 )), 16),
+            "sGMP" => gmp_init("0x" . $this->String2Hex(substr( $rawSig, 32, 64 )), 16)
+        ];
+
+        return $sigObj;
+
     }
 
     private function callRegistry($registrationIdentifier, $issuerId, $subjectId, $callback) {
@@ -197,15 +205,6 @@ class jwtTools
         }
     }
 
-    private function String2Hex($string){
-        $hex='';
-        for ($i=0; $i < strlen($string); $i++){
-            $hex .= dechex(ord($string[$i]));
-        }
-        return $hex;
-    }
-     
-
     private function eaeDecode ($payload) {
         $base58 = new Base58([
             "characters" => Base58::IPFS,
@@ -244,15 +243,6 @@ class jwtTools
         ];
     }
 
-    private function encodeByteArrayToHex ($byteArray) {
-
-        $chars = array_map("chr", $byteArray);
-        $bin = join($chars);
-        $hex = bin2hex($bin);
-
-        return $hex;
-
-    }
 }
 
 ?>
