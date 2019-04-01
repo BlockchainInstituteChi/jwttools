@@ -1,35 +1,99 @@
-# php-did-resolver
+Add data to the validate file and then run. 
 
-This repo is intended to provide the ability for PHP-Based apps to retrieve DID documents for services such as the uPort Wordpress Plugin. 
 
-The Lookup process accepts a dynamic multi-network identifier (MNID) value and a method in the following format:
+Stole some code from 
 
-did:< method >:< mnid >
+https://github.com/scintill/php-bitcoin-signature-routines/blob/master/test/verifymessage.php
 
-where Alex's testnet did is 
 
-did:uport:2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575
 
-# To-Do's
+### Testing Data:
 
-1. Compose HTTP payload and call the rpc url 
-
-Example Payload: 
-{ uri: 'https://rinkeby.infura.io/uport-lite-library',
-  accept: 'application/json',
-  data: 
-   { method: 'eth_call',
-     params: [ [Object], 'latest' ],
-     id: 1,
-     jsonrpc: '2.0' } }
-params:  [ { to: '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
-    data: '0x447885f075506f727450726f66696c65495046533132323000000000000000000000000000000000000000000000000045cc630c5a692bb1fc5dcac3a368db549d6cfbf600000000000000000000000045cc630c5a692bb1fc5dcac3a368db549d6cfbf6' },
-  'latest' ]
-}
-
-# Installation 
-
-While this is still in beta, you can install the composer module with the following composer commands:
-
-```composer config repositories.did-resolver vcs https://github.com/BlockchainInstituteChi/php-did-resolver.git```
-```composer require BlockchainInstituteChi/php-did-resolver:master```
+data was  eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTM3MTM0MTQsImV4cCI6MTU1Mzc5OTgxNCwiYXVkIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoiLCJ0eXBlIjoic2hhcmVSZXNwIiwibmFkIjoiMm90MWhDdVZBTDZuUTNOUXJ5amtCQVJHdHNqNHJzYW81NzUiLCJvd24iOnsibmFtZSI6IkFsZXgifSwicmVxIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTlRNM01UTTBNRGtzSW5KbGNYVmxjM1JsWkNJNld5SnVZVzFsSWwwc0ltTmhiR3hpWVdOcklqb2lhSFIwY0hNNkx5OWphR0Z6Y1hWcExuVndiM0owTG0xbEwyRndhUzkyTVM5MGIzQnBZeTlNY1d4R1dHOVFNbEEyU0ZaMVIxZFpJaXdpYm1WMElqb2lNSGcwSWl3aWRIbHdaU0k2SW5Ob1lYSmxVbVZ4SWl3aWFYTnpJam9pTW05cVJYUlZXRUpMTWtvM05XVkRRbUY2ZWpSMGJtTkZWMFV4T0c5R1YzSnVaa29pZlEuOVJyN05UcllxeTRjSlVoUk1nRHhFTGhYczcwVkZnT2xiUW9QMW1jaEpGa2dIRG5vd3hjemJOMWVYMUJSUERmYnlNaE1VSC1LRDV0d1BnbUtjOGQtckEiLCJpc3MiOiIyb3QxaEN1VkFMNm5RM05Rcnlqa0JBUkd0c2o0cnNhbzU3NSJ9  
+signature was  3d_07P4ZdzD3FH4XNGWgVZH5jouQpSijmeQBcvC_7EYnW-vy7R1Plar7ldQ8qLJRjXB_mw9TyP_WFqP7p6ZYqg
+  authenticators was  [ { id: 'did:uport:2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575#keys-1',
+    type: 'Secp256k1VerificationKey2018',
+    owner: 'did:uport:2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575',
+    publicKeyHex: '04315249bd0eac98917004d01e71cac4c7954829c0301c97df8e17dbce425c07c0e4a24a96878796e94a4fa8096bb5dc43f0991af0331d4d1dc42c62dae7da4095' } ]  
+rawsig was   <Buffer dd df f4 ec fe 19 77 30 f7 14 7e 17 34 65 a0 55 91 f9 8e 8b 90 a5 28 a3 99 e4 01 72 f0 bf ec 46 27 5b eb f2 ed 1d 4f 95 aa fb 95 d4 3c a8 b2 51 8d 70 ... >  
+rawsig hex was   dddff4ecfe197730f7147e173465a05591f98e8b90a528a399e40172f0bfec46275bebf2ed1d4f95aafb95d43ca8b2518d707f9b0f53c8ffd616a3fba7a658aa  
+sigObj is  { r: 'dddff4ecfe197730f7147e173465a05591f98e8b90a528a399e40172f0bfec46',
+  s: '275bebf2ed1d4f95aafb95d43ca8b2518d707f9b0f53c8ffd616a3fba7a658aa' }  
+signing publicKeyHex was  04315249bd0eac98917004d01e71cac4c7954829c0301c97df8e17dbce425c07c0e4a24a96878796e94a4fa8096bb5dc43f0991af0331d4d1dc42c62dae7da4095  
+****** ++++++ ----- ec signature verification triggered with  <Buffer 54 fb 0f 22 2b f5 58 43 15 72 e7 69 ff 46 32 fc 1a 15 b8 0b 5a 5e 60 dd 9f b8 5f 58 f4 90 3a 20> { r: 'dddff4ecfe197730f7147e173465a05591f98e8b90a528a399e40172f0bfec46',
+  s: '275bebf2ed1d4f95aafb95d43ca8b2518d707f9b0f53c8ffd616a3fba7a658aa' } <Key priv: null pub: <EC Point x: 315249bd0eac98917004d01e71cac4c7954829c0301c97df8e17dbce425c07c0 y: e4a24a96878796e94a4fa8096bb5dc43f0991af0331d4d1dc42c62dae7da4095> > undefined
+key is <Key priv: null pub: <EC Point x: 315249bd0eac98917004d01e71cac4c7954829c0301c97df8e17dbce425c07c0 y: e4a24a96878796e94a4fa8096bb5dc43f0991af0331d4d1dc42c62dae7da4095> >
+ 
+decoded signature Signature {
+  r: <BN: dddff4ecfe197730f7147e173465a05591f98e8b90a528a399e40172f0bfec46>,
+  s: <BN: 275bebf2ed1d4f95aafb95d43ca8b2518d707f9b0f53c8ffd616a3fba7a658aa>,
+  recoveryParam: null }
+R: 100356836847763279901400158617019659053930756501974317202412424796994193583174
+S: 17802612637311882274571371773745242216328289018585776847845208281105574549674
+N: 115792089237316195423570985008687907852837564279074904382605163141518161494337 115792089237316195423570985008687907852837564279074904382605163141518161494337
+ 
+ 
+ sinv:  <BN: cb1a62e03c940eda806c1e8635a07a3ef3f9b4b373102ea932987890952baa57>
+ 
+ 
+u1 <BN: 5774af6069d7a805dbf708c7c01dcd72dcc6b4b2ef0926e773997fce8ddfc8f7> 39557382491170543263360074992485885583033360995438256394568316319315529812215
+u2 <BN: 4990cca912b0f16734421dc0d755ef8c3dbf4dd7afe4fbb4f401ba5fb328e40c> 33274676438360677088631097076946273820340660454329706465978055392911222694924
+ 
+ 
+p was  <EC JPoint x: 9d9f52bcce3aea28c8b7b1909b0c5892e867acca96dc7be0ccc75b5ee19e7050 y: eed89014319720ce14bf265a798a4b3cd21c0e68dd6219e94592c04117724bf0 z: c30cc6f5ecd1c8ba73e6b2afcbc4710d153141c8154a232d9a6cc104f2482fe5>
+p x  71294616944261564512878432549854209594855463970935348974991553953191688040528
+p y  108033091324704875436646587425556985737865336087661038394386113349759165156336
+returned  true
+ 
+signer was  { id: 'did:uport:2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575#keys-1',
+  type: 'Secp256k1VerificationKey2018',
+  owner: 'did:uport:2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575',
+  publicKeyHex: '04315249bd0eac98917004d01e71cac4c7954829c0301c97df8e17dbce425c07c0e4a24a96878796e94a4fa8096bb5dc43f0991af0331d4d1dc42c62dae7da4095' }  
+verifyES256K ran   
+data was  eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTM3MTM0MDksInJlcXVlc3RlZCI6WyJuYW1lIl0sImNhbGxiYWNrIjoiaHR0cHM6Ly9jaGFzcXVpLnVwb3J0Lm1lL2FwaS92MS90b3BpYy9McWxGWG9QMlA2SFZ1R1dZIiwibmV0IjoiMHg0IiwidHlwZSI6InNoYXJlUmVxIiwiaXNzIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoifQ  
+signature was  9Rr7NTrYqy4cJUhRMgDxELhXs70VFgOlbQoP1mchJFkgHDnowxczbN1eX1BRPDfbyMhMUH-KD5twPgmKc8d-rA
+  authenticators was  [ { id: 'did:uport:2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ#keys-1',
+    type: 'Secp256k1VerificationKey2018',
+    owner: 'did:uport:2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ',
+    publicKeyHex: '042cf2a7f5d071ab950e68fb6c3be0f06e214517f8ea40fb5ce02636789771452068409b66ab2adb25f8f6fb906559e8917600028356d4d99f61df8668b1236c63' } ]  
+rawsig was   <Buffer f5 1a fb 35 3a d8 ab 2e 1c 25 48 51 32 00 f1 10 b8 57 b3 bd 15 16 03 a5 6d 0a 0f d6 67 21 24 59 20 1c 39 e8 c3 17 33 6c dd 5e 5f 50 51 3c 37 db c8 c8 ... >  
+rawsig hex was   f51afb353ad8ab2e1c2548513200f110b857b3bd151603a56d0a0fd667212459201c39e8c317336cdd5e5f50513c37dbc8c84c507f8a0f9b703e098a73c77eac  
+sigObj is  { r: 'f51afb353ad8ab2e1c2548513200f110b857b3bd151603a56d0a0fd667212459',
+  s: '201c39e8c317336cdd5e5f50513c37dbc8c84c507f8a0f9b703e098a73c77eac' }  
+signing publicKeyHex was  042cf2a7f5d071ab950e68fb6c3be0f06e214517f8ea40fb5ce02636789771452068409b66ab2adb25f8f6fb906559e8917600028356d4d99f61df8668b1236c63  
+****** ++++++ ----- ec signature verification triggered with  <Buffer 1d 89 2a 20 2c 1c d4 b8 e8 f0 93 d3 21 08 7d 8d bc 59 68 e2 ac 48 9e 46 84 25 5c b6 25 3b 5a 9b> { r: 'f51afb353ad8ab2e1c2548513200f110b857b3bd151603a56d0a0fd667212459',
+  s: '201c39e8c317336cdd5e5f50513c37dbc8c84c507f8a0f9b703e098a73c77eac' } <Key priv: null pub: <EC Point x: 2cf2a7f5d071ab950e68fb6c3be0f06e214517f8ea40fb5ce026367897714520 y: 68409b66ab2adb25f8f6fb906559e8917600028356d4d99f61df8668b1236c63> > undefined
+key is <Key priv: null pub: <EC Point x: 2cf2a7f5d071ab950e68fb6c3be0f06e214517f8ea40fb5ce026367897714520 y: 68409b66ab2adb25f8f6fb906559e8917600028356d4d99f61df8668b1236c63> >
+ 
+decoded signature Signature {
+  r: <BN: f51afb353ad8ab2e1c2548513200f110b857b3bd151603a56d0a0fd667212459>,
+  s: <BN: 201c39e8c317336cdd5e5f50513c37dbc8c84c507f8a0f9b703e098a73c77eac>,
+  recoveryParam: null }
+R: 110864319699991966173242179247879896114842251910831056760085765717442926027865
+S: 14523882547273154194027457875948513921896697397073333480462226652060409364140
+N: 115792089237316195423570985008687907852837564279074904382605163141518161494337 115792089237316195423570985008687907852837564279074904382605163141518161494337
+ 
+ 
+ sinv:  <BN: d86522e1c01d2163ec9fcb222afb25e99b9c73b7f65eda9c6d2cf46850f9b1e9>
+ 
+ 
+u1 <BN: 63455d7ab486a8fe40be167cc8b901d9f614abf26c80e17d6865b7cce8ee0378> 44901529627748434347083938306615263188220547228838695707050962011109647582072
+u2 <BN: 74d8d650a3b569b156b1496ad14e069baec0fcace5f246d95f43941ac029750a> 52851408549405511084058244380736473929815958532800875829157767572331000591626
+ 
+ 
+p was  <EC JPoint x: 8c05458027f7602de713207c84eccd60dbc3a12e6d1ef41ad16be8d3dc81eeb4 y: 955bfcb5549cd7d81073a01127f568e4e50f174c3c66f93ce5d8d55d0a8d3d54 z: 72b9a4c939c604919d2c7c085a5a02472014524a37e95fe49c4fe79512939165>
+p x  63333112712561232073772602851552888436656416594571259805063120016490623004340
+p y  67557141650542016843788831137156316140079862715899401719729651278191166045524
+returned  true
+ 
+signer was  { id: 'did:uport:2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ#keys-1',
+  type: 'Secp256k1VerificationKey2018',
+  owner: 'did:uport:2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ',
+  publicKeyHex: '042cf2a7f5d071ab950e68fb6c3be0f06e214517f8ea40fb5ce02636789771452068409b66ab2adb25f8f6fb906559e8917600028356d4d99f61df8668b1236c63' }  
+{ name: 'Alex',
+  address: '2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575',
+  did: '2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575',
+  networkAddress: '2ot1hCuVAL6nQ3NQryjkBARGtsj4rsao575',
+  publicKey: '0x04315249bd0eac98917004d01e71cac4c7954829c0301c97df8e17dbce425c07c0e4a24a96878796e94a4fa8096bb5dc43f0991af0331d4d1dc42c62dae7da4095',
+  publicEncKey: '7JVDJn/SXtr/jDbCUu91KTRQD4YviNcq5h+2PdoZb2Y=' }
+finished

@@ -26,7 +26,6 @@ SOFTWARE.
 
 namespace Blockchaininstitute;
 
-require __DIR__ . "/vendor/autoload.php";
 use Mdanter\Ecc\Crypto\Signature\SignHasher;
 use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Curves\CurveFactory;
@@ -66,7 +65,7 @@ class jwtValidator
      * @return string Returns the phrase passed in
      */
 
-    public function resolve_did($profileId, $mnid, $callback)
+    public function validateJWT ($jwt)
     {
         // echo "didResolver received " . $mnid;
 
@@ -84,8 +83,13 @@ class jwtValidator
 
 
 
-    private function placeholderCallback ($result) {
-        echo $result;
+    public function deconstructAndDecode ($jwt) {
+        
+        $decodedParts = [];
+
+        
+
+        return $decodedParts;
     }
 
 
