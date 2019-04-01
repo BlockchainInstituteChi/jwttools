@@ -81,26 +81,42 @@ class jwtTools
     public function deconstructAndDecode ($jwt) {
 
         $exp = explode(".", $jwt);
-
         $decodedParts = [
             "header" => $exp[0],
             "body" => $exp[1],
             "signature" => $exp[2]
         ];
-
         return $decodedParts;
 
     }
 
 
-    public function resolve_did($profileId, $mnid, $callback)
+    public function resolve_did($profileId, $jwt, $callback)
     {
+
+        $mnid = $this->getSenderMnid($jwt);
+
         // echo "didResolver received " . $mnid;
         $return = $this->callRegistry($profileId, $mnid, $mnid, $callback);
         // echo "resolved did: " . $return;
         return $return;
     }
 
+    public function getSenderMnid ($jwt) {
+
+        $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
+        $sender = json_decode($jsonBody, false)->nad;
+        return $sender;
+
+    }
+
+    public function getAudienceMnid ($jwt) {
+
+        $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
+        $sender = json_decode($jsonBody, false)->aud;
+        return $sender;
+
+    }    
 
     // Utilities Functionality
     public function base64url_decode( $payload ){
