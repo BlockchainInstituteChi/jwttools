@@ -1,6 +1,6 @@
 {
-    "name": "blockchaininstitute/did-resolver",
-    "description": "This module provides a solution for resolving decentralized IDs (DIDs) with PHP.",
+    "name": "blockchaininstitute/jwtTools",
+    "description": "This library provides tools for working with uPort DIDs.",
     "keywords": ["decentralized","web3","did","uport"],
     "homepage": "https://theblockchaininstitute.org/",
     "license": "MIT",
