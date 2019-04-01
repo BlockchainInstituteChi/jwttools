@@ -64,6 +64,7 @@ The function can be passed into the did resolver as a string like 'infuraApiCall
 
 1. Set up DidResolver to fully Compose HTTP payload and call the rpc url 
 
+```
 Example Payload: 
 { uri: 'https://rinkeby.infura.io/uport-lite-library',
   accept: 'application/json',
@@ -76,6 +77,7 @@ params:  [ { to: '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
     data: '0x447885f075506f727450726f66696c65495046533132323000000000000000000000000000000000000000000000000045cc630c5a692bb1fc5dcac3a368db549d6cfbf600000000000000000000000045cc630c5a692bb1fc5dcac3a368db549d6cfbf6' },
   'latest' ]
 }
+```
 
 2. Create example in examples branch with a properly formatted http call in the callback function for didResolver
 
