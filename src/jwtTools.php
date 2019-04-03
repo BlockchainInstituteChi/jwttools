@@ -93,18 +93,16 @@ class jwtTools
 
     public function resolve_did($profileId, $jwt)
     {
-
-        $mnid = $this->getSenderMnid($jwt);
-
-        $callstring = $this->prepareRegistryCallString($profileId, $mnid, $mnid);
-
-        return $callstring;
+        $senderMnid = $this->getSenderMnid($jwt);
+        $signerMnid = $this->getAudienceMnid($jwt);
+        return $this->prepareRegistryCallString($profileId, $signerMnid, $signerMnid);
     }
 
     public function getSenderMnid ($jwt) {
 
         $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
         $sender = json_decode($jsonBody, false)->nad;
+        
         return $sender;
 
     }
@@ -166,9 +164,9 @@ class jwtTools
 
     private function prepareRegistryCallString($registrationIdentifier, $issuerId, $subjectId) {
 
+        $callObj = (object)[];
         $issuer = $this->eaeDecode($issuerId);
         $subject = $this->eaeDecode($subjectId);
-
         $networks = $this->getNetworks();
 
         if ( $issuer['network'] !== $subject['network'] ) {
@@ -179,14 +177,12 @@ class jwtTools
            return 'Network id ' . $issuer['network'] . ' is not configured';
         } 
         
-        $rpcUrl = $networks[$issuer['network']]['registry'];
-        $registryAddress = $networks[$issuer['network']]['registry'];
+        $callObj->rpcUrl = $networks[$issuer['network']]['registry'];
+        $callObj->registryAddress = $networks[$issuer['network']]['registry'];
+        $callObj->functionSignature = '0x447885f0';
+        $callObj->callString = $this->encodeFunctionCall($callObj->functionSignature, $registrationIdentifier, $issuer['address'], $subject['address']);
 
-        $functionSignature = '0x447885f0';
-
-        $callString = $this->encodeFunctionCall($functionSignature, $registrationIdentifier, $issuer['address'], $subject['address']);
-
-        return $callString;
+        return $callObj;
 
     }
 
@@ -200,19 +196,26 @@ class jwtTools
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $regStub, false);
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $issStub, true);
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $subStub, true);
-        
         return $callString;
 
+    }
+
+    private function ascii2Hex($string){
+        $hex='';
+        for ($i=0; $i < strlen($string); $i++){
+            $hex .= dechex(ord($string[$i]));
+        }
+        return $hex;
     }
 
     private function pad ($pad, $str, $padLeft) {
         if ( gettype($str) == "undefined" ) {
             return $pad;
         }
-        if ( $padLeft ) {
+        if ( $padLeft === true ) {
             return substr( ($pad . $str), (-1)*strlen($pad) );
         } else {
-            return substr( ($str . $pad), 0, (-1)*strlen($pad) );
+            return substr( ($str . $pad), 0, strlen($pad) );
         }
     }
 
