@@ -101,11 +101,14 @@ class jwtTools
 
         curl_setopt_array($ch, $options);
 
-        return curl_exec($ch);
+        $result = curl_exec($ch);
         
         curl_close($ch);
 
+        return $result;
+
     }
+
 
     public function deconstructAndDecode ($jwt) {
 
