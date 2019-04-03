@@ -15,5 +15,45 @@
 
 	$infuraPayload = $jwtTools->resolve_did("uPortProfileIPFS1220", $jwt);
 
-
 	echo "\r\n\r\nInfura Callstring\r\n", $infuraPayload, "\r\n\r\n";
+
+	$params  = new stdClass ();
+	$params		->to 	= '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee';
+	$params		->data 	= $infuraPayload;
+
+	$payloadOptions = new stdClass();
+
+	$payloadOptions->method 	= 'eth_call';
+	$payloadOptions->id 		= 1			;
+	$payloadOptions->jsonrpc 	= '2.0'		;
+	$payloadOptions->data 		= json_encode(array($params, 'latest'));
+
+	$payloadOptions = json_encode($payloadOptions);
+
+	print_r( $payloadOptions );
+
+	echo "\r\n\r\n";
+
+	$options = array(CURLOPT_URL => 'https://rinkeby.infura.io/uport-lite-library',
+                 CURLOPT_HEADER => true,
+                 CURLOPT_FRESH_CONNECT => true,
+                 CURLOPT_POSTFIELDS => $payloadOptions
+                );
+
+	echo "\r\n\r\nOptions:\r\n";
+	print_r($options);
+	echo "\r\n\r\n";
+
+	$ch = curl_init();
+
+	curl_setopt_array($ch, $options);
+
+	$response  = curl_exec($ch);
+	
+	curl_close($ch);
+
+
+
+
+
+
