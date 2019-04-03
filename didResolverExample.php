@@ -26,7 +26,7 @@
 	$payloadOptions->method 	= 'eth_call';
 	$payloadOptions->id 		= 1			;
 	$payloadOptions->jsonrpc 	= '2.0'		;
-	$payloadOptions->data 		= json_encode(array($params, 'latest'));
+	$payloadOptions->params 	= array($params, 'latest');
 
 	$payloadOptions = json_encode($payloadOptions);
 
@@ -53,7 +53,8 @@
 	curl_close($ch);
 
 
-
+	echo "\r\n\r\n";
+	echo "\r\n\r\n";
 
 
 
