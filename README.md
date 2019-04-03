@@ -54,12 +54,6 @@ jwt : {
 **The Callback Function:**
 In order to resolve the DID to a public key, it's necessary to make a call to the infura API. In order to ensure interoperability with wordpress plugins and other restricted environments such as Drupel, Laravel or Magento, the didResolver function will return an HTTP GET request which can be executed inside of the callback function. 
 
-An example might look something like the function shown below:
-```
-function infuraApiCallback ( $payload ) {
-  ?? Hannah ??
-}
-```
-The function can be passed into the did resolver as a string like 'infuraApiCallback' in order to trigger it on completion of the didResolver function. 
+An example can be seen using cURL in the didResolverExample.php file.
 
 
