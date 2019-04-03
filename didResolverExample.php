@@ -12,31 +12,14 @@
 
 	$infuraPayload = $jwtTools->resolve_did("uPortProfileIPFS1220", $jwt);
 
-	$params  = new stdClass ();
-	$params		->to 	= $infuraPayload->rpcUrl;
-	$params		->data 	= $infuraPayload->callString;
+	print_r($infuraPayload);
 
-	$payloadOptions = new stdClass();
+	$infuraResponse = $jwtTools->resolveInfuraPayload($infuraPayload);
 
-	$payloadOptions->method 	= 'eth_call';
-	$payloadOptions->id 		= 1			;
-	$payloadOptions->jsonrpc 	= '2.0'		;
-	$payloadOptions->params 	= array($params, 'latest');
+	print_r($infuraResponse);
 
-	$payloadOptions = json_encode($payloadOptions);
+	$address = json_decode($infuraResponse, true);
 
-	$options = array(CURLOPT_URL => 'https://rinkeby.infura.io/uport-lite-library',
-                 CURLOPT_HEADER => true,
-                 CURLOPT_FRESH_CONNECT => true,
-                 CURLOPT_POSTFIELDS => $payloadOptions
-                );
+	print_r($address);
 
-	$ch = curl_init();
-
-	curl_setopt_array($ch, $options);
-
-	$response  = curl_exec($ch);
-	
-	curl_close($ch);
-
-
+	echo "\r\n\r\nThe hex string address is " . $address . "\r\n\r\n";
