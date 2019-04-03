@@ -12,10 +12,6 @@
 
 	$infuraPayload = $jwtTools->resolve_did("uPortProfileIPFS1220", $jwt);
 
-	echo "\r\n\r\nInfura Callstring\r\n";
-	print_r($infuraPayload);
-	echo "\r\n\r\n";
-
 	$params  = new stdClass ();
 	$params		->to 	= $infuraPayload->rpcUrl;
 	$params		->data 	= $infuraPayload->callString;
@@ -29,19 +25,11 @@
 
 	$payloadOptions = json_encode($payloadOptions);
 
-	print_r( $payloadOptions );
-
-	echo "\r\n\r\n";
-
 	$options = array(CURLOPT_URL => 'https://rinkeby.infura.io/uport-lite-library',
                  CURLOPT_HEADER => true,
                  CURLOPT_FRESH_CONNECT => true,
                  CURLOPT_POSTFIELDS => $payloadOptions
                 );
-
-	echo "\r\n\r\nOptions:\r\n";
-	print_r($options);
-	echo "\r\n\r\n";
 
 	$ch = curl_init();
 
@@ -50,10 +38,5 @@
 	$response  = curl_exec($ch);
 	
 	curl_close($ch);
-
-
-	echo "\r\n\r\n";
-	echo "\r\n\r\n";
-
 
 
