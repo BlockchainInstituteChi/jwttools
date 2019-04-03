@@ -77,6 +77,35 @@ class jwtTools
 
     }
 
+    public function resolveInfuraPayload ($infuraPayload) {
+        $params  = (object)["n"=>"p"];
+        $params     ->to    = $infuraPayload->rpcUrl;
+        $params     ->data  = $infuraPayload->callString;
+
+        $payloadOptions = (object)["n"=>"p"];
+
+        $payloadOptions->method     = 'eth_call';
+        $payloadOptions->id         = 1         ;
+        $payloadOptions->jsonrpc    = '2.0'     ;
+        $payloadOptions->params     = array($params, 'latest');
+
+        $payloadOptions = json_encode($payloadOptions);
+
+        $options = array(CURLOPT_URL => 'https://rinkeby.infura.io/uport-lite-library',
+                     CURLOPT_HEADER => true,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $payloadOptions
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        return curl_exec($ch);
+        
+        curl_close($ch);
+
+    }
 
     public function deconstructAndDecode ($jwt) {
 

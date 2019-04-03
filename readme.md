@@ -18,6 +18,9 @@ At this time, there are no required constructor arguments. See the examples bran
 ```didResolver( $jwt, $callback)```
 *This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io. The $callback parameter expects a string function name like 'myCallBackFunction' which can make an API call to the infura network and receive a payload like the one shown below.*
 
+```resolveInfuraPayload($infuraPayload)```
+*This function allows you to resolve a properly formatted infura callstring against the infura api using cURL. See didResolverExample.php for more information.*
+
 ## Payload Formats
 
 **The JWT:**
