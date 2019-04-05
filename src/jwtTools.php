@@ -92,9 +92,11 @@ class jwtTools
         $payloadOptions = json_encode($payloadOptions);
 
         $options = array(CURLOPT_URL => 'https://rinkeby.infura.io/uport-lite-library',
-                     CURLOPT_HEADER => true,
+                     CURLOPT_HEADER => false,
                      CURLOPT_FRESH_CONNECT => true,
-                     CURLOPT_POSTFIELDS => $payloadOptions
+                     CURLOPT_POSTFIELDS => $payloadOptions,
+                     CURLOPT_RETURNTRANSFER => true
+
                     );
 
         $ch = curl_init();
@@ -102,6 +104,9 @@ class jwtTools
         curl_setopt_array($ch, $options);
 
         $result = curl_exec($ch);
+
+        print_r('result is'); 
+        print_r($result);
         
         curl_close($ch);
 
