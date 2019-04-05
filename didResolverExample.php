@@ -12,14 +12,17 @@
 
 	$infuraPayload = $jwtTools->resolve_did("uPortProfileIPFS1220", $jwt);
 
+	echo "\r\n\r\nifp:\r\n\r\n";
 	print_r($infuraPayload);
 
 	$infuraResponse = $jwtTools->resolveInfuraPayload($infuraPayload);
 
+	echo "\r\n\r\nifr:\r\n\r\n";
 	print_r($infuraResponse);
 
-	$address = json_decode($infuraResponse, true);
+	$address = json_decode($infuraResponse, false);
 
-	print_r($address);
+	echo "\r\n\r\naddr:\r\n\r\n";
+	print_r($address->result);
 
-	echo "\r\n\r\nThe hex string address is " . $address . "\r\n\r\n";
+	// echo "\r\n\r\nThe hex string address is " . $address . "\r\n\r\n";
