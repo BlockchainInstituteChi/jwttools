@@ -105,8 +105,8 @@ class jwtTools
 
         $result = curl_exec($ch);
 
-        print_r('result is'); 
-        print_r($result);
+        // print_r('result is'); 
+        // print_r($result);
         
         curl_close($ch);
 
