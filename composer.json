@@ -1,11 +1,12 @@
 {
     "require": {
         "tuupola/base58": "dev-master",
-        "blockchaininstitute/did-resolver" : "master"
+        "blockchaininstitute/jwttools" : "master",
+        "kornrunner/secp256k1": "dev-master"
     },
     "minimum-stability": "dev",
     "repositories": {
-        "did-resolver": {
+        "jwtTools": {
             "type": "vcs",
             "url": "https://github.com/BlockchainInstituteChi/phpJwtTools.git"
         }

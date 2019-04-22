@@ -13,7 +13,6 @@ namespace FG\ASN1;
 use ArrayAccess;
 use ArrayIterator;
 use Countable;
-use FG\ASN1\Exception\ParserException;
 use Iterator;
 
 abstract class Construct extends ASNObject implements Countable, ArrayAccess, Iterator, Parsable
@@ -159,7 +158,6 @@ abstract class Construct extends ASNObject implements Countable, ArrayAccess, It
         $parsedObject = new static();
         self::parseIdentifier($binaryData[$offsetIndex], $parsedObject->getType(), $offsetIndex++);
         $contentLength = self::parseContentLength($binaryData, $offsetIndex);
-        $startIndex = $offsetIndex;
 
         $children = [];
         $octetsToRead = $contentLength;
@@ -167,10 +165,6 @@ abstract class Construct extends ASNObject implements Countable, ArrayAccess, It
             $newChild = ASNObject::fromBinary($binaryData, $offsetIndex);
             $octetsToRead -= $newChild->getObjectLength();
             $children[] = $newChild;
-        }
-
-        if ($octetsToRead !== 0) {
-            throw new ParserException("Sequence length incorrect", $startIndex);
         }
 
         $parsedObject->addChildren($children);

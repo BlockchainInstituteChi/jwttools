@@ -1,29 +1,31 @@
 [
     {
-        "name": "blockchaininstitute/did-resolver",
+        "name": "blockchaininstitute/jwtTools",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
-            "url": "https://github.com/BlockchainInstituteChi/php-did-resolver.git",
-            "reference": "7abf1ae417d09a574358a4d09e5c485542256458"
+            "url": "git@github.com:BlockchainInstituteChi/phpJwtTools.git",
+            "reference": "fb2f544eebf10a6c9ff774cc76d48b743edffe02"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/BlockchainInstituteChi/php-did-resolver/zipball/7abf1ae417d09a574358a4d09e5c485542256458",
-            "reference": "7abf1ae417d09a574358a4d09e5c485542256458",
+            "url": "https://api.github.com/repos/BlockchainInstituteChi/phpJwtTools/zipball/fb2f544eebf10a6c9ff774cc76d48b743edffe02",
+            "reference": "fb2f544eebf10a6c9ff774cc76d48b743edffe02",
             "shasum": ""
         },
         "require": {
             "php": "^5.6|^7.0"
         },
         "require-dev": {
+            "kornrunner/secp256k1": "^0.1.2",
+            "mdanter/ecc": "^0.5.2",
             "tuupola/base58": "^0.4.0"
         },
         "suggest": {
-            "ext-gmp": "GMP extension provides the fastest encoding and decoding."
+            "ext-gmp": "Must install php-gmp before using validation function."
         },
-        "time": "2019-03-20T15:46:34+00:00",
+        "time": "2019-04-05T16:49:34+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -31,7 +33,6 @@
                 "Blockchaininstitute\\": "src"
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
         "license": [
             "MIT"
         ],
@@ -43,28 +44,32 @@
                 "role": "Developer"
             }
         ],
-        "description": "This module provides a solution for resolving decentralized IDs (DIDs) with PHP.",
+        "description": "This library provides tools for working with uPort DIDs.",
         "homepage": "https://theblockchaininstitute.org/",
         "keywords": [
             "decentralized",
             "did",
             "uport",
             "web3"
-        ]
+        ],
+        "support": {
+            "source": "https://github.com/BlockchainInstituteChi/phpJwtTools/tree/master",
+            "issues": "https://github.com/BlockchainInstituteChi/phpJwtTools/issues"
+        }
     },
     {
         "name": "fgrosse/phpasn1",
-        "version": "v2.1.1",
-        "version_normalized": "2.1.1.0",
+        "version": "2.1.x-dev",
+        "version_normalized": "2.1.9999999.9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/fgrosse/PHPASN1.git",
-            "reference": "7ebf2a09084a7bbdb7b879c66fdf7ad80461bbe8"
+            "reference": "734e1a94dfb292199f4f285be99a5645ea66fb58"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/7ebf2a09084a7bbdb7b879c66fdf7ad80461bbe8",
-            "reference": "7ebf2a09084a7bbdb7b879c66fdf7ad80461bbe8",
+            "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/734e1a94dfb292199f4f285be99a5645ea66fb58",
+            "reference": "734e1a94dfb292199f4f285be99a5645ea66fb58",
             "shasum": ""
         },
         "require": {
@@ -78,14 +83,14 @@
             "ext-gmp": "GMP is the preferred extension for big integer calculations",
             "php-curl": "For loading OID information from the web if they have not bee defined statically"
         },
-        "time": "2018-12-02T01:34:34+00:00",
+        "time": "2018-03-31T08:32:19+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
                 "dev-master": "2.0.x-dev"
             }
         },
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "FG\\": "lib/"
@@ -124,113 +129,18 @@
         ]
     },
     {
-        "name": "ionux/phactor",
-        "version": "v1.0.8",
-        "version_normalized": "1.0.8.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ionux/phactor.git",
-            "reference": "271373b65cffe75a8c28f7f8c392fe460251f4f7"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ionux/phactor/zipball/271373b65cffe75a8c28f7f8c392fe460251f4f7",
-            "reference": "271373b65cffe75a8c28f7f8c392fe460251f4f7",
-            "shasum": ""
-        },
-        "require": {
-            "ext-bcmath": "*",
-            "ext-openssl": "*",
-            "php": ">=5.6.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "^5.7.9"
-        },
-        "suggest": {
-            "ext-gmp": "Highest performing math library and preferred for this library's Elliptic Curve calculations."
-        },
-        "time": "2018-04-27T16:49:28+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Phactor\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Rich Morgan",
-                "email": "rich@richmorgan.me",
-                "role": "Creator and Lead Developer"
-            }
-        ],
-        "description": "Phactor is a high-performance PHP implementation of the elliptic curve math functions required to generate & verify private/public (asymmetric) EC keypairs and ECDSA signatures based on secp256k1 curve parameters. This library also includes a class to generate Service Identification Numbers (SINs) based on the published Identity Protocol v1 spec.",
-        "homepage": "https://github.com/ionux/phactor",
-        "keywords": [
-            "Algorithm",
-            "BIP",
-            "ECDSA",
-            "SIN",
-            "arbitrary",
-            "asymmetric",
-            "base",
-            "base58",
-            "bcmath",
-            "binary",
-            "bitcoin",
-            "calculator",
-            "coprime",
-            "crypto",
-            "cryptography",
-            "curve",
-            "digital",
-            "dsa",
-            "ec",
-            "elliptic",
-            "encryption",
-            "generate",
-            "gmp",
-            "hex",
-            "identification",
-            "identity",
-            "integer",
-            "key",
-            "keygen",
-            "keypair",
-            "keys",
-            "library",
-            "math",
-            "number",
-            "performance",
-            "phactor",
-            "precision",
-            "prime",
-            "private",
-            "protocol",
-            "public",
-            "secp256k1",
-            "service",
-            "signature",
-            "verify"
-        ]
-    },
-    {
         "name": "kornrunner/secp256k1",
-        "version": "0.1.2",
-        "version_normalized": "0.1.2.0",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/kornrunner/php-secp256k1.git",
-            "reference": "915f0ef1ec748606a1117b171093266de349b058"
+            "reference": "1cd655e150743b34d2be8b035ddc2e44b11bb5a9"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/kornrunner/php-secp256k1/zipball/915f0ef1ec748606a1117b171093266de349b058",
-            "reference": "915f0ef1ec748606a1117b171093266de349b058",
+            "url": "https://api.github.com/repos/kornrunner/php-secp256k1/zipball/1cd655e150743b34d2be8b035ddc2e44b11bb5a9",
+            "reference": "1cd655e150743b34d2be8b035ddc2e44b11bb5a9",
             "shasum": ""
         },
         "require": {
@@ -239,11 +149,11 @@
         },
         "require-dev": {
             "php-coveralls/php-coveralls": "^2.1",
-            "phpunit/phpunit": "^7"
+            "phpunit/phpunit": "^8"
         },
-        "time": "2019-01-16T17:01:51+00:00",
+        "time": "2019-04-17T11:48:39+00:00",
         "type": "library",
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-4": {
                 "kornrunner\\": "src/"

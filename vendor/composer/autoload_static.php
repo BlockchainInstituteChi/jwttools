@@ -15,10 +15,6 @@ class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
         array (
             'Tuupola\\' => 8,
         ),
-        'P' => 
-        array (
-            'Phactor\\' => 8,
-        ),
         'M' => 
         array (
             'Mdanter\\Ecc\\' => 12,
@@ -42,10 +38,6 @@ class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
         array (
             0 => __DIR__ . '/..' . '/tuupola/base58/src',
         ),
-        'Phactor\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/ionux/phactor/src',
-        ),
         'Mdanter\\Ecc\\' => 
         array (
             0 => __DIR__ . '/..' . '/mdanter/ecc/src',
@@ -56,12 +48,8 @@ class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
         ),
         'Blockchaininstitute\\' => 
         array (
-            0 => __DIR__ . '/..' . '/blockchaininstitute/did-resolver/src',
+            0 => __DIR__ . '/..' . '/blockchaininstitute/jwtTools/src',
         ),
-        'Blockchaininstitute\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/blockchaininstitute/phpJwtTools/src',
-        )
     );
 
     public static function getInitializer(ClassLoader $loader)

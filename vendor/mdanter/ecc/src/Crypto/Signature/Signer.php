@@ -63,19 +63,10 @@ class Signer
      */
     public function verify(PublicKeyInterface $key, SignatureInterface $signature, \GMP $hash): bool
     {
-     
-
         $generator = $key->getGenerator();
         $n = $generator->getOrder();
         $r = $signature->getR();
         $s = $signature->getS();
-
-        // echo "\r\n\r\nKey:\r\n\r\n";
-        // print_r($key);
-        // echo "\r\n\r\nGenerator:\r\n\r\n";
-        // print_r($generator);
-        // echo "\r\nxhex: ", gmp_strval($generator->getY(), 16), "\r\n";        
-        // echo "\r\nyhex: ", gmp_strval($generator->getY(), 16), "\r\n";   
 
         $math = $this->adapter;
         $one = gmp_init(1, 10);
@@ -93,20 +84,6 @@ class Signer
         $u2 = $modMath->mul($r, $c);
         $xy = $generator->mul($u1)->add($key->getPoint()->mul($u2));
         $v = $math->mod($xy->getX(), $n);
-
-        // echo "\r\n\r\nMath:\r\n\r\nc: ",
-        //     $c, " \r\n", gmp_strval($c, 16), " \r\n \r\nu1: ",
-        //     $u1," \r\n",  gmp_strval($u1, 16), " \r\n \r\nu2 ",
-        //     $u2," \r\n",  gmp_strval($u2, 16), " \r\n \r\n ";
-
-        // echo "\r\n\r\Point:\r\n\r\nx: ",
-        //     $xy->getX(), " \r\n", gmp_strval($xy->getX(), 16), " \r\n \r\ny: ",
-        //     $xy->getY()," \r\n",  gmp_strval($xy->getY(), 16), " \r\n \r\nz: ";
-        
-        // print_r($xy);
-        
-        // echo $v," \r\n",  gmp_strval($v, 16), " \r\n \r\n";
-
 
         return BinaryString::constantTimeCompare($math->toString($v), $math->toString($r));
     }

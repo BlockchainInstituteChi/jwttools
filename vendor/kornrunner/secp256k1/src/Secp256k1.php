@@ -58,13 +58,7 @@ class Secp256k1
         $hex_hash = gmp_init($hash, 16);
         $signer = new Signer($this->adapter);
 
-        $ret = $signer->verify($key, $signature, $hex_hash);
-
-        // echo "\r\nRet:\r\n";
-        // print_r($ret);
-        // echo "\r\n\r\n";
-
-        return $ret;
+        return $signer->verify($key, $signature, $hex_hash);
     }
 
     protected function decodePoint(string $publicKey): PointInterface
@@ -93,11 +87,7 @@ class Secp256k1
         ) {
             $x = gmp_init(mb_substr($publicKey, 2, $length), 16);
             $y = $this->curve->recoverYfromX($num === 3, $x);
-            echo "\r\n\r\nDecodePoint\r\n\r\nx: \r\n";
-            print_r($x); 
-            echo "\r\n\r\ny: \r\n";
-            print_r($y); 
-            
+
             return $this->curve->getPoint($x, $y, $order);
         }
         throw new InvalidArgumentException('Invalid public key point format.');

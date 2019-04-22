@@ -1,9 +1,9 @@
 language: php
 
 php:
-  - 7.1
   - 7.2
   - 7.3
+  - 7.4snapshot
   - nightly
 
 matrix:
@@ -12,7 +12,7 @@ matrix:
 
 install:
   - phpenv config-rm xdebug.ini || true
-  - travis_retry composer update --prefer-dist -n
+  - travis_retry composer install --prefer-dist -n
 
 script:
   - mkdir -p build/logs
