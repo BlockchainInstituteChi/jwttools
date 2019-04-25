@@ -78,11 +78,11 @@ class jwtTools
     }
 
     public function resolveInfuraPayload ($infuraPayload) {
-        $params  = (object)["n"=>"p"];
+        $params  = (object)[];
         $params     ->to    = $infuraPayload->rpcUrl;
         $params     ->data  = $infuraPayload->callString;
 
-        $payloadOptions = (object)["n"=>"p"];
+        $payloadOptions = (object)[];
 
         $payloadOptions->method     = 'eth_call';
         $payloadOptions->id         = 1         ;
@@ -95,8 +95,9 @@ class jwtTools
                      CURLOPT_HEADER => false,
                      CURLOPT_FRESH_CONNECT => true,
                      CURLOPT_POSTFIELDS => $payloadOptions,
-                     CURLOPT_RETURNTRANSFER => true
-
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => 1,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
                     );
 
         $ch = curl_init();
@@ -105,15 +106,49 @@ class jwtTools
 
         $result = curl_exec($ch);
 
-        // print_r('result is'); 
-        // print_r($result);
-        
         curl_close($ch);
 
         return $result;
 
     }
 
+    public function registryEncodingToIPFS ($hexStr) {
+        $base58 = new Base58([
+            "characters" => Base58::IPFS,
+            "version" => 0x00
+        ]);
+        $sliced = '1220' . subStr($hexStr, 2);
+        print_r("\r\n\r\nsliced:");
+        print_r($sliced);
+        $decoded = pack("H*", $sliced);
+        print_r("\r\n\r\ndecoded:");
+        print_r($decoded);        
+
+        $base58enc = $base58->encode($decoded);
+        print_r("\r\n\r\nbase58enc:");
+        print_r($base58enc);
+
+        return $base58enc;
+    }
+
+    public function fetchIpfs($ipfsHash) {
+        $uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
+
+        $options = array(CURLOPT_URL => $uri,
+             CURLOPT_RETURNTRANSFER => true,
+             CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+            );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+    }
 
     public function deconstructAndDecode ($jwt) {
 
@@ -224,15 +259,43 @@ class jwtTools
     }
 
     private function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
+
+        // debugging callstring generation
+        print_r("\r\nfunctionsig:\r\n");
+        print_r($functionSignature);
+        print_r("\r\nregID:\r\n");
+        print_r($registrationIdentifier);
+        print_r("\r\nissuer:\r\n");
+        print_r($issuer);
+        print_r("\r\nsubject:\r\n");
+        print_r($subject);
+        print_r("\r\n");
+
         $callString = $functionSignature;
 
         $regStub = $this->String2Hex($registrationIdentifier);
-        $issStub = subStr($issuer, (-1)*(sizeof($issuer) - 3));
-        $subStub = subStr($subject, (-1)*(sizeof($issuer) - 3));
+        $issStub = subStr($issuer, (-1)*(strlen($issuer) - 2));
+        $subStub = subStr($subject, (-1)*(strlen($issuer) - 2));
+
+        print_r("\r\nregStub\r\n");
+        print_r($regStub);
+        print_r("\r\nissStub\r\n");
+        print_r($issStub);
+        print_r("\r\nsubStub\r\n");
+        print_r($subStub);                
 
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $regStub, false);
+        print_r("\r\n callstring is now: ");
+        print_r($callString); 
+        print_r("\r\n");
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $issStub, true);
+        print_r("\r\n callstring is now: ");
+        print_r( $callString); 
+        print_r("\r\n");
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $subStub, true);
+        print_r("\r\n callstring is now: ");
+        print_r( $callString);
+        print_r( "\r\n");
         return $callString;
 
     }
