@@ -77,6 +77,23 @@ class jwtTools
 
     }
 
+    public function resolvePublicKeyFromJWT ($jwt) {
+        $infuraPayload = $this->resolve_did("uPortProfileIPFS1220", $jwt);
+
+        $infuraResponse = $this->resolveInfuraPayload($infuraPayload);
+
+        $address = json_decode($infuraResponse, false);
+
+        $addressOutput = $address->result;
+
+        $ipfsEncoded = $this->registryEncodingToIPFS($addressOutput);
+
+        $ipfsResult = json_decode($this->fetchIpfs($ipfsEncoded));
+        
+        return $ipfsResult->publicKey;
+
+    }
+
     public function resolveInfuraPayload ($infuraPayload) {
         $params  = (object)[];
         $params     ->to    = $infuraPayload->rpcUrl;
@@ -118,15 +135,8 @@ class jwtTools
             "version" => 0x00
         ]);
         $sliced = '1220' . subStr($hexStr, 2);
-        print_r("\r\n\r\nsliced:");
-        print_r($sliced);
         $decoded = pack("H*", $sliced);
-        print_r("\r\n\r\ndecoded:");
-        print_r($decoded);        
-
         $base58enc = $base58->encode($decoded);
-        print_r("\r\n\r\nbase58enc:");
-        print_r($base58enc);
 
         return $base58enc;
     }
@@ -260,42 +270,15 @@ class jwtTools
 
     private function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
 
-        // debugging callstring generation
-        print_r("\r\nfunctionsig:\r\n");
-        print_r($functionSignature);
-        print_r("\r\nregID:\r\n");
-        print_r($registrationIdentifier);
-        print_r("\r\nissuer:\r\n");
-        print_r($issuer);
-        print_r("\r\nsubject:\r\n");
-        print_r($subject);
-        print_r("\r\n");
-
         $callString = $functionSignature;
 
         $regStub = $this->String2Hex($registrationIdentifier);
         $issStub = subStr($issuer, (-1)*(strlen($issuer) - 2));
         $subStub = subStr($subject, (-1)*(strlen($issuer) - 2));
 
-        print_r("\r\nregStub\r\n");
-        print_r($regStub);
-        print_r("\r\nissStub\r\n");
-        print_r($issStub);
-        print_r("\r\nsubStub\r\n");
-        print_r($subStub);                
-
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $regStub, false);
-        print_r("\r\n callstring is now: ");
-        print_r($callString); 
-        print_r("\r\n");
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $issStub, true);
-        print_r("\r\n callstring is now: ");
-        print_r( $callString); 
-        print_r("\r\n");
         $callString .= $this->pad('0000000000000000000000000000000000000000000000000000000000000000', $subStub, true);
-        print_r("\r\n callstring is now: ");
-        print_r( $callString);
-        print_r( "\r\n");
         return $callString;
 
     }
