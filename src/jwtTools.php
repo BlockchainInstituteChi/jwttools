@@ -96,17 +96,8 @@ class jwtTools
     }
 
     public function resolvePublicKeyFromJWT ($jwt) {
-        $infuraPayload = $this->resolve_did("uPortProfileIPFS1220", $jwt);
 
-        $infuraResponse = $this->resolveInfuraPayload($infuraPayload);
-
-        $address = json_decode($infuraResponse, false);
-
-        $addressOutput = $address->result;
-
-        $ipfsEncoded = $this->registryEncodingToIPFS($addressOutput);
-
-        $ipfsResult = json_decode($this->fetchIpfs($ipfsEncoded));
+        $ipfsResult = $this->resolveDIDFromJWT($jwt);
         
         return $ipfsResult->publicKey;
 
@@ -195,7 +186,7 @@ class jwtTools
     {
         $senderMnid = $this->getSenderMnid($jwt);
         $signerMnid = $this->getAudienceMnid($jwt);
-        return $this->prepareRegistryCallString($profileId, $signerMnid, $signerMnid);
+        return $this->prepareRegistryCallString($profileId, $senderMnid, $senderMnid);
     }
 
     public function getSenderMnid ($jwt) {
