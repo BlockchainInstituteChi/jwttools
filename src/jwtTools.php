@@ -58,7 +58,9 @@ class jwtTools
 
     public function verifyJWT ($jwt) {
 
-        $publicKey = $this->resolvePublicKeyFromJWT($jwt);
+        $publicKeyLong = $this->resolvePublicKeyFromJWT($jwt);
+
+        $publicKey =  substr($publicKeyLong, 2);
 
         $opt = $this->deconstructAndDecode($jwt);
 
