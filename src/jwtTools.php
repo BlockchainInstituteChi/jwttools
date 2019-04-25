@@ -56,7 +56,9 @@ class jwtTools
      * @return string Returns the phrase passed in
      */
 
-    public function verifyJWT ($jwt, $publicKey) {
+    public function verifyJWT ($jwt) {
+
+        $publicKey = $this->resolvePublicKeyFromJWT($jwt);
 
         $opt = $this->deconstructAndDecode($jwt);
 

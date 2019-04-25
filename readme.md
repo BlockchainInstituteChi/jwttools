@@ -1,8 +1,10 @@
-## PHP JWT Tools - Powered by TheBlockchainInstitute.org
+## PHP JWT Tools (Examples Branch) - Powered by TheBlockchainInstitute.org
 
 JWT's or JSON Web Tokens are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
 
 This module expects secp256k1 signed payloads per the uPort documentation at docs.uport.me. 
+
+This branch contains some example scripts to demonstrate the use cases of the library's core functionality.
 
 ## Use
 
@@ -12,14 +14,14 @@ At this time, there are no required constructor arguments. See the examples bran
 
 ## Functionality
 
-```verifyJWT( $jwt, $publickey )```
-*This function provides the core use of this module. The $jwt parameter expects a decimal separated string as shown in the example below. The $publickey parameter expects a string encoded public key, which can be found using the did-resolver function and the same JWT payload.*
+```verifyJWT( $jwt )```
+*This function provides the core use of this module. The $jwt parameter expects a decimal separated string as shown in the example below.*
 
-```didResolver( $jwt, $callback)```
-*This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io. The $callback parameter expects a string function name like 'myCallBackFunction' which can make an API call to the infura network and receive a payload like the one shown below.*
+```resolvePublicKeyFromJWT($jwt)```
+*This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
-```resolveInfuraPayload($infuraPayload)```
-*This function allows you to resolve a properly formatted infura callstring against the infura api using cURL. See didResolverExample.php for more information.*
+```resolveDIDFromJWT($jwt)```
+*This function returns a php object contianing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
 ## Payload Formats
 
@@ -55,10 +57,6 @@ jwt : {
 **The Callback Function:**
 In order to resolve the DID to a public key, it's necessary to make a call to the infura API. In order to ensure interoperability with wordpress plugins and other restricted environments such as Drupel, Laravel or Magento, the didResolver function will return an HTTP GET request which can be executed inside of the callback function. 
 
-An example might look something like the function shown below:
-```
-function infuraApiCallback ( $payload ) {
-  ?? Hannah ??
-}
-```
-The function can be passed into the did resolver as a string like 'infuraApiCallback' in order to trigger it on completion of the didResolver function. 
+An example can be seen using cURL in the didResolverExample.php file.
+
+
