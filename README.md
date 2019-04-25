@@ -14,11 +14,14 @@ At this time, there are no required constructor arguments. See the examples bran
 
 ## Functionality
 
-```verifyJWT( $jwt, $publickey )```
-*This function provides the core use of this module. The $jwt parameter expects a decimal separated string as shown in the example below. The $publickey parameter expects a string encoded public key, which can be found using the did-resolver function and the same JWT payload.*
+```verifyJWT( $jwt )```
+*This function provides the core use of this module. The $jwt parameter expects a decimal separated string as shown in the example below.*
 
-```didResolver( $jwt, $callback)```
-*This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io. The $callback parameter expects a string function name like 'myCallBackFunction' which can make an API call to the infura network and receive a payload like the one shown below.*
+```resolvePublicKeyFromJWT($jwt)```
+*This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
+
+```resolveDIDFromJWT($jwt)```
+*This function returns a php object contianing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
 ## Payload Formats
 
