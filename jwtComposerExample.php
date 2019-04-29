@@ -3,6 +3,17 @@
 	// use RuntimeException;
 	use Tuupola\Base58;
 	use Blockchaininstitute\jwtTools as jwtTools;
+	use Mdanter\Ecc\Crypto\Signature\SignHasher;
+	use Mdanter\Ecc\EccFactory;
+	use Mdanter\Ecc\Curves\CurveFactory;
+	use Mdanter\Ecc\Curves\SecgCurve;
+	use Mdanter\Ecc\Math\GmpMathInterface;
+
+	use kornrunner\Secp256k1;
+	use kornrunner\Signature\Signature as kSig;
+	use kornrunner\Signature\Signer;
+	use kornrunner\Serializer\HexPrivateKeySerializer;
+	use kornrunner\Serializer\HexSignatureSerializer;
 
 	require 'vendor/autoload.php';
 
@@ -15,6 +26,7 @@
     $generator = CurveFactory::getGeneratorByName('secp256k1');
     $algorithm = 'sha256';
 
+
 // Prepare the JWT Header
 	// 1. Initialize JWT Values
 	$jwtHeader = (object)[];
@@ -22,7 +34,6 @@
 
 	// 2. Create JWT Object
 	$jwtHeaderJson = json_encode($jwtHeader);
-
 
 
 // Prepare the JWT Body
@@ -35,25 +46,34 @@
 	// 2. Create JWT Object
 	$jwtBodyJson = json_encode($jwtBody);
 
-	
+
+// Encode the components and compose the payload
+	$encodedHeader = base64_encode(urlencode($jwtHeaderJson));
+    $encodedBody   = base64_encode(urlencode($jwtBodyJson));
+    $jwt 		   = $encodedHeader . "." . $encodedBody;
+
 
 // Create Signature
 	// 1. Create a secp256k1 private key 'point' from the hex private key above
-	$key = $jwtObj->signingKey;
+	$keySerializer = new HexPrivateKeySerializer($generator);
+	$key = $keySerializer->parse($jwtBody->signingKey);
 
 	// 2. Create a hash of the payload body
-	$document = $jwt 
-    $hash = hash($algorithm, $document);
+	$hexHash = hash($algorithm, $jwt);
+    $hash = gmp_init($hexHash, 16);
 
-	// 3. Sign the hash (mdantar?)
-	$random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getRandomGenerator();
+	// 3. Sign the hash 
+	$random    = \Mdanter\Ecc\Random\RandomGeneratorFactory::getRandomGenerator();
 	// $random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getHmacRandomGenerator($key, $hash, $algorithm); // Alt
-    $randomK = $random->generate($generator->getOrder());
-    $signer = new Signer($adapter);
-    $signer->sign($key, $hash, $randomK);
+    $randomK   = $random->generate($generator->getOrder());
+    $signer    = new Signer($adapter);
+    $signature = $signer->sign($key, $hash, $randomK);
+
+    $signatureSerializer = new HexSignatureSerializer();
+    $hexSignature        = $signatureSerializer->serialize($signature);
 
 	// 4. Return the signed hash, the base 64 encoded header, and the base 64 encoded body
-    $encodedHeader = base64_encode(urlencode($jwtHeaderJson));
-    $encodedBody   = base64_encode(urlencode($jwtBodyJson));
-        
-    // 
+    $jwt.= "." . $hexSignature;
+
+    print_r($jwt);
+    
