@@ -73,10 +73,6 @@
     $encodedBody   = urlencode(base64_encode($jwtBodyJson));
     $jwt 		   = $encodedHeader . "." . $encodedBody;
 
-    // echo "\r\n";
-    // print_r($jwt);
-    // echo "\r\n";
-
 // Create Signature
 	// 1. Create a secp256k1 private key 'point' from the hex private key above
 	$keySerializer = new HexPrivateKeySerializer($generator);
