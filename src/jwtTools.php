@@ -63,9 +63,7 @@ class jwtTools
         $publicKey =  substr($publicKeyLong, 2);
 
         $opt = $this->deconstructAndDecode($jwt);
-        // print_r("\r\nopt\r\n");
-        // print_r(json_decode(base64_decode(urldecode($opt["body"]))));
-
+        
         $secp256k1 = new Secp256k1();
         $CurveFactory = new CurveFactory;
         $adapter = EccFactory::getAdapter();
@@ -217,13 +215,9 @@ class jwtTools
 
         if ( ( $senderMnid === null ) || ( $signerMnid === null ) ) {
             $signerMnid = $senderMnid = $this->getIssuerMnid($jwt);
-            print_r("\r\ngot issuer mnid\r\n");
-            print_r($signerMnid);
 
             return $this->prepareRegistryCallString($profileId, $senderMnid, $senderMnid);
         } else {
-            print_r("\r\ngot sender mnid\r\n");
-            print_r($senderMnid);
             
             return $this->prepareRegistryCallString($profileId, $senderMnid, $senderMnid);
         }
@@ -234,11 +228,6 @@ class jwtTools
 
         // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-
-        print_r("\r\n\r\njwt:\r\n");
-        print_r($jsonBody);
-        print_r("\r\n");
-        print_r(json_decode($jsonBody));
 
         if ( isset((json_decode($jsonBody, true))['iss']) ) {
             $sender = (json_decode($jsonBody, true))['iss'];
@@ -252,12 +241,7 @@ class jwtTools
     public function getSenderMnid ($jwt) {
 
         // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
-        $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));        
-
-        print_r("\r\n\r\njwt:\r\n");
-        print_r($jsonBody);
-        print_r("\r\n");
-        print_r(json_decode($jsonBody));
+        $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));      
 
         if ( isset((json_decode($jsonBody, true))['nad']) ) {
             $sender = (json_decode($jsonBody, true))['nad'];
@@ -272,11 +256,6 @@ class jwtTools
 
         // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-        print_r("\r\n\r\njwt:\r\n");
-        print_r($jsonBody);
-        print_r("\r\n");
-        print_r(json_decode($jsonBody));
-
 
         if ( isset(json_decode($jsonBody, true)['aud']) ) {
             $sender = (json_decode($jsonBody, true))['aud'];
@@ -290,8 +269,6 @@ class jwtTools
 
     // Utilities Functionality
     public function base64url_decode( $payload ){
-        print_r("\r\n decoding payload: \r\n");
-        print_r($payload);
 
         // converts from base64url to base64, then decodes
         return base64_decode( strtr( $payload, '-_', '+/') . str_repeat('=', 3 - ( 3 + strlen( $payload )) % 4 ));
@@ -339,8 +316,6 @@ class jwtTools
     }
 
     private function prepareRegistryCallString($registrationIdentifier, $issuerId, $subjectId) {
-
-        print_r("\r\nprepRegCall\r\n" . $registrationIdentifier . "\r\n" . $issuerId . "\r\n\r\n" . $subjectId . "\r\n"); 
 
         $callObj = (object)[];
         $issuer = $this->eaeDecode($issuerId);
