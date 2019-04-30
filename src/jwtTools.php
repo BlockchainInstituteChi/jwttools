@@ -63,6 +63,8 @@ class jwtTools
         $publicKey =  substr($publicKeyLong, 2);
 
         $opt = $this->deconstructAndDecode($jwt);
+        // print_r("\r\nopt\r\n");
+        // print_r(json_decode(base64_decode(urldecode($opt["body"]))));
 
         $secp256k1 = new Secp256k1();
         $CurveFactory = new CurveFactory;
@@ -106,6 +108,28 @@ class jwtTools
         return $ipfsResult->publicKey;
 
     }
+
+    // This is a very mediocre hack that needs to be resolved in the future - function newTopic(topicName) in uport-connect/src/topicFactory.js npm module for expected behaviour
+    public function chasquiFactory ($topicName) {
+        
+        $CHASQUI_URL = 'https://chasqui.uport.me/api/v1/topic/';
+        return $CHASQUI_URL;
+
+    }
+
+    // function decodeJWT(jwt) {
+    //   if (!jwt) throw new Error('no JWT passed into decodeJWT');
+    //   var parts = jwt.match(/^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)$/);
+    //   if (parts) {
+    //     return {
+    //       header: JSON.parse(_base64url2.default.decode(parts[1])),
+    //       payload: JSON.parse(_base64url2.default.decode(parts[2])),
+    //       signature: parts[3],
+    //       data: parts[1] + '.' + parts[2]
+    //     };
+    //   }
+    //   throw new Error('Incorrect format JWT');
+    // }
 
     public function resolveInfuraPayload ($infuraPayload) {
         $params  = (object)[];
@@ -190,32 +214,89 @@ class jwtTools
     {
         $senderMnid = $this->getSenderMnid($jwt);
         $signerMnid = $this->getAudienceMnid($jwt);
-        return $this->prepareRegistryCallString($profileId, $senderMnid, $senderMnid);
+
+        if ( ( $senderMnid === null ) || ( $signerMnid === null ) ) {
+            $signerMnid = $senderMnid = $this->getIssuerMnid($jwt);
+            print_r("\r\ngot issuer mnid\r\n");
+            print_r($signerMnid);
+
+            return $this->prepareRegistryCallString($profileId, $senderMnid, $senderMnid);
+        } else {
+            print_r("\r\ngot sender mnid\r\n");
+            print_r($senderMnid);
+            
+            return $this->prepareRegistryCallString($profileId, $senderMnid, $senderMnid);
+        }
+        
+    }
+
+    public function getIssuerMnid ($jwt) {
+
+        // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
+        $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
+
+        print_r("\r\n\r\njwt:\r\n");
+        print_r($jsonBody);
+        print_r("\r\n");
+        print_r(json_decode($jsonBody));
+
+        if ( isset((json_decode($jsonBody, true))['iss']) ) {
+            $sender = (json_decode($jsonBody, true))['iss'];
+            return $sender;
+        } else {       
+            return null; 
+        }
+
     }
 
     public function getSenderMnid ($jwt) {
 
-        $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
-        $sender = json_decode($jsonBody, false)->nad;
-        
-        return $sender;
+        // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
+        $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));        
+
+        print_r("\r\n\r\njwt:\r\n");
+        print_r($jsonBody);
+        print_r("\r\n");
+        print_r(json_decode($jsonBody));
+
+        if ( isset((json_decode($jsonBody, true))['nad']) ) {
+            $sender = (json_decode($jsonBody, true))['nad'];
+            return $sender;
+        } else {       
+            return null; 
+        }
 
     }
 
     public function getAudienceMnid ($jwt) {
 
-        $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
-        $sender = json_decode($jsonBody, false)->aud;
-        return $sender;
+        // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
+        $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
+        print_r("\r\n\r\njwt:\r\n");
+        print_r($jsonBody);
+        print_r("\r\n");
+        print_r(json_decode($jsonBody));
 
+
+        if ( isset(json_decode($jsonBody, true)['aud']) ) {
+            $sender = (json_decode($jsonBody, true))['aud'];
+            return $sender;
+
+        } else {
+            return null;
+        }
+        
     }    
 
     // Utilities Functionality
     public function base64url_decode( $payload ){
+        print_r("\r\n decoding payload: \r\n");
+        print_r($payload);
+
         // converts from base64url to base64, then decodes
         return base64_decode( strtr( $payload, '-_', '+/') . str_repeat('=', 3 - ( 3 + strlen( $payload )) % 4 ));
 
-    }    
+    }   
 
     public function encodeByteArrayToHex ($byteArray) {
 
@@ -258,6 +339,8 @@ class jwtTools
     }
 
     private function prepareRegistryCallString($registrationIdentifier, $issuerId, $subjectId) {
+
+        print_r("\r\nprepRegCall\r\n" . $registrationIdentifier . "\r\n" . $issuerId . "\r\n\r\n" . $subjectId . "\r\n"); 
 
         $callObj = (object)[];
         $issuer = $this->eaeDecode($issuerId);
