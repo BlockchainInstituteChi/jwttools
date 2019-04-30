@@ -49,31 +49,33 @@
 	 // "Client ID"
 	$signingKey  = 'cb89a98b53eec9dc58213e67d04338350e7c15a7f7643468d8081ad2c5ce5480'; // "Private Key"
 
-	$jwtBody->iat 	      = 1556569499;
+	$jwtBody->iat 	      = 1556570020;
 	$jwtBody->requested   = ['name'];
 	$jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/SMD5kwa68CIveHsY';
 	// $jwtBody->callback 	  = $jwtTools->chasquiFactory($topicName);
 	$jwtBody->net      	  = "0x4";
 	$jwtBody->type 		  = "shareReq";
 	$jwtBody->iss         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
-
+	$jwtBody->nad         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
+	$jwtBody->aud         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
+	
 
 	// 2. Create JWT Object
 	$jwtBodyJson = json_encode($jwtBody);
 
-    echo "\r\n";
-	print_r($jwtBody);
-	print_r($jwtBodyJson);
-    echo "\r\n";
+ //    echo "\r\n";
+	// print_r($jwtBody);
+	// print_r($jwtBodyJson);
+ //    echo "\r\n";
 
 // Encode the components and compose the payload
 	$encodedHeader = urlencode(base64_encode($jwtHeaderJson));
     $encodedBody   = urlencode(base64_encode($jwtBodyJson));
     $jwt 		   = $encodedHeader . "." . $encodedBody;
 
-    echo "\r\n";
-    print_r($jwt);
-    echo "\r\n";
+    // echo "\r\n";
+    // print_r($jwt);
+    // echo "\r\n";
 
 // Create Signature
 	// 1. Create a secp256k1 private key 'point' from the hex private key above
