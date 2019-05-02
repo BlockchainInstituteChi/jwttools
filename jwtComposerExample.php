@@ -39,7 +39,7 @@
 	$jwtHeader->alg = 'ES256K'; // ""
 
 	// 2. Create JWT Object
-	$jwtHeaderJson = json_encode($jwtHeader);
+	$jwtHeaderJson = json_encode($jwtHeader, JSON_UNESCAPED_SLASHES);
 
 
 // Prepare the JWT Body
@@ -49,29 +49,41 @@
 	 // "Client ID"
 	$signingKey  = 'cb89a98b53eec9dc58213e67d04338350e7c15a7f7643468d8081ad2c5ce5480'; // "Private Key"
 
-	$jwtBody->iat 	      = 1556570020;
+	$jwtBody->iat 	      = 1556815027;
 	$jwtBody->requested   = ['name'];
-	$jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/SMD5kwa68CIveHsY';
+	$jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/QiXBauTEl9RS63Oh';
 	// $jwtBody->callback 	  = $jwtTools->chasquiFactory($topicName);
 	$jwtBody->net      	  = "0x4";
 	$jwtBody->type 		  = "shareReq";
 	$jwtBody->iss         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
-	$jwtBody->nad         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
-	$jwtBody->aud         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
-	
+	// $jwtBody->nad         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
+	// $jwtBody->aud         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
 
 	// 2. Create JWT Object
-	$jwtBodyJson = json_encode($jwtBody);
+	$jwtBodyJson = json_encode($jwtBody, JSON_UNESCAPED_SLASHES);
+	echo "\r\n\r\njsonbody:\r\n";
+	print_r($jwtBodyJson);
+	echo "\r\n\r\n";
 
- //    echo "\r\n";
-	// print_r($jwtBody);
-	// print_r($jwtBodyJson);
- //    echo "\r\n";
 
 // Encode the components and compose the payload
-	$encodedHeader = urlencode(base64_encode($jwtHeaderJson));
-    $encodedBody   = urlencode(base64_encode($jwtBodyJson));
+	$encodedHeader = spEncodeAndTrim($jwtHeaderJson);
+    $encodedBody   = spEncodeAndTrim($jwtBodyJson);
     $jwt 		   = $encodedHeader . "." . $encodedBody;
+
+    function spEncodeAndTrim ($payload) {
+    	$encoded = strval(base64_encode($payload));
+    	echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
+    	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
+    	if ( sizeof(explode("=", $encoded)) > 1 ) {
+	    	$trimmed = explode("=", $encoded)[0];
+    	} else {
+    		$trimmed = $encoded;
+    	}
+    	echo "\r\n\r\ntrimmed: \r\n " . $trimmed . "\r\n\r\n";
+
+    	return urlencode($trimmed);
+    }
 
 // Create Signature
 	// 1. Create a secp256k1 private key 'point' from the hex private key above
