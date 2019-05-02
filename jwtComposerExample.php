@@ -49,9 +49,9 @@
 	 // "Client ID"
 	$signingKey  = 'cb89a98b53eec9dc58213e67d04338350e7c15a7f7643468d8081ad2c5ce5480'; // "Private Key"
 
-	$jwtBody->iat 	      = 1556815027;
+	$jwtBody->iat 	      = 1556821784;
 	$jwtBody->requested   = ['name'];
-	$jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/QiXBauTEl9RS63Oh';
+	$jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/cHCgXzgDmatHH4OR';
 	// $jwtBody->callback 	  = $jwtTools->chasquiFactory($topicName);
 	$jwtBody->net      	  = "0x4";
 	$jwtBody->type 		  = "shareReq";
@@ -71,29 +71,25 @@
     $encodedBody   = spEncodeAndTrim($jwtBodyJson);
     $jwt 		   = $encodedHeader . "." . $encodedBody;
 
-    function spEncodeAndTrim ($payload) {
-    	$encoded = strval(base64_encode($payload));
-    	echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
-    	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
-    	if ( sizeof(explode("=", $encoded)) > 1 ) {
-	    	$trimmed = explode("=", $encoded)[0];
-    	} else {
-    		$trimmed = $encoded;
-    	}
-    	echo "\r\n\r\ntrimmed: \r\n " . $trimmed . "\r\n\r\n";
-
-    	return urlencode($trimmed);
-    }
-
 // Create Signature
 	// 1. Create a secp256k1 private key 'point' from the hex private key above
 	$keySerializer = new HexPrivateKeySerializer($generator);
 	$key = $keySerializer->parse($signingKey);
 
 	// 2. Create a hash of the payload body
-	$hexHash = hash($algorithm, $jwt);
+	$hexHash = hash('sha256', $jwt);
+	
+	echo "\r\nhexhash: ". $hexHash . "\r\n";
+
     $hash = gmp_init($hexHash, 16);
 
+	$unpackedHash = unpack('C*',  $hexHash);
+	// print_r($unpackedHash);
+    echo "\r\n\r\nhashis:";  
+    print_r($unpackedHash);
+
+	echo "string \r\n\r\n";
+	
 	// 3. Sign the hash 
 	$random    = \Mdanter\Ecc\Random\RandomGeneratorFactory::getRandomGenerator();
 	// $random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getHmacRandomGenerator($key, $hash, $algorithm); // Alt
@@ -109,3 +105,17 @@
 
     print_r($jwt);
     
+
+    function spEncodeAndTrim ($payload) {
+    	$encoded = strval(base64_encode($payload));
+    	echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
+    	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
+    	if ( sizeof(explode("=", $encoded)) > 1 ) {
+	    	$trimmed = explode("=", $encoded)[0];
+    	} else {
+    		$trimmed = $encoded;
+    	}
+    	echo "\r\n\r\ntrimmed: \r\n " . $trimmed . "\r\n\r\n";
+
+    	return urlencode($trimmed);
+    }
