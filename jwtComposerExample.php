@@ -3,6 +3,7 @@
 	// use RuntimeException;
 	use Tuupola\Base58;
 	use Blockchaininstitute\jwtTools as jwtTools;
+	use Mdanter\Ecc\Crypto\Signature\Signer;
 	use Mdanter\Ecc\Crypto\Signature\SignHasher;
 	use Mdanter\Ecc\EccFactory;
 	use Mdanter\Ecc\Curves\CurveFactory;
@@ -11,7 +12,7 @@
 
 	use kornrunner\Secp256k1;
 	use kornrunner\Signature\Signature as kSig;
-	use kornrunner\Signature\Signer;
+	// use kornrunner\Signature\Signer;
 	use kornrunner\Serializer\HexPrivateKeySerializer;
 	use kornrunner\Serializer\HexSignatureSerializer;
 
@@ -28,6 +29,7 @@
 
 
 
+	$hasher = new SignHasher($algorithm, $adapter);
 // Input Data
     $topicName = "Blockchain Institute Login Request";
 
@@ -79,10 +81,11 @@
 	// 2. Create a hash of the payload body
 	$hexHash = hash('sha256', $jwt);
 	
-	echo "\r\nhexhash: ". $hexHash . "\r\n";
+	// echo "\r\nhexhash: ". $hexHash . "\r\n";
 
-    $hash = gmp_init($hexHash, 16);
-
+    // $hash = gmp_init($hexHash, 16);
+	$hash = gmp_init(bin2hex(hash_hmac('sha256', $jwt, $signingKey)), 16);
+	// $hash = $hasher->makeHash($jwt, $generator);
 	$unpackedHash = unpack('C*',  $hexHash);
 	// print_r($unpackedHash);
     echo "\r\n\r\nhashis:";  
@@ -95,7 +98,8 @@
 	// $random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getHmacRandomGenerator($key, $hash, $algorithm); // Alt
     $randomK   = $random->generate($generator->getOrder());
     $signer    = new Signer($adapter);
-    $signature = $signer->sign($key, $hash, $randomK);
+    // $signature = $signer->sign($key, $hash, $randomK);
+    $signature = $secp256k1->sign($hash, $signingKey, []);
 
     $signatureSerializer = new HexSignatureSerializer();
     $hexSignature        = $signatureSerializer->serialize($signature);
@@ -106,7 +110,16 @@
     print_r($jwt);
     
 
+	$isVerified = $jwtTools->verifyJWT($jwt);
+
+	echo "\r\n\r\nisVerified:\r\n" , $isVerified;
+
+	echo "\r\n\r\n";
+
+	
+
     function spEncodeAndTrim ($payload) {
+
     	$encoded = strval(base64_encode($payload));
     	echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
     	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
@@ -118,4 +131,5 @@
     	echo "\r\n\r\ntrimmed: \r\n " . $trimmed . "\r\n\r\n";
 
     	return urlencode($trimmed);
+    	// return urlencode($trimmed);
     }
