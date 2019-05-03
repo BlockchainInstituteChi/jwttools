@@ -50,10 +50,11 @@
 
 	 // "Client ID"
 	$signingKey  = 'cb89a98b53eec9dc58213e67d04338350e7c15a7f7643468d8081ad2c5ce5480'; // "Private Key"
+	// 776e591d9674b1c0fc8182f8574f24734cdeb4dc7ef8c4643d0fda33f4f8e0d6
 
-	$jwtBody->iat 	      = 1556821784;
+	$jwtBody->iat 	      = 1556912833;
 	$jwtBody->requested   = ['name'];
-	$jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/cHCgXzgDmatHH4OR';
+	$jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/1OzSjQRFrF948LLk';
 	// $jwtBody->callback 	  = $jwtTools->chasquiFactory($topicName);
 	$jwtBody->net      	  = "0x4";
 	$jwtBody->type 		  = "shareReq";
@@ -67,7 +68,6 @@
 	print_r($jwtBodyJson);
 	echo "\r\n\r\n";
 
-
 // Encode the components and compose the payload
 	$encodedHeader = spEncodeAndTrim($jwtHeaderJson);
     $encodedBody   = spEncodeAndTrim($jwtBodyJson);
@@ -79,25 +79,33 @@
 	$key = $keySerializer->parse($signingKey);
 
 	// 2. Create a hash of the payload body
-	$hexHash = hash('sha256', $jwt);
-	
-	// echo "\r\nhexhash: ". $hexHash . "\r\n";
+	$hashex = hash('sha256', $jwt);
+	$hash = gmp_init($hashex, 16);
 
-    // $hash = gmp_init($hexHash, 16);
-	$hash = gmp_init(bin2hex(hash_hmac('sha256', $jwt, $signingKey)), 16);
+
+
+	if ( $hashex === "7d6dd5e06529c1ec9be575d6962da6ed6a9a54db08dc92d5b2bf2fbd66b2c347" ) {
+		echo "MOTHERFUCKING MATCH!";
+	} else {
+		echo "\r\n\r\nhash is " . $hashex . " \r\n";
+	}
+
+		
+
 	// $hash = $hasher->makeHash($jwt, $generator);
-	$unpackedHash = unpack('C*',  $hexHash);
+	// $unpackedHash = unpack('C*',  $hexHash);
 	// print_r($unpackedHash);
-    echo "\r\n\r\nhashis:";  
-    print_r($unpackedHash);
+ //    echo "\r\n\r\nhashis:";  
+ //    print_r($unpackedHash);
 
-	echo "string \r\n\r\n";
+	// echo "string \r\n\r\n";
 	
 	// 3. Sign the hash 
-	$random    = \Mdanter\Ecc\Random\RandomGeneratorFactory::getRandomGenerator();
-	// $random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getHmacRandomGenerator($key, $hash, $algorithm); // Alt
+	// $random    = \Mdanter\Ecc\Random\RandomGeneratorFactory::getRandomGenerator();
+	$random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getHmacRandomGenerator($key, $hash, $algorithm); // Alt
     $randomK   = $random->generate($generator->getOrder());
     $signer    = new Signer($adapter);
+
     // $signature = $signer->sign($key, $hash, $randomK);
     $signature = $secp256k1->sign($hash, $signingKey, []);
 
@@ -116,19 +124,19 @@
 
 	echo "\r\n\r\n";
 
-	
+
 
     function spEncodeAndTrim ($payload) {
 
     	$encoded = strval(base64_encode($payload));
-    	echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
+    	// echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
     	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
     	if ( sizeof(explode("=", $encoded)) > 1 ) {
 	    	$trimmed = explode("=", $encoded)[0];
     	} else {
     		$trimmed = $encoded;
     	}
-    	echo "\r\n\r\ntrimmed: \r\n " . $trimmed . "\r\n\r\n";
+    	// echo "\r\n\r\nt/rimmed: \r\n " . $trimmed . "\r\n\r\n";
 
     	return urlencode($trimmed);
     	// return urlencode($trimmed);
