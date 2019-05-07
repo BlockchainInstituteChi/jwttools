@@ -35,6 +35,16 @@ class Signer
      */
     public function sign(PrivateKeyInterface $key, \GMP $truncatedHash, \GMP $randomK): SignatureInterface
     {
+        // echo "\r\n\r\n";
+        // echo "printing sign values:";
+        // echo "\r\n\r\n";
+        // print_r($key);
+        // echo "\r\n\r\n";
+        // print_r($truncatedHash);
+        // echo "\r\n\r\n";
+        // print_r($randomK);
+        // echo "\r\n\r\n";
+
         $math = $this->adapter;
         $generator = $key->getPoint();
         $modMath = $math->getModularArithmetic($generator->getOrder());

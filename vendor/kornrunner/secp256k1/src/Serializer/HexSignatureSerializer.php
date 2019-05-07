@@ -9,10 +9,17 @@ use Mdanter\Ecc\Crypto\Signature\SignatureInterface;
 class HexSignatureSerializer
 {
     public function serialize(SignatureInterface $signature): string {
+
+        echo "\r\n\r\nhexSerialize running with \r\n";
+        print_r($signature);
+        echo "\r\n";
+
         $r = $signature->getR();
         $s = $signature->getS();
+        $result = str_pad(gmp_strval($r, 16), 64, '0', STR_PAD_LEFT) . str_pad(gmp_strval($s, 16), 64, '0', STR_PAD_LEFT);
+        echo "\r\n\r\nhexSerializeRan with \r\nr:" . $r . " \r\n\r\ns:" . $s . "\r\n\r\nhex: " . $result . "\r\n";
 
-        return str_pad(gmp_strval($r, 16), 64, '0', STR_PAD_LEFT) . str_pad(gmp_strval($s, 16), 64, '0', STR_PAD_LEFT);
+        return $result;
     }
 
     public function parse(string $binary): SignatureInterface {

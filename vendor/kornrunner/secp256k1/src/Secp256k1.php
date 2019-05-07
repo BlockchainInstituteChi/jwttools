@@ -32,7 +32,10 @@ class Secp256k1
         $this->algorithm = $hashAlgorithm;
     }
 
-    public function sign(string $hash, string $privateKey, array $options=[]): SignatureInterface {
+    public function sign(string $hash, string $privateKey, array $options=[]): 
+
+        SignatureInterface {
+
         $key = $this->deserializer->parse($privateKey);
         $hex_hash = gmp_init($hash, 16);
 
