@@ -98,9 +98,9 @@
 
     $hexSignature = $signature->toHex();
 
-    echo "\r\nSignature is \r\n";
-    print_r($signature);
-    echo "\r\n";
+    // echo "\r\nSignature is \r\n";
+    // print_r($signature);
+    // echo "\r\n";
 
     // echo "\r\nHex Signature is \r\n";
     // print_r($hexSignature);
@@ -110,18 +110,27 @@
     $jwt.= "." . spEncodeAndTrim($hexSignature);
 
 
-    $sigFromHex = $jwtTools->createSignatureObjectFromHex($hexSignature);
+    // $sigFromHex = $jwtTools->createSignatureObjectFromHex($hexSignature);
+
+    $sigFromHex  = $jwtTools->createSignatureObject($hexSignature);
+    $sigFromHex2 = $jwtTools->createSignatureObjectFromHex($hexSignature);
+
 
     $testSig = (new kSig ($sigFromHex['rGMP'],$sigFromHex['sGMP'],$sigFromHex['v']));
 
-    echo "\r\n checking\r\nrN:\r\n" . $testSig->getR() . "\r\nrG:\r\n" .  $signature->getR();
+    $testSig2 = (new kSig ($sigFromHex2['rGMP'],$sigFromHex2['sGMP'],$sigFromHex2['v']));
 
+    // echo "\r\nkSigTest\r\n";
+    // print_r($testSig);
+    // echo "\r\n";
+
+    // echo  "\r\ngeneratedSig:\r\n" .  $signature->getR() . "\r\n checking\r\nsigCreated:\r\n" . $testSig->getR() . "\r\nsigFromHex:\r\n" .  $testSig2->getR();
 
     // print_r($jwt);
     
     echo "\r\n\r\n======== BEGINNING VERIFICATION =======\r\n\r\n";
 
-	$isVerified = $jwtTools->verifyJWT($jwt);
+	$isVerified = $jwtTools->verifyJWT2($jwt);
 
 	echo "\r\n\r\nisVerified:\r\n" , $isVerified;
 
@@ -135,7 +144,7 @@
 
     function spEncodeAndTrim ($payload) {
 
-    	$encoded = base64_encode(strtr( $payload, '+/', '-_' ));
+    	$encoded = strtr(base64_encode( $payload), '+/', '-_' );
     	// echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
     	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
     	if ( sizeof(explode("=", $encoded)) > 1 ) {
@@ -146,8 +155,8 @@
     	// echo "\r\n\r\nt/rimmed: \r\n " . $trimmed . "\r\n\r\n";
 
     	// return urlencode($encoded);
-    	return urlencode($trimmed);
-    	// return $trimmed;
+    	// return urlencode($trimmed);
+    	return $trimmed;
     }
 
     function spEncode ($payload) {
