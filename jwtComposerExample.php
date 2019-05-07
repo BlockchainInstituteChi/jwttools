@@ -109,6 +109,7 @@
 	// // 4. Return the signed hash, the base 64 encoded header, and the base 64 encoded body
     $jwt.= "." . spEncodeAndTrim($hexSignature);
 
+    print_r($jwt);
 
     // $sigFromHex = $jwtTools->createSignatureObjectFromHex($hexSignature);
 
