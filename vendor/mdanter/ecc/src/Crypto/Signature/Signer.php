@@ -42,6 +42,9 @@ class Signer
         $k = $math->mod($randomK, $generator->getOrder());
         $p1 = $generator->mul($k);
         $r = $p1->getX();
+        // echo "\r\n\r\nRlen: " . mb_strlen(gmp_strval($r, 10)) . "\r\n";
+        // print_r($r);
+        // echo "\r\n";
         $zero = gmp_init(0, 10);
         if ($math->equals($r, $zero)) {
             throw new \RuntimeException("Error: random number R = 0");
