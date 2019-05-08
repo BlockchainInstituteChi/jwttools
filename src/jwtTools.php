@@ -31,9 +31,11 @@ use Mdanter\Ecc\EccFactory;
 use Mdanter\Ecc\Curves\CurveFactory;
 use Mdanter\Ecc\Curves\SecgCurve;
 use Mdanter\Ecc\Math\GmpMathInterface;
+use Mdanter\Ecc\Crypto\Signature\Signer;
 
 use kornrunner\Secp256k1;
 use kornrunner\Signature\Signature as kSig;
+use kornrunner\Serializer\HexPrivateKeySerializer;
 
 use Tuupola\Base58;
 
@@ -56,6 +58,39 @@ class jwtTools
      * @return string Returns the phrase passed in
      */
 
+    public function createJWT ($headerJSON, $bodyJSON, $privateKeyString) {
+
+        $secp256k1 = new Secp256k1();
+        $CurveFactory = new CurveFactory;
+        $adapter = EccFactory::getAdapter();
+        $generator = CurveFactory::getGeneratorByName('secp256k1');
+
+        // Encode the components and compose the payload
+        $encodedHeader = $this->spEncodeAndTrim($headerJSON);
+        $encodedBody   = $this->spEncodeAndTrim($bodyJSON);
+        $jwt           = $encodedHeader . "." . $encodedBody;
+
+        // Create Signature
+        // 1. Create a secp256k1 private key 'point' from the hex private key above
+        $keySerializer = new HexPrivateKeySerializer($generator);
+        $key = $keySerializer->parse($privateKeyString);
+
+        // 2. Create a hash of the payload body
+        $hash = hash('sha256', $jwt);
+        
+        // 3. Sign the hash 
+        $signer    = new Signer($adapter);
+
+        $signature = $secp256k1->sign($hash, $privateKeyString, []);
+
+        $hexSignature = $signature->toHex();
+
+        $jwt.= "." . $this->spEncodeAndTrim(hex2bin($hexSignature));
+
+        return $jwt;
+
+    }
+
     public function verifyJWT ($jwt) {
 
         $publicKeyLong = $this->resolvePublicKeyFromJWT($jwt);
@@ -63,18 +98,24 @@ class jwtTools
         $publicKey =  substr($publicKeyLong, 2);
 
         $opt = $this->deconstructAndDecode($jwt);
-        
+
+        $u64 = urldecode($opt['signature']);
+
+        $b64 = base64_decode($u64);
+
         $secp256k1 = new Secp256k1();
         $CurveFactory = new CurveFactory;
         $adapter = EccFactory::getAdapter();
         $generator = CurveFactory::getGeneratorByName('secp256k1');
 
-        $signatureSet = $this->createSignatureObject($opt['signature']);   
+        $signatureSet = $this->createSignatureObject($opt['signature']); 
+
         $signatureK = new kSig ($signatureSet["rGMP"], $signatureSet["sGMP"], $signatureSet["v"]);
 
         $algorithm = 'sha256';
-        
-        $document = $opt['header'] . "." . $opt['body'];    
+
+        $document = $opt['header'] . "." . $opt['body'];  
+         
         $hash = hash($algorithm, $document);
 
         return $secp256k1->verify($hash, $signatureK, $publicKey);
@@ -102,7 +143,6 @@ class jwtTools
     public function resolvePublicKeyFromJWT ($jwt) {
 
         $ipfsResult = $this->resolveDIDFromJWT($jwt);
-        
         return $ipfsResult->publicKey;
 
     }
@@ -114,20 +154,6 @@ class jwtTools
         return $CHASQUI_URL;
 
     }
-
-    // function decodeJWT(jwt) {
-    //   if (!jwt) throw new Error('no JWT passed into decodeJWT');
-    //   var parts = jwt.match(/^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)$/);
-    //   if (parts) {
-    //     return {
-    //       header: JSON.parse(_base64url2.default.decode(parts[1])),
-    //       payload: JSON.parse(_base64url2.default.decode(parts[2])),
-    //       signature: parts[3],
-    //       data: parts[1] + '.' + parts[2]
-    //     };
-    //   }
-    //   throw new Error('Incorrect format JWT');
-    // }
 
     public function resolveInfuraPayload ($infuraPayload) {
         $params  = (object)[];
@@ -226,7 +252,6 @@ class jwtTools
 
     public function getIssuerMnid ($jwt) {
 
-        // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
 
         if ( isset((json_decode($jsonBody, true))['iss']) ) {
@@ -240,7 +265,6 @@ class jwtTools
 
     public function getSenderMnid ($jwt) {
 
-        // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));      
 
         if ( isset((json_decode($jsonBody, true))['nad']) ) {
@@ -254,7 +278,6 @@ class jwtTools
 
     public function getAudienceMnid ($jwt) {
 
-        // $jsonBody = $this->base64url_decode(($this->deconstructAndDecode($jwt))["body"]);
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
 
         if ( isset(json_decode($jsonBody, true)['aud']) ) {
@@ -269,8 +292,6 @@ class jwtTools
 
     // Utilities Functionality
     public function base64url_decode( $payload ){
-
-        // converts from base64url to base64, then decodes
         return base64_decode( strtr( $payload, '-_', '+/') . str_repeat('=', 3 - ( 3 + strlen( $payload )) % 4 ));
 
     }   
@@ -288,8 +309,6 @@ class jwtTools
     public function String2Hex($string){
         $hex='';
         for ($i=0; $i < strlen($string); $i++){
-            // echo "\r\nconverting " . $string[$i] . " to " . dechex(ord($string[$i]));
-
             $newBit = dechex(ord($string[$i]));
 
             if ( strlen($newBit) == 1 ) {
@@ -301,14 +320,37 @@ class jwtTools
         return $hex;
     }
 
-    private function createSignatureObject ($signature) {
+    public function createSignatureObject ($signature) {
 
         $rawSig = $this->base64url_decode($signature);
 
+        $firstHalf = $this->String2Hex(substr( $rawSig, 0, 32 ));
+        $secondHalf = $this->String2Hex(substr( $rawSig, 32, 64 ));
+
         $sigObj = [
             "v" => 0,
-            "rGMP" => gmp_init("0x" . $this->String2Hex(substr( $rawSig, 0, 32 )), 16),
-            "sGMP" => gmp_init("0x" . $this->String2Hex(substr( $rawSig, 32, 64 )), 16)
+            "rGMP" => gmp_init("0x" . $firstHalf, 16),
+            "sGMP" => gmp_init("0x" . $secondHalf, 16)
+        ];
+
+        return $sigObj;
+
+    }
+
+    public function createSignatureObjectFromHex ($signature) {
+
+
+        $rawSig = $this->base64url_decode($signature);
+
+        $firstHalf  = bin2hex(substr( $rawSig,  0, 32 ));
+        $secondHalf = bin2hex(substr( $rawSig, 32, 64 ));
+
+        echo "\r\n\r\n2. Hex Splitting: " . $rawSig . "\r\n\r\nfirst:" . $firstHalf . "\r\n\r\nsecond:" . $secondHalf . "\r\n";
+
+        $sigObj = [
+            "v" => 0,
+            "rGMP" => gmp_init($firstHalf, 16),
+            "sGMP" => gmp_init($secondHalf, 16)
         ];
 
         return $sigObj;
@@ -337,6 +379,17 @@ class jwtTools
 
         return $callObj;
 
+    }
+
+    private function spEncodeAndTrim ($payload) {
+
+        $encoded = base64_encode($payload);
+        if ( sizeof(explode("=", $encoded)) > 1 ) {
+            $trimmed = explode("=", $encoded)[0];
+        } else {
+            $trimmed = $encoded;
+        }
+        return $trimmed;
     }
 
     private function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
