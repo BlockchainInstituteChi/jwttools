@@ -66,30 +66,7 @@
 	print_r($jwtBodyJson);
 	echo "\r\n\r\n";
 
-// Encode the components and compose the payload
-	$encodedHeader = spEncodeAndTrim($jwtHeaderJson);
-    $encodedBody   = spEncodeAndTrim($jwtBodyJson);
-    $jwt 		   = $encodedHeader . "." . $encodedBody;
-
-// Create Signature
-	// 1. Create a secp256k1 private key 'point' from the hex private key above
-	$keySerializer = new HexPrivateKeySerializer($generator);
-	$key = $keySerializer->parse($signingKey);
-
-	// 2. Create a hash of the payload body
-	$hash = hash('sha256', $jwt);
-	
-	// 3. Sign the hash 
-    $signer    = new Signer($adapter);
-
-    $signature = $secp256k1->sign($hash, $signingKey, []);
-
-    $hexSignature = $signature->toHex();
-
-    $jwt.= "." . spEncodeAndTrim(hex2bin($hexSignature));
-
-    echo "JWT Payload:\r\n";
-    print_r($jwt);
+	$jwt = $jwtTools->createJWT($jwtHeaderJson, $jwtBodyJson, $signingKey);
     
     echo "\r\n\r\n======== BEGINNING VERIFICATION =======\r\n\r\n";
 
