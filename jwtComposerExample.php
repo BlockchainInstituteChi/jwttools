@@ -59,9 +59,7 @@
 	$jwtBody->net      	  = "0x4";
 	$jwtBody->type 		  = "shareReq";
 	$jwtBody->iss         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
-	// $jwtBody->nad         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
-	// $jwtBody->aud         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
-
+	
 	// 2. Create JWT Object
 	$jwtBodyJson = json_encode($jwtBody, JSON_UNESCAPED_SLASHES);
 	echo "\r\n\r\njsonbody:\r\n";
@@ -72,7 +70,6 @@
 	$encodedHeader = spEncodeAndTrim($jwtHeaderJson);
     $encodedBody   = spEncodeAndTrim($jwtBodyJson);
     $jwt 		   = $encodedHeader . "." . $encodedBody;
-    // $jwtClean 	   = spEncode($jwtHeaderJson) . "." . spEncode($jwtBodyJson); 
 
 // Create Signature
 	// 1. Create a secp256k1 private key 'point' from the hex private key above
@@ -81,53 +78,17 @@
 
 	// 2. Create a hash of the payload body
 	$hash = hash('sha256', $jwt);
-	// $hash = gmp_init($hashex, 16);
-
 	
 	// 3. Sign the hash 
-	// $random    = \Mdanter\Ecc\Random\RandomGeneratorFactory::getRandomGenerator();
-	// $random = \Mdanter\Ecc\Random\RandomGeneratorFactory::getHmacRandomGenerator($key, $hash, $algorithm); // Alt
-    // $randomK   = $random->generate($generator->getOrder());
     $signer    = new Signer($adapter);
 
-    // $signature = $signer->sign($key, $hash, $randomK);
     $signature = $secp256k1->sign($hash, $signingKey, []);
-
-    // echo "\r\n\r\n\r\nprinting reconv hex\r\n";
-    // echo "\r\n\r\n\r\nend printout\r\n";
 
     $hexSignature = $signature->toHex();
 
-    // echo "\r\nSignature is \r\n";
-    // print_r($signature);
-    // echo "\r\n";
-
-    // echo "\r\nHex Signature is \r\n";
-    // print_r($hexSignature);
-    // echo "\r\n";
-
-	// // 4. Return the signed hash, the base 64 encoded header, and the base 64 encoded body
     $jwt.= "." . spEncodeAndTrim(hex2bin($hexSignature));
 
     print_r($jwt);
-
-    // $sigFromHex = $jwtTools->createSignatureObjectFromHex($hexSignature);
-
-    $sigFromHex  = $jwtTools->createSignatureObject($hexSignature);
-    $sigFromHex2 = $jwtTools->createSignatureObjectFromHex($hexSignature);
-
-
-    $testSig = (new kSig ($sigFromHex['rGMP'],$sigFromHex['sGMP'],$sigFromHex['v']));
-
-    $testSig2 = (new kSig ($sigFromHex2['rGMP'],$sigFromHex2['sGMP'],$sigFromHex2['v']));
-
-    // echo "\r\nkSigTest\r\n";
-    // print_r($testSig);
-    // echo "\r\n";
-
-    // echo  "\r\ngeneratedSig:\r\n" .  $signature->getR() . "\r\n checking\r\nsigCreated:\r\n" . $testSig->getR() . "\r\nsigFromHex:\r\n" .  $testSig2->getR();
-
-    // print_r($jwt);
     
     echo "\r\n\r\n======== BEGINNING VERIFICATION =======\r\n\r\n";
 
@@ -138,26 +99,17 @@
 	echo "\r\n\r\n";
 
 	function encodeSignature ($sig) {
-		// return urlencode($sig);
-		// return spEncode($sig);
 		return spEncodeAndTrim($sig);
 	}
 
     function spEncodeAndTrim ($payload) {
 
-    	// $encoded = strtr(base64_encode( $payload), '+/', '-_' );
     	$encoded = base64_encode($payload);
-    	// echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
-    	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
     	if ( sizeof(explode("=", $encoded)) > 1 ) {
 	    	$trimmed = explode("=", $encoded)[0];
     	} else {
     		$trimmed = $encoded;
     	}
-    	// echo "\r\n\r\nt/rimmed: \r\n " . $trimmed . "\r\n\r\n";
-
-    	// return urlencode($encoded);
-    	// return urlencode($trimmed);
     	return $trimmed;
     }
 
