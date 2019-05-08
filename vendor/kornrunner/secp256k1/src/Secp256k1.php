@@ -40,6 +40,8 @@ class Secp256k1
         $hex_hash = gmp_init($hash, 16);
 
         if (!isset($options['n'])) {
+            // $random    = RandomGeneratorFactory::getRandomGenerator();
+    
             $random = RandomGeneratorFactory::getHmacRandomGenerator($key, $hex_hash, $this->algorithm);
             $n = $this->generator->getOrder();
             $randomK = $random->generate($n);

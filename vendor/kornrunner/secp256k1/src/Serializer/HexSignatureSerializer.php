@@ -16,22 +16,25 @@ class HexSignatureSerializer
 
         $r = $signature->getR();
         $s = $signature->getS();
-        $result = str_pad(gmp_strval($r, 16), 64, '0', STR_PAD_LEFT) . str_pad(gmp_strval($s, 16), 64, '0', STR_PAD_LEFT);
+        $leftHalf  = str_pad(gmp_strval($r, 16), 64, '0', STR_PAD_LEFT);
+        $rightHalf = str_pad(gmp_strval($s, 16), 64, '0', STR_PAD_LEFT);
+        $result = $leftHalf . $rightHalf;
 
-        // echo "\r\n\r\nhexSerializeRan with \r\nr:" . $r . " \r\n\r\ns:" . $s . "\r\n\r\nhex: " . $result . "\r\n";
+        echo "\r\n\r\nhexSerializeRan with \r\nr:" . $r . " \r\n\r\ns:" . $s . "\r\n\r\nhex: " . $result . "\r\nleft:" . $leftHalf . " \r\n\r\nright:" . $rightHalf . "\r\n\r\nstrlen" . mb_strlen(gmp_strval($r, 16));
 
         return $result;
     }
 
     public function parse(string $binary): SignatureInterface {
 
-        if ( mb_strlen($binary) === 50 ) {
-            echo "\r\nmb_strlen(binary) is 50:" . mb_strlen($binary) . "\r\n";
+        $binary_lower = mb_strtolower($binary);
+
+        if ( mb_strlen($binary_lower) === 50 ) {
+            echo "\r\nmb_strlen(binary) is 50:" . mb_strlen($binary_lower) . "\r\n";
         } else {
-            echo "\r\nmb_strlen(binary) is not 50:" . mb_strlen($binary) . "\r\n";
+            echo "\r\nmb_strlen(binary) is not 50:" . mb_strlen($binary_lower) . "\r\n";
         }
 
-        $binary_lower = mb_strtolower($binary);
 
         if (strpos($binary_lower, '0x') >= 0) {
             $count = 1;

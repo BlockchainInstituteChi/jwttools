@@ -23,6 +23,7 @@ At this time, there are no required constructor arguments. See the examples bran
 ```resolveDIDFromJWT($jwt)```
 *This function returns a php object contianing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
+
 ## Payload Formats
 
 **The JWT:**
@@ -53,6 +54,10 @@ jwt : {
   signature: "vFslRV7OGpfCAwQ9HDqr1BoBYNXlzyHjZiJrT4_0exgbrVXTYjbvJ3_6GGtI2yKATxjOUuX5EToNBcTXyPLBUg
 }
 ```
+
+Full docs can be found here: https://github.com/uport-project/specs/blob/develop/messages/index.md#json-web-token
+
+For more information about did resolution visit https://github.com/uport-project/specs/blob/develop/pki/index.md
 
 **The Callback Function:**
 In order to resolve the DID to a public key, it's necessary to make a call to the infura API. In order to ensure interoperability with wordpress plugins and other restricted environments such as Drupel, Laravel or Magento, the didResolver function will return an HTTP GET request which can be executed inside of the callback function. 

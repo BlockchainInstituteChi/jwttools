@@ -107,7 +107,7 @@
     // echo "\r\n";
 
 	// // 4. Return the signed hash, the base 64 encoded header, and the base 64 encoded body
-    $jwt.= "." . spEncodeAndTrim($hexSignature);
+    $jwt.= "." . spEncodeAndTrim(hex2bin($hexSignature));
 
     print_r($jwt);
 
@@ -131,7 +131,7 @@
     
     echo "\r\n\r\n======== BEGINNING VERIFICATION =======\r\n\r\n";
 
-	$isVerified = $jwtTools->verifyJWT2($jwt);
+	$isVerified = $jwtTools->verifyJWT($jwt);
 
 	echo "\r\n\r\nisVerified:\r\n" , $isVerified;
 
@@ -145,7 +145,8 @@
 
     function spEncodeAndTrim ($payload) {
 
-    	$encoded = strtr(base64_encode( $payload), '+/', '-_' );
+    	// $encoded = strtr(base64_encode( $payload), '+/', '-_' );
+    	$encoded = base64_encode($payload);
     	// echo "\r\n\r\nencoded: \r\n " . $encoded . "\r\n\r\n"; 
     	// $trimmed = substr($encoded, 0, (strlen($payload) - 1/8));
     	if ( sizeof(explode("=", $encoded)) > 1 ) {
