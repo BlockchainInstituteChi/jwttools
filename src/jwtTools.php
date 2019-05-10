@@ -45,8 +45,13 @@ class jwtTools
     /**
      * Create a new Skeleton Instance
      */
-    public function __construct()
+    public function __construct($httpCaller)
     {
+        if (isset($httpCaller)) {
+            $this->httpCaller = $httpCaller;
+        } else {
+            $this->httpCaller = $this->makeHttpCall;
+        }
     }
 
 
@@ -169,22 +174,7 @@ class jwtTools
 
         $payloadOptions = json_encode($payloadOptions);
 
-        $options = array(CURLOPT_URL => 'https://rinkeby.infura.io/uport-lite-library',
-                     CURLOPT_HEADER => false,
-                     CURLOPT_FRESH_CONNECT => true,
-                     CURLOPT_POSTFIELDS => $payloadOptions,
-                     CURLOPT_RETURNTRANSFER => true,
-                     CURLOPT_POST => 1,
-                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
-                    );
-
-        $ch = curl_init();
-
-        curl_setopt_array($ch, $options);
-
-        $result = curl_exec($ch);
-
-        curl_close($ch);
+        $result = call_user_func($this->httpCaller, 'https://rinkeby.infura.io/uport-lite-library',  $payloadOptions, 1 );
 
         return $result;
 
@@ -205,18 +195,7 @@ class jwtTools
     public function fetchIpfs($ipfsHash) {
         $uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
 
-        $options = array(CURLOPT_URL => $uri,
-             CURLOPT_RETURNTRANSFER => true,
-             CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
-            );
-
-        $ch = curl_init();
-
-        curl_setopt_array($ch, $options);
-
-        $result = curl_exec($ch);
-
-        curl_close($ch);
+        $result = call_user_func($this->httpCaller, $uri,  json_encode([]), 0 );
 
         return $result;
     }
@@ -379,6 +358,29 @@ class jwtTools
 
         return $callObj;
 
+    }
+
+
+    public function makeHttpCall ($url, $body, $isPost) {
+
+        $options = array(CURLOPT_URL => $url,
+                     CURLOPT_HEADER => false,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $body,
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => $isPost,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
     }
 
     private function spEncodeAndTrim ($payload) {

@@ -1,4 +1,4 @@
-## PHP JWT Tools (Examples Branch) - Powered by TheBlockchainInstitute.org
+## PHP JWT Tools - Powered by TheBlockchainInstitute.org
 
 JWT's or JSON Web Tokens are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
 
@@ -11,6 +11,8 @@ This branch contains some example scripts to demonstrate the use cases of the li
 This repo can be installed as a composer module from the master branch. 
 
 At this time, there are no required constructor arguments. See the examples branch of this repo for detailed code. 
+
+If you are in a constrained environment such as wordpress, where http calls must be made in a particular way, then you can instantiate the tools using a local httpCaller function. This is shown in the examples, but it not mandatory as it will default to a private function within the library if not.
 
 ## Functionality
 
