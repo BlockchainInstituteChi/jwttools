@@ -18,7 +18,7 @@
 
 	require 'vendor/autoload.php';
 
-	$jwtTools = new jwtTools();
+	$jwtTools = new jwtTools('makeHttpCall');
 
 	// Dependancy Integrations
     $secp256k1 = new Secp256k1();
@@ -86,3 +86,25 @@
     	}
     	return $trimmed;
     }
+    
+	function makeHttpCall ($url, $body, $isPost) {
+
+        $options = array(CURLOPT_URL => $url,
+                     CURLOPT_HEADER => false,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $body,
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => $isPost,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+	}

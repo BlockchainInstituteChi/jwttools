@@ -15,14 +15,14 @@
 	echo $address;
 
 
-	function makeHttpCall ($url, $body) {
+	function makeHttpCall ($url, $body, $isPost) {
 
         $options = array(CURLOPT_URL => $url,
                      CURLOPT_HEADER => false,
                      CURLOPT_FRESH_CONNECT => true,
                      CURLOPT_POSTFIELDS => $body,
                      CURLOPT_RETURNTRANSFER => true,
-                     CURLOPT_POST => 1,
+                     CURLOPT_POST => $isPost,
                      CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
                     );
 
