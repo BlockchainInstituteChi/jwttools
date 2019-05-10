@@ -86,7 +86,7 @@
     	}
     	return $trimmed;
     }
-
+    
 	function makeHttpCall ($url, $body, $isPost) {
 
         $options = array(CURLOPT_URL => $url,

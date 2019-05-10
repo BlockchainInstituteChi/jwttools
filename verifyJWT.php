@@ -14,7 +14,7 @@
 
 	echo "\r\nStarting validate.php \r\n";
 
-	$jwtTools = new jwtTools();
+	$jwtTools = new jwtTools('makeHttpCall');
 
 	// $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTY4MjE3ODQsInJlcXVlc3RlZCI6WyJuYW1lIl0sImNhbGxiYWNrIjoiaHR0cHM6Ly9jaGFzcXVpLnVwb3J0Lm1lL2FwaS92MS90b3BpYy9jSENnWHpnRG1hdEhINE9SIiwibmV0IjoiMHg0IiwidHlwZSI6InNoYXJlUmVxIiwiaXNzIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoifQ.a99f1734d72bead02625295ed5178e1c85807ac6dd49205d3406a26409b45a816f7a534209d72739addfd33136f2de61353b0eb84be45d40d9a3f3f460a1a705";
 
@@ -27,3 +27,25 @@
 	echo "\r\n\r\nisVerified:\r\n" , $isVerified;
 
 	echo "\r\n\r\n";
+
+	function makeHttpCall ($url, $body, $isPost) {
+
+        $options = array(CURLOPT_URL => $url,
+                     CURLOPT_HEADER => false,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $body,
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => $isPost,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+	}
