@@ -1,5 +1,5 @@
 {
-    "name": "blockchaininstitute/jwt-tools",
+    "name": "blockchaininstitute/jwttools",
     "description": "This library provides tools for working with uPort DIDs.",
     "keywords": ["decentralized","web3","did","uport"],
     "homepage": "https://theblockchaininstitute.org/",
