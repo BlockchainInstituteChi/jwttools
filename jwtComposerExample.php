@@ -1,38 +1,14 @@
 <?php
-	require __DIR__ . '/vendor/autoload.php';
-	// use RuntimeException;
-	use Tuupola\Base58;
-	use Blockchaininstitute\jwtTools as jwtTools;
-	use Mdanter\Ecc\Crypto\Signature\Signer;
-	use Mdanter\Ecc\Crypto\Signature\SignHasher;
-	use Mdanter\Ecc\EccFactory;
-	use Mdanter\Ecc\Curves\CurveFactory;
-	use Mdanter\Ecc\Curves\SecgCurve;
-	use Mdanter\Ecc\Math\GmpMathInterface;
-
-	use kornrunner\Secp256k1;
-	use kornrunner\Signature\Signature as kSig;
-	// use kornrunner\Signature\Signer;
-	use kornrunner\Serializer\HexPrivateKeySerializer;
-	use kornrunner\Serializer\HexSignatureSerializer;
-
 	require 'vendor/autoload.php';
+	require __DIR__ . '/vendor/autoload.php';
+
+	use Blockchaininstitute\jwtTools as jwtTools;
 
 	$jwtTools = new jwtTools('makeHttpCall');
 
-	// Dependancy Integrations
-    $secp256k1 = new Secp256k1();
-    $CurveFactory = new CurveFactory;
-    $adapter = EccFactory::getAdapter();
-    $generator = CurveFactory::getGeneratorByName('secp256k1');
-    $algorithm = 'sha256';
-
-
-
-	$hasher = new SignHasher($algorithm, $adapter);
 // Input Data
     $topicName = "Blockchain Institute Login Request";
-
+    // For chasqui, this should be generated from an existing uportJs library for consistancy
 
 // Prepare the JWT Header
 	// 1. Initialize JWT Values
@@ -62,6 +38,8 @@
 
 	// 2. Create JWT Object
 	$jwtBodyJson = json_encode($jwtBody, JSON_UNESCAPED_SLASHES);
+
+
 	echo "\r\n\r\njsonbody:\r\n";
 	print_r($jwtBodyJson);
 	echo "\r\n\r\n";
@@ -86,7 +64,7 @@
     	}
     	return $trimmed;
     }
-
+    
 	function makeHttpCall ($url, $body, $isPost) {
 
         $options = array(CURLOPT_URL => $url,

@@ -1,10 +1,9 @@
 <?php
-	require __DIR__ . '/vendor/autoload.php';
-	// use RuntimeException;
-	use Tuupola\Base58;
-	use Blockchaininstitute\jwtTools as jwtTools;
 
-	require 'vendor/autoload.php';
+    require 'vendor/autoload.php';
+	require __DIR__ . '/vendor/autoload.php';
+
+	use Blockchaininstitute\jwtTools as jwtTools;
 
 	$jwtTools = new jwtTools('makeHttpCall');
 	
