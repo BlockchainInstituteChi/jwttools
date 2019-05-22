@@ -1,18 +1,14 @@
-## PHP JWT Tools - Powered by TheBlockchainInstitute.org
+## uPort PHP JWT Tools (Examples Branch) - Powered by TheBlockchainInstitute.org
 
-JWT's or JSON Web Tokens are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
+JSON Web Tokens (JWTs) are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
 
 This module expects secp256k1 signed payloads per the uPort documentation at docs.uport.me. 
 
-This branch contains some example scripts to demonstrate the use cases of the library's core functionality.
-
 ## Use
 
-This repo can be installed as a composer module from the master branch. 
+This repo can be installed as a composer module with the command below:
 
-At this time, there are no required constructor arguments. See the examples branch of this repo for detailed code. 
-
-If you are in a constrained environment such as wordpress, where http calls must be made in a particular way, then you can instantiate the tools using a local httpCaller function. This is shown in the examples, but it not mandatory as it will default to a private function within the library if not.
+```composer require blockchaininstitute/jwttools```
 
 ## Functionality
 
@@ -23,7 +19,11 @@ If you are in a constrained environment such as wordpress, where http calls must
 *This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
 ```resolveDIDFromJWT($jwt)```
-*This function returns a php object contianing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
+*This function returns a php object containing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
+
+```createJWT($jwtHeaderJson, $jwtBodyJson, $signingKey)```
+*This function returns a valid signed JWT using a hex encoded signing key. See the jwtComposer.php example file for further details.*
+
 
 ## Payload Formats
 
@@ -55,6 +55,10 @@ jwt : {
   signature: "vFslRV7OGpfCAwQ9HDqr1BoBYNXlzyHjZiJrT4_0exgbrVXTYjbvJ3_6GGtI2yKATxjOUuX5EToNBcTXyPLBUg
 }
 ```
+
+Full docs can be found here: https://github.com/uport-project/specs/blob/develop/messages/index.md#json-web-token
+
+For more information about did resolution visit https://github.com/uport-project/specs/blob/develop/pki/index.md
 
 **The Callback Function:**
 In order to resolve the DID to a public key, it's necessary to make a call to the infura API. In order to ensure interoperability with wordpress plugins and other restricted environments such as Drupel, Laravel or Magento, the didResolver function will return an HTTP GET request which can be executed inside of the callback function. 
