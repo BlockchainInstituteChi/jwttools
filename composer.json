@@ -20,8 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Blockchaininstitute\\": "",
-            "Blockchaininstitute\\jwttools\\" : "src"
+            "Blockchaininstitute\\jwttools\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Blockchaininstitute\\jwttools\\" : "src/"
         }
     },
     "require-dev": {
