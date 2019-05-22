@@ -1,6 +1,6 @@
-## PHP JWT Tools (Examples Branch) - Powered by TheBlockchainInstitute.org
+## uPort PHP JWT Tools (Examples Branch) - Powered by TheBlockchainInstitute.org
 
-JWT's or JSON Web Tokens are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
+JWTs or JSON Web Tokens are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
 
 This module expects secp256k1 signed payloads per the uPort documentation at docs.uport.me. 
 
@@ -21,7 +21,10 @@ At this time, there are no required constructor arguments. See the examples bran
 *This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
 ```resolveDIDFromJWT($jwt)```
-*This function returns a php object contianing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
+*This function returns a php object containing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
+
+```createJWT($jwtHeaderJson, $jwtBodyJson, $signingKey)```
+*This function returns a valid signed JWT using a hex encoded signing key. See the jwtComposer.php example file for further details.*
 
 
 ## Payload Formats
