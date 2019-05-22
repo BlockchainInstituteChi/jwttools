@@ -10,5 +10,5 @@ return array(
     'Tuupola\\' => array($vendorDir . '/tuupola/base58/src'),
     'Mdanter\\Ecc\\' => array($vendorDir . '/mdanter/ecc/src'),
     'FG\\' => array($vendorDir . '/fgrosse/phpasn1/lib'),
-    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/jwtTools/src'),
+    'Blockchaininstitute\\' => array($vendorDir . '/blockchaininstitute/jwttools/src'),
 );

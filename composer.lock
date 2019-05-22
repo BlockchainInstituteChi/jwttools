@@ -4,24 +4,26 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a9dea5c4d2d970e9b054530ce6c0276",
+    "content-hash": "dede9bb8c69a6a81451d874f049d1edc",
     "packages": [
         {
-            "name": "blockchaininstitute/jwtTools",
+            "name": "blockchaininstitute/jwttools",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:BlockchainInstituteChi/phpJwtTools.git",
-                "reference": "fb2f544eebf10a6c9ff774cc76d48b743edffe02"
+                "url": "https://github.com/BlockchainInstituteChi/phpJwtTools.git",
+                "reference": "6dbcfa48bad6981c89f579ecaebdc5b0b1e3b0bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/BlockchainInstituteChi/phpJwtTools/zipball/fb2f544eebf10a6c9ff774cc76d48b743edffe02",
-                "reference": "fb2f544eebf10a6c9ff774cc76d48b743edffe02",
+                "url": "https://api.github.com/repos/BlockchainInstituteChi/phpJwtTools/zipball/6dbcfa48bad6981c89f579ecaebdc5b0b1e3b0bb",
+                "reference": "6dbcfa48bad6981c89f579ecaebdc5b0b1e3b0bb",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6|^7.0"
+                "kornrunner/secp256k1": "^0.1.2",
+                "mdanter/ecc": "^0.5.2",
+                "tuupola/base58": "^0.4.0"
             },
             "require-dev": {
                 "kornrunner/secp256k1": "^0.1.2",
@@ -34,15 +36,13 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Blockchaininstitute\\": "src"
+                    "Blockchaininstitute\\": "src/"
                 }
             },
-            "license": [
-                "MIT"
-            ],
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
-                    "name": "Alexander Morris",
+                    "name": "alexander-morris",
                     "email": "alex@theblockchaininstitute.org",
                     "homepage": "http://theblockchaininstitute.org/",
                     "role": "Developer"
@@ -56,11 +56,7 @@
                 "uport",
                 "web3"
             ],
-            "support": {
-                "source": "https://github.com/BlockchainInstituteChi/phpJwtTools/tree/master",
-                "issues": "https://github.com/BlockchainInstituteChi/phpJwtTools/issues"
-            },
-            "time": "2019-04-05T16:49:34+00:00"
+            "time": "2019-05-22T20:06:20+00:00"
         },
         {
             "name": "fgrosse/phpasn1",
@@ -133,16 +129,16 @@
         },
         {
             "name": "kornrunner/secp256k1",
-            "version": "dev-master",
+            "version": "0.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kornrunner/php-secp256k1.git",
-                "reference": "1cd655e150743b34d2be8b035ddc2e44b11bb5a9"
+                "reference": "915f0ef1ec748606a1117b171093266de349b058"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kornrunner/php-secp256k1/zipball/1cd655e150743b34d2be8b035ddc2e44b11bb5a9",
-                "reference": "1cd655e150743b34d2be8b035ddc2e44b11bb5a9",
+                "url": "https://api.github.com/repos/kornrunner/php-secp256k1/zipball/915f0ef1ec748606a1117b171093266de349b058",
+                "reference": "915f0ef1ec748606a1117b171093266de349b058",
                 "shasum": ""
             },
             "require": {
@@ -151,7 +147,7 @@
             },
             "require-dev": {
                 "php-coveralls/php-coveralls": "^2.1",
-                "phpunit/phpunit": "^8"
+                "phpunit/phpunit": "^7"
             },
             "type": "library",
             "autoload": {
@@ -176,7 +172,7 @@
                 "elliptic",
                 "secp256k1"
             ],
-            "time": "2019-04-17T11:48:39+00:00"
+            "time": "2019-01-16T17:01:51+00:00"
         },
         {
             "name": "mdanter/ecc",
@@ -252,16 +248,16 @@
         },
         {
             "name": "tuupola/base58",
-            "version": "dev-master",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tuupola/base58.git",
-                "reference": "2bf8d47e4ecc3ab8399c5c758a5d1959211c621b"
+                "reference": "39b69ed50fa2fc1a830d29e210ce00bf46696d4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tuupola/base58/zipball/2bf8d47e4ecc3ab8399c5c758a5d1959211c621b",
-                "reference": "2bf8d47e4ecc3ab8399c5c758a5d1959211c621b",
+                "url": "https://api.github.com/repos/tuupola/base58/zipball/39b69ed50fa2fc1a830d29e210ce00bf46696d4a",
+                "reference": "39b69ed50fa2fc1a830d29e210ce00bf46696d4a",
                 "shasum": ""
             },
             "require": {
@@ -300,15 +296,14 @@
             "keywords": [
                 "base58"
             ],
-            "time": "2019-03-30T16:21:14+00:00"
+            "time": "2019-01-30T16:53:38+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "tuupola/base58": 20,
-        "kornrunner/secp256k1": 20
+        "blockchaininstitute/jwttools": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

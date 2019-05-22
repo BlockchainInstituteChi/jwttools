@@ -15,6 +15,7 @@ class Signature extends EccSignature implements SignatureInterface
 
     public function __construct(GMP $r, GMP $s, int $recoveryParam) {
         parent::__construct($r, $s);
+
         $this->serializer = new HexSignatureSerializer;
         $this->recoveryParam = $recoveryParam;
     }

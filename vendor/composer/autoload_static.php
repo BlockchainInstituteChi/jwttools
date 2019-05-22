@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
+class ComposerStaticInitda052f10080a6ce6bccb0936f52dddc6
 {
     public static $prefixLengthsPsr4 = array (
         'k' => 
@@ -48,15 +48,15 @@ class ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea
         ),
         'Blockchaininstitute\\' => 
         array (
-            0 => __DIR__ . '/..' . '/blockchaininstitute/jwtTools/src',
+            0 => __DIR__ . '/..' . '/blockchaininstitute/jwttools/src',
         ),
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita9ec7506fbdd650e9f4815b61e5e48ea::$prefixDirsPsr4;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitda052f10080a6ce6bccb0936f52dddc6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitda052f10080a6ce6bccb0936f52dddc6::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

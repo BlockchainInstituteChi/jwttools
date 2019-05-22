@@ -10,7 +10,7 @@ class HexPrivateKeySerializerTest extends TestCase
 {
     protected $serializer;
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
         $generator = CurveFactory::getGeneratorByName(SecgCurve::NAME_SECP_256K1);

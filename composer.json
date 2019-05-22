@@ -1,14 +1,14 @@
 {
+    "name": "alex/php-jwt-tools",
+    "type": "project",
     "require": {
-        "tuupola/base58": "dev-master",
-        "blockchaininstitute/jwttools" : "master",
-        "kornrunner/secp256k1": "dev-master"
+        "blockchaininstitute/jwttools": "dev-master"
     },
-    "minimum-stability": "dev",
-    "repositories": {
-        "jwtTools": {
-            "type": "vcs",
-            "url": "https://github.com/BlockchainInstituteChi/phpJwtTools.git"
+    "authors": [
+        {
+            "name": "alexander-morris",
+            "email": "alex@theblockchaininstitute.org"
         }
-    }
+    ],
+    "minimum-stability": "dev"
 }
