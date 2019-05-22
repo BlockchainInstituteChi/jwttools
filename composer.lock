@@ -4,21 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "22ecc79b2f0dfcd30904426ca1f1b0d5",
-    "packages": [],
-    "packages-dev": [
+    "content-hash": "05a4643dc142cbd08e9d2a8a25f62d78",
+    "packages": [
         {
             "name": "fgrosse/phpasn1",
-            "version": "v2.1.1",
+            "version": "2.1.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fgrosse/PHPASN1.git",
-                "reference": "7ebf2a09084a7bbdb7b879c66fdf7ad80461bbe8"
+                "reference": "734e1a94dfb292199f4f285be99a5645ea66fb58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/7ebf2a09084a7bbdb7b879c66fdf7ad80461bbe8",
-                "reference": "7ebf2a09084a7bbdb7b879c66fdf7ad80461bbe8",
+                "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/734e1a94dfb292199f4f285be99a5645ea66fb58",
+                "reference": "734e1a94dfb292199f4f285be99a5645ea66fb58",
                 "shasum": ""
             },
             "require": {
@@ -74,7 +73,7 @@
                 "x509",
                 "x690"
             ],
-            "time": "2018-12-02T01:34:34+00:00"
+            "time": "2018-03-31T08:32:19+00:00"
         },
         {
             "name": "kornrunner/secp256k1",
@@ -248,13 +247,12 @@
             "time": "2019-01-30T16:53:38+00:00"
         }
     ],
+    "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {
-        "php": "^5.6|^7.0"
-    },
+    "platform": [],
     "platform-dev": []
 }

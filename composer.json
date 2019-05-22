@@ -5,14 +5,14 @@
     "homepage": "https://theblockchaininstitute.org/",
     "type": "library",
     "require": {
-        "mdanter/ecc": "dev-master",
-        "kornrunner/secp256k1": "dev-master",
-        "tuupola/base58": "2.x-dev"
+        "mdanter/ecc": "^0.5.2",
+        "kornrunner/secp256k1": "^0.1.2",
+        "tuupola/base58": "^0.4.0"
     },
     "require-dev": {
-        "mdanter/ecc": "dev-master",
-        "kornrunner/secp256k1": "dev-master",
-        "tuupola/base58": "2.x-dev"
+        "mdanter/ecc": "^0.5.2",
+        "kornrunner/secp256k1": "^0.1.2",
+        "tuupola/base58": "^0.4.0"
     },
     "authors": [
         {
@@ -35,6 +35,6 @@
         "psr-4": {
             "Blockchaininstitute\\" : "src/"
         }
-    },
+    }
 
 }
