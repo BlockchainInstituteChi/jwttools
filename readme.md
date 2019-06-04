@@ -1,8 +1,9 @@
-## uPort PHP JWT Tools (Examples Branch) - Powered by TheBlockchainInstitute.org
+# uPort PHP JWT Tools - Powered by TheBlockchainInstitute.org
 
 JSON Web Tokens (JWTs) are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
 
 This module expects secp256k1 signed payloads per the uPort documentation at docs.uport.me. 
+
 
 ## Use
 
@@ -62,6 +63,7 @@ For more information about did resolution visit https://github.com/uport-project
 
 **The Callback Function:**
 To resolve the DID to a public key, it's necessary to make a call to the infura API. In order to ensure interoperability with wordpress plugins and other restricted environments such as Drupel, Laravel or Magento, the didResolver function will return an HTTP GET request which can be executed inside of the callback function. This can be seen in the DidResolver example below.
+
 
 ## Examples
 
