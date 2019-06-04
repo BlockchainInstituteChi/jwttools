@@ -61,8 +61,234 @@ Full docs can be found here: https://github.com/uport-project/specs/blob/develop
 For more information about did resolution visit https://github.com/uport-project/specs/blob/develop/pki/index.md
 
 **The Callback Function:**
-In order to resolve the DID to a public key, it's necessary to make a call to the infura API. In order to ensure interoperability with wordpress plugins and other restricted environments such as Drupel, Laravel or Magento, the didResolver function will return an HTTP GET request which can be executed inside of the callback function. 
+To resolve the DID to a public key, it's necessary to make a call to the infura API. In order to ensure interoperability with wordpress plugins and other restricted environments such as Drupel, Laravel or Magento, the didResolver function will return an HTTP GET request which can be executed inside of the callback function. This can be seen in the DidResolver example below.
 
-An example can be seen using cURL in the didResolverExample.php file.
+## Examples
+
+### Resolve DID
+
+```
+<?php
+
+  require 'vendor/autoload.php';
+  require __DIR__ . '/vendor/autoload.php';
+
+  use Blockchaininstitute\jwtTools as jwtTools;
+
+  $jwtTools = new jwtTools('makeHttpCall');
+  
+  $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTYyMTQ5MzcsImV4cCI6MTU1NjMwMTMzNywiYXVkIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoiLCJ0eXBlIjoic2hhcmVSZXNwIiwibmFkIjoiMm90MWhDdVZBTDZuUTNOUXJ5amtCQVJHdHNqNHJzYW81NzUiLCJvd24iOnsibmFtZSI6IkFsZXgifSwicmVxIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTlRZeU1UUTVNak1zSW5KbGNYVmxjM1JsWkNJNld5SnVZVzFsSWwwc0ltTmhiR3hpWVdOcklqb2lhSFIwY0hNNkx5OWphR0Z6Y1hWcExuVndiM0owTG0xbEwyRndhUzkyTVM5MGIzQnBZeTkwTUVsVmNtcEdjVEIzTjNkMlVsWnVJaXdpYm1WMElqb2lNSGcwSWl3aWRIbHdaU0k2SW5Ob1lYSmxVbVZ4SWl3aWFYTnpJam9pTW05cVJYUlZXRUpMTWtvM05XVkRRbUY2ZWpSMGJtTkZWMFV4T0c5R1YzSnVaa29pZlEuWTVtMTFKZmR1UG9hNW1fdm4zYkI4TUlqTHktUWdETHI3YTVMREhJcjgxclBkQWVrcmNKTzJra2UxQmJOOVVaSlVrNUQzZzVCRldqNW81RHM4cWQ0bUEiLCJpc3MiOiIyb3QxaEN1VkFMNm5RM05Rcnlqa0JBUkd0c2o0cnNhbzU3NSJ9.dhS6KNpA21NJUmxtNmOCBv8ewBIwyOgqak9eXpUKZS8Hk-zpxjbbnkhLaOVHCENFjK2zzm9OxVekgGlwlNoIbw";
+
+  $DID = $jwtTools->resolveDIDFromJWT($jwt);
+
+  print_r($DID);
+
+  function makeHttpCall ($url, $body, $isPost) {
+
+        $options = array(CURLOPT_URL => $url,
+                     CURLOPT_HEADER => false,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $body,
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => $isPost,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+  }
+
+``` 
+
+### Compose and Sign a JWT
+
+```
+<?php
+  require 'vendor/autoload.php';
+  require __DIR__ . '/vendor/autoload.php';
+
+  use Blockchaininstitute\jwtTools as jwtTools;
+
+  $jwtTools = new jwtTools('makeHttpCall');
+
+// Input Data
+    $topicName = "Blockchain Institute Login Request";
+    // For chasqui, this should be generated from an existing uportJs library for consistancy
+
+// Prepare the JWT Header
+  // 1. Initialize JWT Values
+  $jwtHeader = (object)[];
+  $jwtHeader->typ = 'JWT'; // ""
+  $jwtHeader->alg = 'ES256K'; // ""
+
+  // 2. Create JWT Object
+  $jwtHeaderJson = json_encode($jwtHeader, JSON_UNESCAPED_SLASHES);
+
+
+// Prepare the JWT Body
+  // 1. Initialize JWT Values
+  $jwtBody = (object)[];
+
+   // "Client ID"
+  $signingKey  = 'cb89a98b53eec9dc58213e67d04338350e7c15a7f7643468d8081ad2c5ce5480'; // "Private Key"
+  // 776e591d9674b1c0fc8182f8574f24734cdeb4dc7ef8c4643d0fda33f4f8e0d6
+
+  $jwtBody->iat         = 1556912833;
+  $jwtBody->requested   = ['name'];
+  $jwtBody->callback    = 'https://chasqui.uport.me/api/v1/topic/1OzSjQRFrF948LLk';
+  // $jwtBody->callback     = $jwtTools->chasquiFactory($topicName);
+  $jwtBody->net         = "0x4";
+  $jwtBody->type      = "shareReq";
+  $jwtBody->iss         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
+
+  // 2. Create JWT Object
+  $jwtBodyJson = json_encode($jwtBody, JSON_UNESCAPED_SLASHES);
+
+
+  echo "\r\n\r\njsonbody:\r\n";
+  print_r($jwtBodyJson);
+  echo "\r\n\r\n";
+
+  $jwt = $jwtTools->createJWT($jwtHeaderJson, $jwtBodyJson, $signingKey);
+    
+    echo "\r\n\r\n======== BEGINNING VERIFICATION =======\r\n\r\n";
+
+  $isVerified = $jwtTools->verifyJWT($jwt);
+
+  echo "\r\n\r\nisVerified:\r\n" , $isVerified;
+
+  echo "\r\n\r\n";
+
+    function spEncodeAndTrim ($payload) {
+
+      $encoded = base64_encode($payload);
+      if ( sizeof(explode("=", $encoded)) > 1 ) {
+        $trimmed = explode("=", $encoded)[0];
+      } else {
+        $trimmed = $encoded;
+      }
+      return $trimmed;
+    }
+    
+  function makeHttpCall ($url, $body, $isPost) {
+
+        $options = array(CURLOPT_URL => $url,
+                     CURLOPT_HEADER => false,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $body,
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => $isPost,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+  }
+
+``` 
+
+### Resolve a Public Key from a JWT
+
+```
+<?php
+
+    require 'vendor/autoload.php';
+  require __DIR__ . '/vendor/autoload.php';
+
+  use Blockchaininstitute\jwtTools as jwtTools;
+
+  $jwtTools = new jwtTools('makeHttpCall');
+  
+  $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTYyMTQ5MzcsImV4cCI6MTU1NjMwMTMzNywiYXVkIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoiLCJ0eXBlIjoic2hhcmVSZXNwIiwibmFkIjoiMm90MWhDdVZBTDZuUTNOUXJ5amtCQVJHdHNqNHJzYW81NzUiLCJvd24iOnsibmFtZSI6IkFsZXgifSwicmVxIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTlRZeU1UUTVNak1zSW5KbGNYVmxjM1JsWkNJNld5SnVZVzFsSWwwc0ltTmhiR3hpWVdOcklqb2lhSFIwY0hNNkx5OWphR0Z6Y1hWcExuVndiM0owTG0xbEwyRndhUzkyTVM5MGIzQnBZeTkwTUVsVmNtcEdjVEIzTjNkMlVsWnVJaXdpYm1WMElqb2lNSGcwSWl3aWRIbHdaU0k2SW5Ob1lYSmxVbVZ4SWl3aWFYTnpJam9pTW05cVJYUlZXRUpMTWtvM05XVkRRbUY2ZWpSMGJtTkZWMFV4T0c5R1YzSnVaa29pZlEuWTVtMTFKZmR1UG9hNW1fdm4zYkI4TUlqTHktUWdETHI3YTVMREhJcjgxclBkQWVrcmNKTzJra2UxQmJOOVVaSlVrNUQzZzVCRldqNW81RHM4cWQ0bUEiLCJpc3MiOiIyb3QxaEN1VkFMNm5RM05Rcnlqa0JBUkd0c2o0cnNhbzU3NSJ9.dhS6KNpA21NJUmxtNmOCBv8ewBIwyOgqak9eXpUKZS8Hk-zpxjbbnkhLaOVHCENFjK2zzm9OxVekgGlwlNoIbw";
+
+  $address = $jwtTools->resolvePublicKeyFromJWT($jwt);
+
+  echo $address;
+
+
+  function makeHttpCall ($url, $body, $isPost) {
+
+        $options = array(CURLOPT_URL => $url,
+                     CURLOPT_HEADER => false,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $body,
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => $isPost,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+  }
+``` 
+
+
+### Verify a JWT Signature
+
+```
+<?php
+  require __DIR__ . '/vendor/autoload.php';
+
+  use Blockchaininstitute\jwtTools as jwtTools;
+
+  echo "\r\nStarting verifyJWT.php \r\n";
+
+  $jwtTools = new jwtTools('makeHttpCall');
+
+  $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTY5MTI4MzMsInJlcXVlc3RlZCI6WyJuYW1lIl0sImNhbGxiYWNrIjoiaHR0cHM6Ly9jaGFzcXVpLnVwb3J0Lm1lL2FwaS92MS90b3BpYy8xT3pTalFSRnJGOTQ4TExrIiwibmV0IjoiMHg0IiwidHlwZSI6InNoYXJlUmVxIiwiaXNzIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoifQ.eeR7QXHZynWehtl7QsLbFSUgegudarGzuT2YqEUFPRUI3VOJwBVL+2zw0/RDz3kJX7sRdpZwdH0ANKdFz2w4UA";
+
+  $isVerified = $jwtTools->verifyJWT($jwt);
+
+  echo "\r\n\r\nisVerified:\r\n" , $isVerified;
+
+  echo "\r\n\r\n";
+
+  function makeHttpCall ($url, $body, $isPost) {
+
+        $options = array(CURLOPT_URL => $url,
+                     CURLOPT_HEADER => false,
+                     CURLOPT_FRESH_CONNECT => true,
+                     CURLOPT_POSTFIELDS => $body,
+                     CURLOPT_RETURNTRANSFER => true,
+                     CURLOPT_POST => $isPost,
+                     CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
+                    );
+
+        $ch = curl_init();
+
+        curl_setopt_array($ch, $options);
+
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
+  }
+``` 
+
+
+
+
 
 
