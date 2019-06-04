@@ -43,7 +43,11 @@ class jwtTools
 {
 
     /**
-     * Create a new Skeleton Instance
+     * Construct
+     *
+     * @param string $httpCaller (Optional) Passes a string name of a callback function to use 
+     *
+     * @return string Returns the base 64 encoded and trimmed JWT with a signature generated using the given private key string
      */
     public function __construct($httpCaller)
     {
@@ -54,13 +58,22 @@ class jwtTools
         }
     }
 
+    /**
+     * HttpCaller contains the function which should be used to make http calls
+    */
+    protected $httpCaller = null;
+
 
     /**
-     * Friendly welcome
+     * createJWT
      *
-     * @param string $phrase Phrase to return
+     * @param string $headerJSON Passes a JSON encoded string to act as the header of the JWT
      *
-     * @return string Returns the phrase passed in
+     * @param string $bodyJSON Passes a JSON encoded string to act as the body of the JWT
+     *
+     * @param string $privateKeyString Passes a string which will be used as the private key to sign the payload
+     *
+     * @return string Returns the base 64 encoded and trimmed JWT with a signature generated using the given private key string
      */
 
     public function createJWT ($headerJSON, $bodyJSON, $privateKeyString) {
@@ -96,6 +109,15 @@ class jwtTools
 
     }
 
+
+    /**
+     * verifyJWT
+     *
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return string Returns either a 1 or 0 to indicate whether the JWT signature was valid
+     */
+
     public function verifyJWT ($jwt) {
 
         $publicKeyLong = $this->resolvePublicKeyFromJWT($jwt);
@@ -128,6 +150,14 @@ class jwtTools
     }
 
 
+    /**
+     * resolveDIDFromJWT
+     *
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return string Returns the full DID payload from IPFS in JSON encoded format
+     */
+
     public function resolveDIDFromJWT ($jwt) {
         $infuraPayload = $this->resolve_did("uPortProfileIPFS1220", $jwt);
 
@@ -145,6 +175,14 @@ class jwtTools
 
     }
 
+    /**
+     * resolveDIDFromJWT
+     *
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return string Returns the public key only from the IPFS DID document
+     */
+
     public function resolvePublicKeyFromJWT ($jwt) {
 
         $ipfsResult = $this->resolveDIDFromJWT($jwt);
@@ -152,13 +190,30 @@ class jwtTools
 
     }
 
-    // This is a very mediocre hack that needs to be resolved in the future - function newTopic(topicName) in uport-connect/src/topicFactory.js npm module for expected behaviour
+    
+    /**
+     * resolveDIDFromJWT
+     * This is a very mediocre hack that needs to be resolved in the future - function newTopic(topicName) in uport-connect/src/topicFactory.js npm module for expected behaviour
+     *
+     * @param string $topicName Passes a string to use as a topic name for the chasqui channel
+     *
+     * @return string Returns a chasqui URL to use as the callback in an auth request
+     */
+
     public function chasquiFactory ($topicName) {
         
         $CHASQUI_URL = 'https://chasqui.uport.me/api/v1/topic/';
         return $CHASQUI_URL;
 
     }
+
+    /**
+     * resolveInfuraPayload
+     * 
+     * @param string $infuraPayload Passes a JSON encoded request payload to call via HTTP
+     *
+     * @return object Returns whatever is found after calling infura 
+     */
 
     public function resolveInfuraPayload ($infuraPayload) {
         $params  = (object)[];
@@ -180,6 +235,14 @@ class jwtTools
 
     }
 
+    /**
+     * registryEncodingToIPFS
+     * 
+     * @param string $hexStr Passes a hex string which needs to be encoded to be part of a infura payload
+     *
+     * @return string Returns a base 58 encoded string which can be used in infura API Calls 
+     */
+
     public function registryEncodingToIPFS ($hexStr) {
         $base58 = new Base58([
             "characters" => Base58::IPFS,
@@ -192,6 +255,14 @@ class jwtTools
         return $base58enc;
     }
 
+    /**
+     * registryEncodingToIPFS
+     * 
+     * @param string $ipfsHash The address of the IPFS record to retrieve
+     *
+     * @return string Returns the IPFS record associated with that address if applicable 
+     */
+
     public function fetchIpfs($ipfsHash) {
         $uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
 
@@ -199,6 +270,14 @@ class jwtTools
 
         return $result;
     }
+
+    /**
+     * deconstructAndDecode
+     * 
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return array Returns JWT components as a three part array 
+     */
 
     public function deconstructAndDecode ($jwt) {
 
@@ -212,6 +291,16 @@ class jwtTools
 
     }
 
+
+    /**
+     * resolve_did
+     *
+     * @param string $profileId Passes the MNID of the sender to be used when composing the registry callstring for Infura
+     * 
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return string Returns a properly formatted registry call string to be used to retrieve the DID record from Infura 
+     */
 
     public function resolve_did($profileId, $jwt)
     {
@@ -229,6 +318,14 @@ class jwtTools
         
     }
 
+    /**
+     * getIssuerMnid
+     *
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return string Returns either null or the issuer MNID
+     */
+
     public function getIssuerMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
@@ -242,6 +339,14 @@ class jwtTools
 
     }
 
+    /**
+     * getSenderMnid
+     *
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return string Returns either null or the sender MNID
+     */
+
     public function getSenderMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));      
@@ -254,6 +359,14 @@ class jwtTools
         }
 
     }
+
+    /**
+     * getAudienceMnid
+     *
+     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
+     *
+     * @return string Returns either null or the audience MNID
+     */
 
     public function getAudienceMnid ($jwt) {
 
@@ -269,11 +382,26 @@ class jwtTools
         
     }    
 
-    // Utilities Functionality
+    /**
+     * base64url_decode
+     *
+     * @param string $payload Passes any string which needs to be encoded
+     *
+     * @return string Returns a base 64 url encoded string
+     */
+
     public function base64url_decode( $payload ){
         return base64_decode( strtr( $payload, '-_', '+/') . str_repeat('=', 3 - ( 3 + strlen( $payload )) % 4 ));
 
     }   
+
+    /**
+     * encodeByteArrayToHex
+     *
+     * @param array $byteArray Passes a byte array to be encoded to hex
+     *
+     * @return string Returns a hex encoded string 
+     */
 
     public function encodeByteArrayToHex ($byteArray) {
 
@@ -284,6 +412,14 @@ class jwtTools
         return $hex;
 
     }
+
+    /**
+     * String2Hex
+     *
+     * @param string $string Passes string to convert to hex
+     *
+     * @return string Returns a hex encoded string 
+     */
 
     public function String2Hex($string){
         $hex='';
@@ -298,6 +434,14 @@ class jwtTools
         }
         return $hex;
     }
+
+    /**
+     * createSignatureObject
+     *
+     * @param string $signature Passes a string signature from a JWT
+     *
+     * @return string Returns an array containing GMP encoded r and s values to represent the signature for mathematical use 
+     */
 
     public function createSignatureObject ($signature) {
 
@@ -315,6 +459,14 @@ class jwtTools
         return $sigObj;
 
     }
+
+    /**
+     * createSignatureObjectFromHex
+     *
+     * @param string $signature Passes a string signature from a JWT in hex format
+     *
+     * @return string Returns an array containing GMP encoded r and s values to represent the signature for mathematical use 
+     */
 
     public function createSignatureObjectFromHex ($signature) {
 
@@ -335,6 +487,18 @@ class jwtTools
         return $sigObj;
 
     }
+
+    /**
+     * prepareRegistryCallString
+     *
+     * @param string $registrationIdentifier Passes a string MNID for the registrar
+     *
+     * @param string $issuerId Passes a string MNID for the issuer
+     *
+     * @param string $subjectId Passes a string MNID for the subject (receiver)
+     *
+     * @return string Returns an object which can be passed to resolveInfuraPayload()
+     */
 
     private function prepareRegistryCallString($registrationIdentifier, $issuerId, $subjectId) {
 
@@ -360,6 +524,18 @@ class jwtTools
 
     }
 
+    /**
+     * makeHttpCall
+     * This acts as a default HTTP call format for IPFS and Infura calls. An alternative can be supplied in the constructor event for further adaptability.
+     *
+     * @param string $url Passes the HTTP URL to call
+     *
+     * @param string $body Passes the payload body. Can be null if GET Request
+     *
+     * @param string $isPost Passes a boolean to indicate if this is a POST or GET request
+     *
+     * @return string Returns the result of the call
+     */
 
     public function makeHttpCall ($url, $body, $isPost) {
 
@@ -383,6 +559,14 @@ class jwtTools
         return $result;
     }
 
+    /**
+     * spEncodeAndTrim
+     *
+     * @param string $payload Passes a value which needs to be encoded to base 64
+     *
+     * @return string Returns the encoded value after removing any extra '=' characters
+     */
+
     private function spEncodeAndTrim ($payload) {
 
         $encoded = base64_encode($payload);
@@ -393,6 +577,20 @@ class jwtTools
         }
         return $trimmed;
     }
+
+    /**
+     * encodeFunctionCall
+     *
+     * @param string $functionSignature Passes a predefined function signature for the infura call to be made
+     *
+     * @param string $registrationIdentifier Passes a string MNID for the registrar
+     *
+     * @param string $issuerId Passes a string MNID for the issuer
+     *
+     * @param string $subjectId Passes a string MNID for the subject (receiver)
+     *
+     * @return string Returns the full Infura callstring in the proper format and encoding
+     */
 
     private function encodeFunctionCall ($functionSignature, $registrationIdentifier, $issuer, $subject) {
 
@@ -409,6 +607,14 @@ class jwtTools
 
     }
 
+    /**
+     * ascii2Hex
+     *
+     * @param string $string Passes a string to convert from ascii to hex
+     *
+     * @return string Returns the converted hex value as a string
+     */
+
     private function ascii2Hex($string){
         $hex='';
         for ($i=0; $i < strlen($string); $i++){
@@ -416,6 +622,18 @@ class jwtTools
         }
         return $hex;
     }
+
+    /**
+     * pad
+     *
+     * @param string $pad Passes a value to be used to pad the string with
+     *
+     * @param string $str Passes the string to pad
+     *
+     * @param string $padLeft Passes a boolean value to indicate whether the padding should be added to the left or right of the string
+     *
+     * @return string Returns the padded string
+     */
 
     private function pad ($pad, $str, $padLeft) {
         if ( gettype($str) == "undefined" ) {
@@ -427,6 +645,14 @@ class jwtTools
             return substr( ($str . $pad), 0, strlen($pad) );
         }
     }
+
+    /**
+     * eaeDecode
+     *
+     * @param string $payload Passes payload to decode
+     *
+     * @return array Returns the decomposed address and network as an array
+     */
 
     private function eaeDecode ($payload) {
         $base58 = new Base58([
@@ -444,6 +670,12 @@ class jwtTools
             "network" => $network
         ];              
     }
+
+    /**
+     * getNetworks
+     *
+     * @return array Returns the array of available Infura rpcUrls and registries for each network
+     */
 
     private function getNetworks () {
         return [
@@ -468,4 +700,3 @@ class jwtTools
 
 }
 
-?>
