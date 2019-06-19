@@ -88,13 +88,10 @@ class jwtTools
 		$jwt           = $this->sp_encode_and_trim($headerJSON) . "." . $this->sp_encode_and_trim($bodyJSON);
 		
 		$keySerializer = new HexPrivateKeySerializer($generator);
-		$key = $keySerializer->parse($privateKeyString);
 
 		$signature = $secp256k1->sign(hash('sha256', $jwt), $privateKeyString, []);
 
-		$jwt.= "." . $this->sp_encode_and_trim(hex2bin($signature->toHex()));
-
-		return $jwt;
+		return $jwt . "." . $this->sp_encode_and_trim(hex2bin($signature->toHex()));
 
 	}
 
@@ -191,9 +188,8 @@ class jwtTools
 		]);
 		$sliced = '1220' . subStr($hexStr, 2);
 		$decoded = pack("H*", $sliced);
-		$base58enc = $base58->encode($decoded);
+		return  $base58->encode($decoded);
 
-		return $base58enc;
 	}
 
 	/**
@@ -205,11 +201,11 @@ class jwtTools
 	 */
 
 	public function fetch_ipfs($ipfsHash) {
+
 		$uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
 
-		$result = $this->make_http_call( $uri,  json_encode([]), 0 );
+		return $this->make_http_call( $uri,  json_encode([]), 0 );
 
-		return $result;
 	}
 
 	/**
@@ -223,12 +219,11 @@ class jwtTools
 	public function deconstruct_and_decode ($jwt) {
 
 		$exp = explode(".", $jwt);
-		$decoded_parts = [
+		return [
 			"header" => $exp[0],
 			"body" => $exp[1],
 			"signature" => $exp[2]
 		];
-		return $decoded_parts;
 
 	}
 
@@ -343,19 +338,15 @@ class jwtTools
 	public function create_signature_object ($signature) {
 
 		$rawSig = $this->base64url_decode($signature);
-
 				
 		$first_half = $this->string_to_hex(substr( $rawSig, 0, 32 ));
 		$second_half = $this->string_to_hex(substr( $rawSig, 32, 64 ));
-
 				
-		$sig_obj = [
+		return [
 			"v" => 0,
 			"rGMP" => gmp_init("0x" . $first_half, 16),
 			"sGMP" => gmp_init("0x" . $second_half, 16)
 		];
-
-		return $sig_obj;
 
 	}
 
