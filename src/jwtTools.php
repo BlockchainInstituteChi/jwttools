@@ -315,11 +315,11 @@ class jwtTools
 
     public function resolve_did($profileId, $jwt)
     {
-        $senderMnid = $this->getSenderMnid($jwt);
-        $signerMnid = $this->getAudienceMnid($jwt);
+        $senderMnid = $this->getMnid($jwt, 'nad');
+        $signerMnid = $this->getMnid($jwt, 'aud');
 
         if ( ( $senderMnid === null ) || ( $signerMnid === null ) ) {
-            $signerMnid = $senderMnid = $this->getIssuerMnid($jwt);
+            $signerMnid = $senderMnid = $this->getMnid($jwt, 'iss');
 
             return $this->prepareRegistryCallString($profileId, $senderMnid, $senderMnid);
         } else {
@@ -330,66 +330,27 @@ class jwtTools
     }
 
     /**
-     * getIssuerMnid
+     * getMnid
      *
      * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
      *
+     * @param string $mode Passes either iss, nad, or aud 
+     *     
      * @return string Returns either null or the issuer MNID
      */
 
-    public function getIssuerMnid ($jwt) {
+    public function getMnid ($jwt, $mode) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-        if ( isset((json_decode($jsonBody, true))['iss']) ) {
-            $sender = (json_decode($jsonBody, true))['iss'];
+        if ( isset((json_decode($jsonBody, true))[$mode]) ) {
+            $sender = (json_decode($jsonBody, true))[$mode];
             return $sender;
         } else {       
             return null; 
         }
 
     }
-
-    /**
-     * getSenderMnid
-     *
-     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
-     *
-     * @return string Returns either null or the sender MNID
-     */
-
-    public function getSenderMnid ($jwt) {
-
-        $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));      
-         if ( isset((json_decode($jsonBody, true))['nad']) ) {
-            $sender = (json_decode($jsonBody, true))['nad'];
-            return $sender;
-        } else {       
-            return null; 
-        }
-
-    }
-
-    /**
-     * getAudienceMnid
-     *
-     * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
-     *
-     * @return string Returns either null or the audience MNID
-     */
-
-    public function getAudienceMnid ($jwt) {
-
-        $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-         if ( isset(json_decode($jsonBody, true)['aud']) ) {
-            $sender = (json_decode($jsonBody, true))['aud'];
-            return $sender;
-
-        } else {
-            return null;
-        }
-        
-    }    
-
+    
     /**
      * base64url_decode
      *
