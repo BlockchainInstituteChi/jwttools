@@ -2,4 +2,4 @@ plugins:
   phpcodesniffer:
     enabled: true
     config:
-      standard: "Composer-Core"
+      standard: "WordPress-Core"
