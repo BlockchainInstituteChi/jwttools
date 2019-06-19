@@ -85,29 +85,13 @@ class jwtTools
 		$adapter = EccFactory::getAdapter();
 		$generator = CurveFactory::getGeneratorByName('secp256k1');
 
-		// Encode the components and compose the payload
-		$encodedHeader = $this->sp_encode_and_trim($headerJSON);
-		$encodedBody   = $this->sp_encode_and_trim($bodyJSON);
-		$jwt           = $encodedHeader . "." . $encodedBody;
-
-		// Create Signature
-		// 1. Create a secp256k1 private key 'point' from the hex private key above
-		$keySerializer = new HexPrivateKeySerializer($generator);
-		$key = $keySerializer->parse($privateKeyString);
-
-		// 2. Create a hash of the payload body
-		$hash = hash('sha256', $jwt);
+		$jwt           = $this->sp_encode_and_trim($headerJSON) . "." . $this->sp_encode_and_trim($bodyJSON);
 		
-		// 3. Sign the hash 
-		$signer    = new Signer($adapter);
+		$keySerializer = new HexPrivateKeySerializer($generator);
 
-		$signature = $secp256k1->sign($hash, $privateKeyString, []);
+		$signature = $secp256k1->sign(hash('sha256', $jwt), $privateKeyString, []);
 
-		$hex_signature = $signature->toHex();
-
-		$jwt.= "." . $this->sp_encode_and_trim(hex2bin($hex_signature));
-
-		return $jwt;
+		return $jwt . "." . $this->sp_encode_and_trim(hex2bin($signature->toHex()));
 
 	}
 
@@ -120,37 +104,24 @@ class jwtTools
 	 * @return string Returns either a 1 or 0 to indicate whether the JWT signature was valid
 	 */
 
-
-
 	public function verify_JWT ($jwt) {
 
-		$public_key_long = $this->resolve_public_key_from_JWT($jwt);
+		$ipfsResult = $this->resolve_DID_from_JWT($jwt);
 
-		$public_key =  substr($public_key_long, 2);
+		$public_key =  substr($ipfsResult->publicKey, 2);
 
 		$opt = $this->deconstruct_and_decode($jwt);
-
-		// $u64 = urldecode($opt['signature']);
-
-		// $b64 = base64_decode($u64);
 
 		$secp256k1 = new Secp256k1();
 		$CurveFactory = new CurveFactory;
 		$adapter = EccFactory::getAdapter();
 		$generator = CurveFactory::getGeneratorByName('secp256k1');
-
 		
 		$signatureSet = $this->create_signature_object($opt['signature']); 
 
-				
 		$signatureK = new kSig ($signatureSet["rGMP"], $signatureSet["sGMP"], $signatureSet["v"]);
 
-		
-		$algorithm = 'sha256';
-
-		$document = $opt['header'] . "." . $opt['body'];  
-		 
-		$hash = hash($algorithm, $document);
+		$hash = hash('sha256', $opt['header'] . "." . $opt['body']);
 
 		return $secp256k1->verify($hash, $signatureK, $public_key);
 
@@ -166,49 +137,28 @@ class jwtTools
 	 */
 
 	public function resolve_DID_from_JWT ($jwt) {
-		$infuraPayload = $this->resolve_did("uPortProfileIPFS1220", $jwt);
+		$infura_payload = $this->resolve_did("uPortProfileIPFS1220", $jwt);
 
-		$infuraResponse = $this->resolve_infura_payload($infuraPayload);
+		$ipfs_record = json_decode($this->resolve_infura_payload($infura_payload), false);
 
-		$address = json_decode($infuraResponse, false);
+		$ipfs_encoded = $this->registry_encoding_to_IPFS( $ipfs_record->result);
 
-		$addressOutput = $address->result;
-
-		$ipfsEncoded = $this->registry_encoding_to_IPFS($addressOutput);
-
-		$ipfsResult = json_decode($this->fetch_ipfs($ipfsEncoded));
-		
-		return $ipfsResult;
-
-	}
-
-	/**
-	 * resolve_DID_from_JWT
-	 *
-	 * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
-	 *
-	 * @return string Returns the public key only from the IPFS DID document
-	 */
-
-	public function resolve_public_key_from_JWT ($jwt) {
-
-		$ipfsResult = $this->resolve_DID_from_JWT($jwt);
-		return $ipfsResult->publicKey;
+		return json_decode($this->fetch_ipfs($ipfs_encoded));
 
 	}
 
 	/**
 	 * resolve_infura_payload
 	 * 
-	 * @param string $infuraPayload Passes a JSON encoded request payload to call via HTTP
+	 * @param string $infura_payload Passes a JSON encoded request payload to call via HTTP
 	 *
 	 * @return object Returns whatever is found after calling infura 
 	 */
 
-	public function resolve_infura_payload ($infuraPayload) {
+	public function resolve_infura_payload ($infura_payload) {
 		$params  = (object)[];
-		$params     ->to    = $infuraPayload->rpcUrl;
-		$params     ->data  = $infuraPayload->callString;
+		$params     ->to    = $infura_payload->rpcUrl;
+		$params     ->data  = $infura_payload->callString;
 
 		$payload_options = (object)[];
 
@@ -219,9 +169,7 @@ class jwtTools
 
 		$payload_options = json_encode($payload_options);
 
-		$result =  $this->make_http_call( 'https://rinkeby.infura.io/uport-lite-library',  $payload_options, 1 );
-
-		return $result;
+		return $this->make_http_call( 'https://rinkeby.infura.io/uport-lite-library',  $payload_options, 1 );
 
 	}
 
@@ -240,9 +188,8 @@ class jwtTools
 		]);
 		$sliced = '1220' . subStr($hexStr, 2);
 		$decoded = pack("H*", $sliced);
-		$base58enc = $base58->encode($decoded);
+		return  $base58->encode($decoded);
 
-		return $base58enc;
 	}
 
 	/**
@@ -254,11 +201,11 @@ class jwtTools
 	 */
 
 	public function fetch_ipfs($ipfsHash) {
+
 		$uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
 
-		$result = $this->make_http_call( $uri,  json_encode([]), 0 );
+		return $this->make_http_call( $uri,  json_encode([]), 0 );
 
-		return $result;
 	}
 
 	/**
@@ -272,12 +219,11 @@ class jwtTools
 	public function deconstruct_and_decode ($jwt) {
 
 		$exp = explode(".", $jwt);
-		$decoded_parts = [
+		return [
 			"header" => $exp[0],
 			"body" => $exp[1],
 			"signature" => $exp[2]
 		];
-		return $decoded_parts;
 
 	}
 
@@ -355,9 +301,7 @@ class jwtTools
 
 		$chars = array_map("chr", $byte_array);
 		$bin = join($chars);
-		$hex = bin2hex($bin);
-
-		return $hex;
+		return bin2hex($bin);
 
 	}
 
@@ -394,19 +338,15 @@ class jwtTools
 	public function create_signature_object ($signature) {
 
 		$rawSig = $this->base64url_decode($signature);
-
 				
 		$first_half = $this->string_to_hex(substr( $rawSig, 0, 32 ));
 		$second_half = $this->string_to_hex(substr( $rawSig, 32, 64 ));
-
 				
-		$sig_obj = [
+		return [
 			"v" => 0,
 			"rGMP" => gmp_init("0x" . $first_half, 16),
 			"sGMP" => gmp_init("0x" . $second_half, 16)
 		];
-
-		return $sig_obj;
 
 	}
 
@@ -426,13 +366,11 @@ class jwtTools
 		$firstHalf  = bin2hex(substr( $rawSig,  0, 32 ));
 		$secondHalf = bin2hex(substr( $rawSig, 32, 64 ));
 
-		$sigObj = [
+		return  [
 			"v" => 0,
 			"rGMP" => gmp_init($firstHalf, 16),
 			"sGMP" => gmp_init($secondHalf, 16)
 		];
-
-		return $sigObj;
 
 	}
 
