@@ -143,10 +143,13 @@ class jwtTools
         $adapter = EccFactory::getAdapter();
         $generator = CurveFactory::getGeneratorByName('secp256k1');
 
+        
         $signatureSet = $this->createSignatureObject($opt['signature']); 
 
+                
         $signatureK = new kSig ($signatureSet["rGMP"], $signatureSet["sGMP"], $signatureSet["v"]);
 
+        
         $algorithm = 'sha256';
 
         $document = $opt['header'] . "." . $opt['body'];  
@@ -337,7 +340,6 @@ class jwtTools
     public function getIssuerMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-error_log('json body is '. $jsonBody);
         if ( isset((json_decode($jsonBody, true))['iss']) ) {
             $sender = (json_decode($jsonBody, true))['iss'];
             return $sender;
@@ -358,8 +360,7 @@ error_log('json body is '. $jsonBody);
     public function getSenderMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));      
- error_log('json body is '. $jsonBody);
-        if ( isset((json_decode($jsonBody, true))['nad']) ) {
+         if ( isset((json_decode($jsonBody, true))['nad']) ) {
             $sender = (json_decode($jsonBody, true))['nad'];
             return $sender;
         } else {       
@@ -379,8 +380,7 @@ error_log('json body is '. $jsonBody);
     public function getAudienceMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
- error_log('json body is '. $jsonBody);
-        if ( isset(json_decode($jsonBody, true)['aud']) ) {
+         if ( isset(json_decode($jsonBody, true)['aud']) ) {
             $sender = (json_decode($jsonBody, true))['aud'];
             return $sender;
 
@@ -455,9 +455,11 @@ error_log('json body is '. $jsonBody);
 
         $rawSig = $this->base64url_decode($signature);
 
+                
         $firstHalf = $this->String2Hex(substr( $rawSig, 0, 32 ));
         $secondHalf = $this->String2Hex(substr( $rawSig, 32, 64 ));
 
+                
         $sigObj = [
             "v" => 0,
             "rGMP" => gmp_init("0x" . $firstHalf, 16),
@@ -583,7 +585,7 @@ error_log('json body is '. $jsonBody);
         } else {
             $trimmed = $encoded;
         }
-        return $trimmed;
+        return strtr( $trimmed, '+/', '-_');
     }
 
     /**
