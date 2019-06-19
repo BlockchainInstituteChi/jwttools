@@ -1,4 +1,4 @@
-# uPort PHP JWT Tools - Powered by TheBlockchainInstitute.org
+# uPort PHP JWT Tools - Powered by TheBlockchainInstitute.org 
 
 JSON Web Tokens (JWTs) are a convenient way of passing signed data requests over HTTP. The full details can be found on jwt.io. 
 
@@ -19,7 +19,7 @@ This repo can be installed as a composer module with the command below:
 ```resolvePublicKeyFromJWT($jwt)```
 *This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
-```resolveDIDFromJWT($jwt)```
+```generate_infura_payload_from_JWT($jwt)```
 *This function returns a php object containing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
 ```createJWT($jwtHeaderJson, $jwtBodyJson, $signingKey)```
@@ -77,22 +77,22 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   use Blockchaininstitute\jwtTools as jwtTools;
 
-  $jwtTools = new jwtTools('makeHttpCall');
+  $jwtTools = new jwtTools('make_http_call');
   
   $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTYyMTQ5MzcsImV4cCI6MTU1NjMwMTMzNywiYXVkIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoiLCJ0eXBlIjoic2hhcmVSZXNwIiwibmFkIjoiMm90MWhDdVZBTDZuUTNOUXJ5amtCQVJHdHNqNHJzYW81NzUiLCJvd24iOnsibmFtZSI6IkFsZXgifSwicmVxIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTlRZeU1UUTVNak1zSW5KbGNYVmxjM1JsWkNJNld5SnVZVzFsSWwwc0ltTmhiR3hpWVdOcklqb2lhSFIwY0hNNkx5OWphR0Z6Y1hWcExuVndiM0owTG0xbEwyRndhUzkyTVM5MGIzQnBZeTkwTUVsVmNtcEdjVEIzTjNkMlVsWnVJaXdpYm1WMElqb2lNSGcwSWl3aWRIbHdaU0k2SW5Ob1lYSmxVbVZ4SWl3aWFYTnpJam9pTW05cVJYUlZXRUpMTWtvM05XVkRRbUY2ZWpSMGJtTkZWMFV4T0c5R1YzSnVaa29pZlEuWTVtMTFKZmR1UG9hNW1fdm4zYkI4TUlqTHktUWdETHI3YTVMREhJcjgxclBkQWVrcmNKTzJra2UxQmJOOVVaSlVrNUQzZzVCRldqNW81RHM4cWQ0bUEiLCJpc3MiOiIyb3QxaEN1VkFMNm5RM05Rcnlqa0JBUkd0c2o0cnNhbzU3NSJ9.dhS6KNpA21NJUmxtNmOCBv8ewBIwyOgqak9eXpUKZS8Hk-zpxjbbnkhLaOVHCENFjK2zzm9OxVekgGlwlNoIbw";
 
-  $DID = $jwtTools->resolveDIDFromJWT($jwt);
+  $DID = $jwtTools->generate_infura_payload_from_JWT($jwt);
 
   print_r($DID);
 
-  function makeHttpCall ($url, $body, $isPost) {
+  function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
                      CURLOPT_HEADER => false,
                      CURLOPT_FRESH_CONNECT => true,
                      CURLOPT_POSTFIELDS => $body,
                      CURLOPT_RETURNTRANSFER => true,
-                     CURLOPT_POST => $isPost,
+                     CURLOPT_POST => $is_post,
                      CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
                     );
 
@@ -118,7 +118,7 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   use Blockchaininstitute\jwtTools as jwtTools;
 
-  $jwtTools = new jwtTools('makeHttpCall');
+  $jwtTools = new jwtTools('make_http_call');
 
 // Input Data
     $topicName = "Blockchain Institute Login Request";
@@ -179,14 +179,14 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
       return $trimmed;
     }
     
-  function makeHttpCall ($url, $body, $isPost) {
+  function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
                      CURLOPT_HEADER => false,
                      CURLOPT_FRESH_CONNECT => true,
                      CURLOPT_POSTFIELDS => $body,
                      CURLOPT_RETURNTRANSFER => true,
-                     CURLOPT_POST => $isPost,
+                     CURLOPT_POST => $is_post,
                      CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
                     );
 
@@ -213,7 +213,7 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   use Blockchaininstitute\jwtTools as jwtTools;
 
-  $jwtTools = new jwtTools('makeHttpCall');
+  $jwtTools = new jwtTools('make_http_call');
   
   $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTYyMTQ5MzcsImV4cCI6MTU1NjMwMTMzNywiYXVkIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoiLCJ0eXBlIjoic2hhcmVSZXNwIiwibmFkIjoiMm90MWhDdVZBTDZuUTNOUXJ5amtCQVJHdHNqNHJzYW81NzUiLCJvd24iOnsibmFtZSI6IkFsZXgifSwicmVxIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTlRZeU1UUTVNak1zSW5KbGNYVmxjM1JsWkNJNld5SnVZVzFsSWwwc0ltTmhiR3hpWVdOcklqb2lhSFIwY0hNNkx5OWphR0Z6Y1hWcExuVndiM0owTG0xbEwyRndhUzkyTVM5MGIzQnBZeTkwTUVsVmNtcEdjVEIzTjNkMlVsWnVJaXdpYm1WMElqb2lNSGcwSWl3aWRIbHdaU0k2SW5Ob1lYSmxVbVZ4SWl3aWFYTnpJam9pTW05cVJYUlZXRUpMTWtvM05XVkRRbUY2ZWpSMGJtTkZWMFV4T0c5R1YzSnVaa29pZlEuWTVtMTFKZmR1UG9hNW1fdm4zYkI4TUlqTHktUWdETHI3YTVMREhJcjgxclBkQWVrcmNKTzJra2UxQmJOOVVaSlVrNUQzZzVCRldqNW81RHM4cWQ0bUEiLCJpc3MiOiIyb3QxaEN1VkFMNm5RM05Rcnlqa0JBUkd0c2o0cnNhbzU3NSJ9.dhS6KNpA21NJUmxtNmOCBv8ewBIwyOgqak9eXpUKZS8Hk-zpxjbbnkhLaOVHCENFjK2zzm9OxVekgGlwlNoIbw";
 
@@ -222,14 +222,14 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
   echo $address;
 
 
-  function makeHttpCall ($url, $body, $isPost) {
+  function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
                      CURLOPT_HEADER => false,
                      CURLOPT_FRESH_CONNECT => true,
                      CURLOPT_POSTFIELDS => $body,
                      CURLOPT_RETURNTRANSFER => true,
-                     CURLOPT_POST => $isPost,
+                     CURLOPT_POST => $is_post,
                      CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
                     );
 
@@ -256,7 +256,7 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   echo "\r\nStarting verifyJWT.php \r\n";
 
-  $jwtTools = new jwtTools('makeHttpCall');
+  $jwtTools = new jwtTools('make_http_call');
 
   $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTY5MTI4MzMsInJlcXVlc3RlZCI6WyJuYW1lIl0sImNhbGxiYWNrIjoiaHR0cHM6Ly9jaGFzcXVpLnVwb3J0Lm1lL2FwaS92MS90b3BpYy8xT3pTalFSRnJGOTQ4TExrIiwibmV0IjoiMHg0IiwidHlwZSI6InNoYXJlUmVxIiwiaXNzIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoifQ.eeR7QXHZynWehtl7QsLbFSUgegudarGzuT2YqEUFPRUI3VOJwBVL+2zw0/RDz3kJX7sRdpZwdH0ANKdFz2w4UA";
 
@@ -266,14 +266,14 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   echo "\r\n\r\n";
 
-  function makeHttpCall ($url, $body, $isPost) {
+  function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
                      CURLOPT_HEADER => false,
                      CURLOPT_FRESH_CONNECT => true,
                      CURLOPT_POSTFIELDS => $body,
                      CURLOPT_RETURNTRANSFER => true,
-                     CURLOPT_POST => $isPost,
+                     CURLOPT_POST => $is_post,
                      CURLOPT_HTTPHEADER => array( 'Content-Type: application/json')
                     );
 
