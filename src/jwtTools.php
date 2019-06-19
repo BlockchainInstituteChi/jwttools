@@ -51,11 +51,14 @@ class jwtTools
      */
     public function __construct($httpCaller)
     {
-        if (isset($httpCaller)) {
-            $this->httpCaller = $httpCaller;
-        } else {
-            $this->httpCaller = $this->makeHttpCall;
-        }
+
+        $this->httpCaller = 'makeHttpCall';
+
+        // if (isset($httpCaller)) {
+        //     $this->httpCaller = $httpCaller;
+        // } else {
+        //     $this->httpCaller = 'makeHttpCall';
+        // }
     }
 
     /**
@@ -63,6 +66,9 @@ class jwtTools
     */
     protected $httpCaller = null;
 
+    public function test () {
+        return "test";
+    }
 
     /**
      * createJWT
@@ -118,6 +124,8 @@ class jwtTools
      * @return string Returns either a 1 or 0 to indicate whether the JWT signature was valid
      */
 
+
+
     public function verifyJWT ($jwt) {
 
         $publicKeyLong = $this->resolvePublicKeyFromJWT($jwt);
@@ -126,19 +134,22 @@ class jwtTools
 
         $opt = $this->deconstructAndDecode($jwt);
 
-        $u64 = urldecode($opt['signature']);
+        // $u64 = urldecode($opt['signature']);
 
-        $b64 = base64_decode($u64);
+        // $b64 = base64_decode($u64);
 
         $secp256k1 = new Secp256k1();
         $CurveFactory = new CurveFactory;
         $adapter = EccFactory::getAdapter();
         $generator = CurveFactory::getGeneratorByName('secp256k1');
 
+        
         $signatureSet = $this->createSignatureObject($opt['signature']); 
 
+                
         $signatureK = new kSig ($signatureSet["rGMP"], $signatureSet["sGMP"], $signatureSet["v"]);
 
+        
         $algorithm = 'sha256';
 
         $document = $opt['header'] . "." . $opt['body'];  
@@ -229,7 +240,7 @@ class jwtTools
 
         $payloadOptions = json_encode($payloadOptions);
 
-        $result = call_user_func($this->httpCaller, 'https://rinkeby.infura.io/uport-lite-library',  $payloadOptions, 1 );
+        $result =  $this->makeHttpCall( 'https://rinkeby.infura.io/uport-lite-library',  $payloadOptions, 1 );
 
         return $result;
 
@@ -266,7 +277,7 @@ class jwtTools
     public function fetchIpfs($ipfsHash) {
         $uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
 
-        $result = call_user_func($this->httpCaller, $uri,  json_encode([]), 0 );
+        $result = $this->makeHttpCall( $uri,  json_encode([]), 0 );
 
         return $result;
     }
@@ -329,7 +340,6 @@ class jwtTools
     public function getIssuerMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-
         if ( isset((json_decode($jsonBody, true))['iss']) ) {
             $sender = (json_decode($jsonBody, true))['iss'];
             return $sender;
@@ -350,8 +360,7 @@ class jwtTools
     public function getSenderMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));      
-
-        if ( isset((json_decode($jsonBody, true))['nad']) ) {
+         if ( isset((json_decode($jsonBody, true))['nad']) ) {
             $sender = (json_decode($jsonBody, true))['nad'];
             return $sender;
         } else {       
@@ -371,8 +380,7 @@ class jwtTools
     public function getAudienceMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-
-        if ( isset(json_decode($jsonBody, true)['aud']) ) {
+         if ( isset(json_decode($jsonBody, true)['aud']) ) {
             $sender = (json_decode($jsonBody, true))['aud'];
             return $sender;
 
@@ -447,9 +455,11 @@ class jwtTools
 
         $rawSig = $this->base64url_decode($signature);
 
+                
         $firstHalf = $this->String2Hex(substr( $rawSig, 0, 32 ));
         $secondHalf = $this->String2Hex(substr( $rawSig, 32, 64 ));
 
+                
         $sigObj = [
             "v" => 0,
             "rGMP" => gmp_init("0x" . $firstHalf, 16),
@@ -575,7 +585,7 @@ class jwtTools
         } else {
             $trimmed = $encoded;
         }
-        return $trimmed;
+        return strtr( $trimmed, '+/', '-_');
     }
 
     /**
