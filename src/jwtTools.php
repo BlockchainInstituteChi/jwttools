@@ -51,11 +51,14 @@ class jwtTools
      */
     public function __construct($httpCaller)
     {
-        if (isset($httpCaller)) {
-            $this->httpCaller = $httpCaller;
-        } else {
-            $this->httpCaller = $this->makeHttpCall;
-        }
+
+        $this->httpCaller = 'makeHttpCall';
+
+        // if (isset($httpCaller)) {
+        //     $this->httpCaller = $httpCaller;
+        // } else {
+        //     $this->httpCaller = 'makeHttpCall';
+        // }
     }
 
     /**
@@ -63,6 +66,9 @@ class jwtTools
     */
     protected $httpCaller = null;
 
+    public function test () {
+        return "test";
+    }
 
     /**
      * createJWT
@@ -118,6 +124,8 @@ class jwtTools
      * @return string Returns either a 1 or 0 to indicate whether the JWT signature was valid
      */
 
+
+
     public function verifyJWT ($jwt) {
 
         $publicKeyLong = $this->resolvePublicKeyFromJWT($jwt);
@@ -126,9 +134,9 @@ class jwtTools
 
         $opt = $this->deconstructAndDecode($jwt);
 
-        $u64 = urldecode($opt['signature']);
+        // $u64 = urldecode($opt['signature']);
 
-        $b64 = base64_decode($u64);
+        // $b64 = base64_decode($u64);
 
         $secp256k1 = new Secp256k1();
         $CurveFactory = new CurveFactory;
@@ -229,7 +237,7 @@ class jwtTools
 
         $payloadOptions = json_encode($payloadOptions);
 
-        $result = call_user_func($this->httpCaller, 'https://rinkeby.infura.io/uport-lite-library',  $payloadOptions, 1 );
+        $result =  $this->makeHttpCall( 'https://rinkeby.infura.io/uport-lite-library',  $payloadOptions, 1 );
 
         return $result;
 
@@ -266,7 +274,7 @@ class jwtTools
     public function fetchIpfs($ipfsHash) {
         $uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
 
-        $result = call_user_func($this->httpCaller, $uri,  json_encode([]), 0 );
+        $result = $this->makeHttpCall( $uri,  json_encode([]), 0 );
 
         return $result;
     }
@@ -329,7 +337,7 @@ class jwtTools
     public function getIssuerMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-
+error_log('json body is '. $jsonBody);
         if ( isset((json_decode($jsonBody, true))['iss']) ) {
             $sender = (json_decode($jsonBody, true))['iss'];
             return $sender;
@@ -350,7 +358,7 @@ class jwtTools
     public function getSenderMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));      
-
+ error_log('json body is '. $jsonBody);
         if ( isset((json_decode($jsonBody, true))['nad']) ) {
             $sender = (json_decode($jsonBody, true))['nad'];
             return $sender;
@@ -371,7 +379,7 @@ class jwtTools
     public function getAudienceMnid ($jwt) {
 
         $jsonBody = base64_decode(urldecode(($this->deconstructAndDecode($jwt))["body"]));
-
+ error_log('json body is '. $jsonBody);
         if ( isset(json_decode($jsonBody, true)['aud']) ) {
             $sender = (json_decode($jsonBody, true))['aud'];
             return $sender;
