@@ -102,9 +102,6 @@ class JwtTools
 		$public_key    = substr( $ipfs_result->publicKey, 2 );
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
-		$CurveFactory  = new CurveFactory;
-		$adapter       = EccFactory::getAdapter();
-		$generator     = CurveFactory::getGeneratorByName( 'secp256k1' );
 		$signature_set = $this->create_signature_object( $opt['signature'] ); 
 		$signature_k   = new kSig ( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v']);
 		$hash          = hash( 'sha256', $opt['header'] . '.' . $opt['body'] );
@@ -126,7 +123,7 @@ class JwtTools
 
 		$infura_payload = $this->resolve_did( 'uPortProfileIPFS1220', $jwt );
 		$ipfs_record    = json_decode( $this->resolve_infura_payload( $infura_payload ), false );
-		$ipfs_encoded   = $this->registry_encoding_to_IPFS( $ipfs_record->result );
+		$ipfs_encoded   = $this->registry_encoding_to_ipfs( $ipfs_record->result );
 
 		return json_decode( $this->fetch_ipfs( $ipfs_encoded ) );
 
@@ -142,11 +139,11 @@ class JwtTools
 
 	public function resolve_infura_payload( $infura_payload ) {
 
-		$params          = ( object ) [];
-		$params->to      = $infura_payload->rpc_url;
-		$params->data    = $infura_payload->call_string;
+		$params       = (object) [];
+		$params->to   = $infura_payload->rpc_url;
+		$params->data = $infura_payload->call_string;
 
-		$payload_options          = ( object ) [];
+		$payload_options          = (object) [];
 		$payload_options->method  = 'eth_call';
 		$payload_options->id      = 1;
 		$payload_options->jsonrpc = '2.0';
@@ -157,37 +154,37 @@ class JwtTools
 	}
 
 	/**
-	 * registry_encoding_to_IPFS
+	 * registry_encoding_to_ipfs
 	 * 
 	 * @param string $hex_str Passes a hex string which needs to be encoded to be part of a infura payload
 	 *
 	 * @return string Returns a base 58 encoded string which can be used in infura API Calls 
 	 */
 
-	public function registry_encoding_to_IPFS( $hex_str ) {
+	public function registry_encoding_to_ipfs( $hex_str ) {
 
 		$base58 = new Base58( [
 			'characters' => Base58::IPFS,
-			'version'    => 0x00
+			'version'    => 0x00,
 		] );
 
 		$sliced  = '1220' . subStr( $hex_str, 2 );
-		$decoded = pack( "H*", $sliced );
+		$decoded = pack( 'H*', $sliced );
 		return  $base58->encode( $decoded );
 
 	}
 
 	/**
-	 * registry_encoding_to_IPFS
+	 * registry_encoding_to_ipfs
 	 * 
-	 * @param string $ipfsHash The address of the IPFS record to retrieve
+	 * @param string $ipfs_hash The address of the IPFS record to retrieve
 	 *
 	 * @return string Returns the IPFS record associated with that address if applicable 
 	 */
 
-	public function fetch_ipfs( $ipfsHash ) {
+	public function fetch_ipfs( $ipfs_hash ) {
 
-		$uri = "https://ipfs.infura.io/ipfs/" . $ipfsHash;
+		$uri = "https://ipfs.infura.io/ipfs/" . $ipfs_hash;
 
 		return $this->make_http_call( $uri,  json_encode( [] ), 0 );
 
@@ -207,7 +204,7 @@ class JwtTools
 		return [
 			'header'    => $exp[0],
 			'body'      => $exp[1],
-			'signature' => $exp[2]
+			'signature' => $exp[2],
 		];
 
 	}
@@ -286,7 +283,7 @@ class JwtTools
 	public function encode_byte_array_to_hex( $byte_array ) {
 
 		$chars = array_map( 'chr', $byte_array );
-		$bin = join( $chars );
+		$bin   = join( $chars );
 		return bin2hex( $bin );
 
 	}
@@ -299,7 +296,8 @@ class JwtTools
 	 * @return string Returns a hex encoded string 
 	 */
 
-	public function string_to_hex( $string ){
+	public function string_to_hex( $string ) {
+
 		$hex = '';
 		for ( $i = 0; $i < strlen( $string ); $i++ ) {
 			$new_bit = dechex( ord( $string[ $i ] ) );
@@ -311,6 +309,7 @@ class JwtTools
 			$hex .= $new_bit;
 		}
 		return $hex;
+
 	}
 
 	/**
@@ -323,9 +322,8 @@ class JwtTools
 
 	public function create_signature_object( $signature ) {
 
-		$raw_sig = $this->base64url_decode( $signature );
-				
-		$first_half = $this->string_to_hex( substr( $raw_sig, 0, 32 ) );
+		$raw_sig     = $this->base64url_decode( $signature );
+		$first_half  = $this->string_to_hex( substr( $raw_sig, 0, 32 ) );
 		$second_half = $this->string_to_hex( substr( $raw_sig, 32, 64 ) );
 				
 		return [
@@ -350,10 +348,10 @@ class JwtTools
 
 	private function prepare_registry_call_string( $registration_identifier, $issuer_id, $subject_id ) {
 
-		$call_obj   = ( object ) [];
-		$issuer     = $this->eae_decode( $issuer_id );
-		$subject    = $this->eae_decode( $subject_id );
-		$networks   = $this->get_networks();
+		$call_obj = (object) [];
+		$issuer   = $this->eae_decode( $issuer_id );
+		$subject  = $this->eae_decode( $subject_id );
+		$networks = $this->get_networks();
 
 		if ( $issuer[ 'network' ] !== $subject[ 'network' ] ) {
 			return 'Error: Subject and Issuer must be in the same network!';
@@ -363,10 +361,10 @@ class JwtTools
 			return 'Network id ' . $issuer['network'] . ' is not configured';
 		} 
 		
-		$call_obj->rpc_url             = $networks[ $issuer['network'] ]['registry'];
+		$call_obj->rpc_url            = $networks[ $issuer['network'] ]['registry'];
 		$call_obj->registryAddress    = $networks[ $issuer['network'] ]['registry'];
 		$call_obj->function_signature = '0x447885f0';
-		$call_obj->call_string         = $this->encode_function_call( $call_obj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
+		$call_obj->call_string        = $this->encode_function_call( $call_obj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
 
 		return $call_obj;
 
@@ -391,10 +389,10 @@ class JwtTools
 					CURLOPT_URL            => $url,
 					CURLOPT_HEADER         => false,
 					CURLOPT_FRESH_CONNECT  => true,
-					CURLOPT_POSTFIELDS 	   => $body,
+					CURLOPT_POSTFIELDS     => $body,
 					CURLOPT_RETURNTRANSFER => true,
 					CURLOPT_POST           => $is_post,
-					CURLOPT_HTTPHEADER     => array( 'Content-Type: application/json' )
+					CURLOPT_HTTPHEADER     => array( 'Content-Type: application/json' ),
 				);
 
 		$ch = curl_init();
@@ -495,7 +493,7 @@ class JwtTools
 			'version'    => 0x00,
 		] );
 
-		$data       = unpack( "C*", $base58->decode( $payload ) );
+		$data       = unpack( 'C*', $base58->decode( $payload ) );
 		$net_length = sizeof( $data ) - 24;
 		$network    = array_slice( $data, 1, $net_length - 1 );
 		$address    = array_slice( $data, $net_length, 20 + $net_length - 2 );
