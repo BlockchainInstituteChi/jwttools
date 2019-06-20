@@ -13,16 +13,16 @@ This repo can be installed as a composer module with the command below:
 
 ## Functionality
 
-```verifyJWT( $jwt )```
+```verify_jwt( $jwt )```
 *This function provides the core use of this module. The $jwt parameter expects a decimal separated string as shown in the example below.*
 
-```resolvePublicKeyFromJWT($jwt)```
+```resolve_public_key_from_jwt($jwt)```
 *This function returns a properly encoded publickey for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
-```generate_infura_payload_from_JWT($jwt)```
+```generate_infura_payload_from_jwt($jwt)```
 *This function returns a php object containing the full IPFS DID for a given jwt by resolving the uPort MNID via the infura gateway. The $jwt parameter expects a valid jwt object per jwt.io.*
 
-```createJWT($jwtHeaderJson, $jwtBodyJson, $signingKey)```
+```create_jwt($jwt_header_json, $jwt_body_json, $signing_key)```
 *This function returns a valid signed JWT using a hex encoded signing key. See the jwtComposer.php example file for further details.*
 
 
@@ -131,7 +131,7 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
   $jwtHeader->alg = 'ES256K'; // ""
 
   // 2. Create JWT Object
-  $jwtHeaderJson = json_encode($jwtHeader, JSON_UNESCAPED_SLASHES);
+  $jwtheader_json = json_encode($jwtHeader, JSON_UNESCAPED_SLASHES);
 
 
 // Prepare the JWT Body
@@ -151,14 +151,14 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
   $jwtBody->iss         = '2ojEtUXBK2J75eCBazz4tncEWE18oFWrnfJ';
 
   // 2. Create JWT Object
-  $jwtBodyJson = json_encode($jwtBody, JSON_UNESCAPED_SLASHES);
+  $jwtbody_json = json_encode($jwtBody, JSON_UNESCAPED_SLASHES);
 
 
-  echo "\r\n\r\njsonbody:\r\n";
-  print_r($jwtBodyJson);
+  echo "\r\n\r\njson_body:\r\n";
+  print_r($jwtbody_json);
   echo "\r\n\r\n";
 
-  $jwt = $jwtTools->createJWT($jwtHeaderJson, $jwtBodyJson, $signingKey);
+  $jwt = $jwtTools->create_jwt($jwtheader_json, $jwtbody_json, $signingKey);
     
     echo "\r\n\r\n======== BEGINNING VERIFICATION =======\r\n\r\n";
 
@@ -217,7 +217,7 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
   
   $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTYyMTQ5MzcsImV4cCI6MTU1NjMwMTMzNywiYXVkIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoiLCJ0eXBlIjoic2hhcmVSZXNwIiwibmFkIjoiMm90MWhDdVZBTDZuUTNOUXJ5amtCQVJHdHNqNHJzYW81NzUiLCJvd24iOnsibmFtZSI6IkFsZXgifSwicmVxIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKRlV6STFOa3NpZlEuZXlKcFlYUWlPakUxTlRZeU1UUTVNak1zSW5KbGNYVmxjM1JsWkNJNld5SnVZVzFsSWwwc0ltTmhiR3hpWVdOcklqb2lhSFIwY0hNNkx5OWphR0Z6Y1hWcExuVndiM0owTG0xbEwyRndhUzkyTVM5MGIzQnBZeTkwTUVsVmNtcEdjVEIzTjNkMlVsWnVJaXdpYm1WMElqb2lNSGcwSWl3aWRIbHdaU0k2SW5Ob1lYSmxVbVZ4SWl3aWFYTnpJam9pTW05cVJYUlZXRUpMTWtvM05XVkRRbUY2ZWpSMGJtTkZWMFV4T0c5R1YzSnVaa29pZlEuWTVtMTFKZmR1UG9hNW1fdm4zYkI4TUlqTHktUWdETHI3YTVMREhJcjgxclBkQWVrcmNKTzJra2UxQmJOOVVaSlVrNUQzZzVCRldqNW81RHM4cWQ0bUEiLCJpc3MiOiIyb3QxaEN1VkFMNm5RM05Rcnlqa0JBUkd0c2o0cnNhbzU3NSJ9.dhS6KNpA21NJUmxtNmOCBv8ewBIwyOgqak9eXpUKZS8Hk-zpxjbbnkhLaOVHCENFjK2zzm9OxVekgGlwlNoIbw";
 
-  $address = $jwtTools->resolvePublicKeyFromJWT($jwt);
+  $address = $jwtTools->resolve_public_key_from_jwt($jwt);
 
   echo $address;
 
@@ -260,7 +260,7 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   $jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1NTY5MTI4MzMsInJlcXVlc3RlZCI6WyJuYW1lIl0sImNhbGxiYWNrIjoiaHR0cHM6Ly9jaGFzcXVpLnVwb3J0Lm1lL2FwaS92MS90b3BpYy8xT3pTalFSRnJGOTQ4TExrIiwibmV0IjoiMHg0IiwidHlwZSI6InNoYXJlUmVxIiwiaXNzIjoiMm9qRXRVWEJLMko3NWVDQmF6ejR0bmNFV0UxOG9GV3JuZkoifQ.eeR7QXHZynWehtl7QsLbFSUgegudarGzuT2YqEUFPRUI3VOJwBVL+2zw0/RDz3kJX7sRdpZwdH0ANKdFz2w4UA";
 
-  $isVerified = $jwtTools->verifyJWT($jwt);
+  $isVerified = $jwtTools->verify_jwt($jwt);
 
   echo "\r\n\r\nisVerified:\r\n" , $isVerified;
 
