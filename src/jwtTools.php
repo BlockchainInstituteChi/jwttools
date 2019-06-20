@@ -39,7 +39,7 @@ use kornrunner\Serializer\HexPrivateKeySerializer;
 
 use Tuupola\Base58;
 
-class jwtTools
+class JwtTools
 {
 
 	/**
@@ -99,7 +99,7 @@ class jwtTools
 	public function verify_jwt( $jwt ) {
 
 		$ipfs_result   = $this->resolve_DID_from_JWT( $jwt );
-		$public_key    =  substr( $ipfs_result->publicKey, 2 );
+		$public_key    = substr( $ipfs_result->publicKey, 2 );
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
 		$CurveFactory  = new CurveFactory;
@@ -143,35 +143,35 @@ class jwtTools
 	public function resolve_infura_payload( $infura_payload ) {
 
 		$params          = ( object ) [];
-		$params->to      = $infura_payload->rpcUrl;
+		$params->to      = $infura_payload->rpc_url;
 		$params->data    = $infura_payload->call_string;
 
-		$payload_options             = ( object ) [];
-		$payload_options->method     = 'eth_call';
-		$payload_options->id         = 1;
-		$payload_options->jsonrpc    = '2.0';
-		$payload_options->params     = array( $params, 'latest' );
+		$payload_options          = ( object ) [];
+		$payload_options->method  = 'eth_call';
+		$payload_options->id      = 1;
+		$payload_options->jsonrpc = '2.0';
+		$payload_options->params  = array( $params, 'latest' );
 
-		return $this->make_http_call( 'https://rinkeby.infura.io/uport-lite-library',  json_encode( $payload_options ), 1 );
+		return $this->make_http_call( 'https://rinkeby.infura.io/uport-lite-library', json_encode( $payload_options ), 1 );
 
 	}
 
 	/**
 	 * registry_encoding_to_IPFS
 	 * 
-	 * @param string $hexStr Passes a hex string which needs to be encoded to be part of a infura payload
+	 * @param string $hex_str Passes a hex string which needs to be encoded to be part of a infura payload
 	 *
 	 * @return string Returns a base 58 encoded string which can be used in infura API Calls 
 	 */
 
-	public function registry_encoding_to_IPFS( $hexStr ) {
+	public function registry_encoding_to_IPFS( $hex_str ) {
 
 		$base58 = new Base58( [
 			'characters' => Base58::IPFS,
 			'version'    => 0x00
 		] );
 
-		$sliced  = '1220' . subStr( $hexStr, 2 );
+		$sliced  = '1220' . subStr( $hex_str, 2 );
 		$decoded = pack( "H*", $sliced );
 		return  $base58->encode( $decoded );
 
@@ -230,8 +230,7 @@ class jwtTools
 
 		if ( ( $sender_mnid === null ) || ( $signer_mnid === null ) ) {
 		
-			$signer_mnid = $sender_mnid = $this->get_mnid( $jwt, 'iss' );
-			return $this->prepare_registry_call_string( $profile_id, $sender_mnid, $sender_mnid );
+			return $this->prepare_registry_call_string( $profile_id, $this->get_mnid( $jwt, 'iss' ), $this->get_mnid( $jwt, 'iss' ) );
 
 		} else {
 
@@ -271,7 +270,7 @@ class jwtTools
 	 * @return string Returns a base 64 url encoded string
 	 */
 
-	public function base64url_decode( $payload ){
+	public function base64url_decode( $payload ) {
 		return base64_decode( strtr( $payload, '-_', '+/' ) . str_repeat( '=', 3 - ( 3 + strlen( $payload ) ) % 4 ) );
 
 	}   
@@ -360,11 +359,11 @@ class jwtTools
 			return 'Error: Subject and Issuer must be in the same network!';
 		}
 
-		if ( !$networks[ $issuer['network'] ] ) {
-		   	return 'Network id ' . $issuer['network'] . ' is not configured';
+		if ( ! $networks[ $issuer['network'] ] ) {
+			return 'Network id ' . $issuer['network'] . ' is not configured';
 		} 
 		
-		$call_obj->rpcUrl             = $networks[ $issuer['network'] ]['registry'];
+		$call_obj->rpc_url             = $networks[ $issuer['network'] ]['registry'];
 		$call_obj->registryAddress    = $networks[ $issuer['network'] ]['registry'];
 		$call_obj->function_signature = '0x447885f0';
 		$call_obj->call_string         = $this->encode_function_call( $call_obj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
@@ -390,12 +389,12 @@ class jwtTools
 
 		$options = array(
 					CURLOPT_URL            => $url,
-					CURLOPT_HEADER 	       => false,
+					CURLOPT_HEADER         => false,
 					CURLOPT_FRESH_CONNECT  => true,
 					CURLOPT_POSTFIELDS 	   => $body,
 					CURLOPT_RETURNTRANSFER => true,
 					CURLOPT_POST           => $is_post,
-					CURLOPT_HTTPHEADER 	   => array( 'Content-Type: application/json' )
+					CURLOPT_HTTPHEADER     => array( 'Content-Type: application/json' )
 				);
 
 		$ch = curl_init();
@@ -496,12 +495,12 @@ class jwtTools
 			'version'    => 0x00,
 		] );
 
-		$data       	= unpack( "C*", $base58->decode( $payload ) );
-		$net_length  	= sizeof( $data ) - 24;
-		$network    	= array_slice( $data, 1, $net_length - 1 );
-		$address    	= array_slice( $data, $net_length, 20 + $net_length - 2 );
-		$network    	= '0x' . $this->encode_byte_array_to_hex( $network );
-		$address    	= '0x' . $this->encode_byte_array_to_hex( $address );
+		$data       = unpack( "C*", $base58->decode( $payload ) );
+		$net_length = sizeof( $data ) - 24;
+		$network    = array_slice( $data, 1, $net_length - 1 );
+		$address    = array_slice( $data, $net_length, 20 + $net_length - 2 );
+		$network    = '0x' . $this->encode_byte_array_to_hex( $network );
+		$address    = '0x' . $this->encode_byte_array_to_hex( $address );
 		return [
 			'address' => $address,
 			'network' => $network,
@@ -511,28 +510,28 @@ class jwtTools
 	/**
 	 * get_networks
 	 *
-	 * @return array Returns the array of available Infura rpcUrls and registries for each network
+	 * @return array Returns the array of available Infura rpc_urls and registries for each network
 	 */
 
 	private function get_networks() {
 		return [
-			  	'0x01' => [
-					'registry'  => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
-					'rpcUrl'    => 'https://mainnet.infura.io',
-			  ], 
-			  	'0x02' => [
-					'registry'  => '0x41566e3a081f5032bdcad470adb797635ddfe1f0',
-					'rpcUrl'    => 'https://ropsten.infura.io',
-			  ], 
-			  	'0x03' => [
-					'registry'  => '0x5f8e9351dc2d238fb878b6ae43aa740d62fc9758',
-					'rpcUrl'    => 'https://kovan.infura.io',
-			  ],
-			  	'0x04' => [
-					'registry'  => '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
-					'rpcUrl'    => 'https://rinkeby.infura.io',
-			  ],
-		];
+				'0x01' => [
+					'registry' => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
+					'rpc_url'  => 'https://mainnet.infura.io',
+				], 
+				'0x02' => [
+					'registry' => '0x41566e3a081f5032bdcad470adb797635ddfe1f0',
+					'rpc_url'  => 'https://ropsten.infura.io',
+				], 
+				'0x03' => [
+					'registry' => '0x5f8e9351dc2d238fb878b6ae43aa740d62fc9758',
+					'rpc_url'  => 'https://kovan.infura.io',
+				],
+				'0x04' => [
+					'registry' => '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
+					'rpc_url'  => 'https://rinkeby.infura.io',
+				],
+		    ];
 	}
 
 }
