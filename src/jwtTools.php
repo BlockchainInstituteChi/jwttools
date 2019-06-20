@@ -49,7 +49,7 @@ class jwtTools
 	 *
 	 * @return string Returns the base 64 encoded and trimmed JWT with a signature generated using the given private key string
 	 */
-	public function __construct( $http_caller ){
+	public function __construct( $http_caller ) {
 
 		$this->http_caller = 'make_http_call';
 
@@ -90,7 +90,7 @@ class jwtTools
 
 		$signature = $secp256k1->sign( hash( 'sha256', $jwt ), $privateKeyString, [] );
 
-		return $jwt . "." . $this->sp_encode_and_trim( hex2bin( $signature->toHex() ) );
+		return $jwt . '.' . $this->sp_encode_and_trim( hex2bin( $signature->toHex() ) );
 
 	}
 
@@ -116,11 +116,11 @@ class jwtTools
 		$adapter = EccFactory::getAdapter();
 		$generator = CurveFactory::getGeneratorByName( 'secp256k1' );
 		
-		$signatureSet = $this->create_signature_object( $opt['signature'] ); 
+		$signature_set = $this->create_signature_object( $opt['signature'] ); 
 
-		$signatureK = new kSig ( $signatureSet['rGMP'], $signatureSet['sGMP'], $signatureSet['v']);
+		$signatureK = new kSig ( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v']);
 
-		$hash = hash( 'sha256', $opt[ 'header' ] . '.' . $opt[ 'body' ] );
+		$hash = hash( 'sha256', $opt['header'] . '.' . $opt['body'] );
 
 		return $secp256k1->verify( $hash, $signatureK, $public_key );
 
@@ -136,7 +136,7 @@ class jwtTools
 	 */
 
 	public function resolve_DID_from_JWT( $jwt ) {
-		$infura_payload = $this->resolve_did( "uPortProfileIPFS1220", $jwt );
+		$infura_payload = $this->resolve_did( 'uPortProfileIPFS1220', $jwt );
 
 		$ipfs_record = json_decode( $this->resolve_infura_payload( $infura_payload ), false );
 
@@ -164,7 +164,7 @@ class jwtTools
 		$payload_options->method     = 'eth_call';
 		$payload_options->id         = 1         ;
 		$payload_options->jsonrpc    = '2.0'     ;
-		$payload_options->params     = array($params, 'latest');
+		$payload_options->params     = array( $params, 'latest' );
 
 		$payload_options = json_encode( $payload_options );
 
@@ -219,9 +219,9 @@ class jwtTools
 
 		$exp = explode( ".", $jwt );
 		return [
-			"header"    => $exp[ 0 ],
-			"body"      => $exp[ 1 ],
-			"signature" => $exp[ 2 ]
+			"header"    => $exp[0],
+			"body"      => $exp[1],
+			"signature" => $exp[2]
 		];
 
 	}
@@ -300,7 +300,7 @@ class jwtTools
 
 	public function encode_byte_array_to_hex( $byte_array ) {
 
-		$chars = array_map( "chr", $byte_array );
+		$chars = array_map( 'chr', $byte_array );
 		$bin = join( $chars );
 		return bin2hex( $bin );
 
@@ -320,7 +320,7 @@ class jwtTools
 			$newBit = dechex( ord( $string[ $i ] ) );
 
 			if ( strlen( $newBit ) == 1 ) {
-				$newBit = "0" . $newBit;
+				$newBit = '0' . $newBit;
 			}
 
 			$hex .= $newBit;
@@ -398,14 +398,14 @@ class jwtTools
 			return 'Error: Subject and Issuer must be in the same network!';
 		}
 
-		if ( !$networks[ $issuer['network' ] ] ) {
-		   return 'Network id ' . $issuer[ 'network' ] . ' is not configured';
+		if ( !$networks[ $issuer['network'] ] ) {
+		   return 'Network id ' . $issuer['network'] . ' is not configured';
 		} 
 		
-		$callObj->rpcUrl             = $networks[ $issuer[ 'network' ] ][ 'registry' ];
-		$callObj->registryAddress    = $networks[ $issuer[ 'network' ] ][ 'registry' ];
+		$callObj->rpcUrl             = $networks[ $issuer['network'] ]['registry'];
+		$callObj->registryAddress    = $networks[ $issuer['network'] ]['registry'];
 		$callObj->function_signature = '0x447885f0';
-		$callObj->callString         = $this->encode_function_call( $callObj->function_signature, $registration_identifier, $issuer[ 'address' ], $subject[ 'address' ] );
+		$callObj->callString         = $this->encode_function_call( $callObj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
 
 		return $callObj;
 
