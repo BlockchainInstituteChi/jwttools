@@ -39,13 +39,12 @@ use kornrunner\Serializer\HexPrivateKeySerializer;
 
 use Tuupola\Base58;
 
-class JwtTools
-{
+class JwtTools {
 
 	/**
 	 * Construct
 	 *
-	 * @param string $http_caller (Optional) Passes a string name of a callback function to use 
+	 * @param string $http_caller (Optional) Passes a string name of a callback function to use
 	 *
 	 * @return string Returns the base 64 encoded and trimmed JWT with a signature generated using the given private key string
 	 */
@@ -79,9 +78,9 @@ class JwtTools
 
 	public function create_jwt( $header_json, $body_json, $private_key_string ) {
 
-		$secp256k1     = new Secp256k1();
-		$jwt           = $this->sp_encode_and_trim( $header_json ) . '.' . $this->sp_encode_and_trim( $body_json );
-		$signature     = $secp256k1->sign( hash( 'sha256', $jwt ), $private_key_string, [] );
+		$secp256k1 = new Secp256k1();
+		$jwt       = $this->sp_encode_and_trim( $header_json ) . '.' . $this->sp_encode_and_trim( $body_json );
+		$signature = $secp256k1->sign( hash( 'sha256', $jwt ), $private_key_string, [] );
 
 		return $jwt . '.' . $this->sp_encode_and_trim( hex2bin( $signature->toHex() ) );
 
@@ -102,8 +101,8 @@ class JwtTools
 		$public_key    = substr( $ipfs_result->publicKey, 2 );
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
-		$signature_set = $this->create_signature_object( $opt['signature'] ); 
-		$signature_k   = new kSig ( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v']);
+		$signature_set = $this->create_signature_object( $opt['signature'] );
+		$signature_k   = new kSig( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v']);
 		$hash          = hash( 'sha256', $opt['header'] . '.' . $opt['body'] );
 
 		return $secp256k1->verify( $hash, $signature_k, $public_key );
@@ -134,7 +133,7 @@ class JwtTools
 	 * 
 	 * @param string $infura_payload Passes a JSON encoded request payload to call via HTTP
 	 *
-	 * @return object Returns whatever is found after calling infura 
+	 * @return object Returns whatever is found after calling infura
 	 */
 
 	public function resolve_infura_payload( $infura_payload ) {
@@ -155,10 +154,10 @@ class JwtTools
 
 	/**
 	 * registry_encoding_to_ipfs
-	 * 
+	 *
 	 * @param string $hex_str Passes a hex string which needs to be encoded to be part of a infura payload
 	 *
-	 * @return string Returns a base 58 encoded string which can be used in infura API Calls 
+	 * @return string Returns a base 58 encoded string which can be used in infura API Calls
 	 */
 
 	public function registry_encoding_to_ipfs( $hex_str ) {
@@ -176,26 +175,26 @@ class JwtTools
 
 	/**
 	 * registry_encoding_to_ipfs
-	 * 
+	 *
 	 * @param string $ipfs_hash The address of the IPFS record to retrieve
 	 *
-	 * @return string Returns the IPFS record associated with that address if applicable 
+	 * @return string Returns the IPFS record associated with that address if applicable
 	 */
 
 	public function fetch_ipfs( $ipfs_hash ) {
 
-		$uri = "https://ipfs.infura.io/ipfs/" . $ipfs_hash;
+		$uri = 'https://ipfs.infura.io/ipfs/' . $ipfs_hash;
 
-		return $this->make_http_call( $uri,  json_encode( [] ), 0 );
+		return $this->make_http_call( $uri, json_encode( [] ), 0 );
 
 	}
 
 	/**
 	 * deconstruct_and_decode
-	 * 
+	 *
 	 * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
 	 *
-	 * @return array Returns JWT components as a three part array 
+	 * @return array Returns JWT components as a three part array
 	 */
 
 	public function deconstruct_and_decode( $jwt ) {
@@ -209,32 +208,25 @@ class JwtTools
 
 	}
 
-
 	/**
 	 * resolve_did
 	 *
 	 * @param string $profile_id Passes the MNID of the sender to be used when composing the registry call_string for Infura
-	 * 
+	 *
 	 * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
 	 *
-	 * @return string Returns a properly formatted registry call string to be used to retrieve the DID record from Infura 
+	 * @return string Returns a properly formatted registry call string to be used to retrieve the DID record from Infura
 	 */
 
-	public function resolve_did( $profile_id, $jwt )
-	{
+	public function resolve_did( $profile_id, $jwt ) {
 		$sender_mnid = $this->get_mnid( $jwt, 'nad' );
 		$signer_mnid = $this->get_mnid( $jwt, 'aud' );
 
 		if ( ( $sender_mnid === null ) || ( $signer_mnid === null ) ) {
-		
 			return $this->prepare_registry_call_string( $profile_id, $this->get_mnid( $jwt, 'iss' ), $this->get_mnid( $jwt, 'iss' ) );
-
 		} else {
-
 			return $this->prepare_registry_call_string( $profile_id, $sender_mnid, $sender_mnid );
-		
 		}
-		
 	}
 
 	/**
@@ -242,19 +234,19 @@ class JwtTools
 	 *
 	 * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
 	 *
-	 * @param string $mode Passes either iss, nad, or aud 
-	 *     
+	 * @param string $mode Passes either iss, nad, or aud
+	 *
 	 * @return string Returns either null or the issuer MNID
 	 */
 
 	public function get_mnid( $jwt, $mode ) {
 
-		$jsonBody = base64_decode( urldecode( ( $this->deconstruct_and_decode( $jwt ) )['body'] ));
-		if ( isset( ( json_decode( $jsonBody, true ) )[ $mode ] ) ) {
-			$sender = ( json_decode( $jsonBody, true ) )[ $mode ];
+		$json_body = base64_decode( urldecode( ( $this->deconstruct_and_decode( $jwt ) )['body'] ));
+		if ( isset( ( json_decode( $json_body, true ) )[ $mode ] ) ) {
+			$sender = ( json_decode( $json_body, true ) )[ $mode ];
 			return $sender;
-		} else {       
-			return null; 
+		} else {
+			return null;
 		}
 
 	}
@@ -269,15 +261,14 @@ class JwtTools
 
 	public function base64url_decode( $payload ) {
 		return base64_decode( strtr( $payload, '-_', '+/' ) . str_repeat( '=', 3 - ( 3 + strlen( $payload ) ) % 4 ) );
-
-	}   
+	}
 
 	/**
 	 * encode_byte_array_to_hex
 	 *
 	 * @param array $byte_array Passes a byte array to be encoded to hex
 	 *
-	 * @return string Returns a hex encoded string 
+	 * @return string Returns a hex encoded string
 	 */
 
 	public function encode_byte_array_to_hex( $byte_array ) {
@@ -293,7 +284,7 @@ class JwtTools
 	 *
 	 * @param string $string Passes string to convert to hex
 	 *
-	 * @return string Returns a hex encoded string 
+	 * @return string Returns a hex encoded string
 	 */
 
 	public function string_to_hex( $string ) {
@@ -317,7 +308,7 @@ class JwtTools
 	 *
 	 * @param string $signature Passes a string signature from a JWT
 	 *
-	 * @return string Returns an array containing GMP encoded r and s values to represent the signature for mathematical use 
+	 * @return string Returns an array containing GMP encoded r and s values to represent the signature for mathematical use
 	 */
 
 	public function create_signature_object( $signature ) {
@@ -353,16 +344,16 @@ class JwtTools
 		$subject  = $this->eae_decode( $subject_id );
 		$networks = $this->get_networks();
 
-		if ( $issuer[ 'network' ] !== $subject[ 'network' ] ) {
+		if ( $issuer['network'] !== $subject['network'] ) {
 			return 'Error: Subject and Issuer must be in the same network!';
 		}
 
 		if ( ! $networks[ $issuer['network'] ] ) {
 			return 'Network id ' . $issuer['network'] . ' is not configured';
-		} 
+		}
 		
 		$call_obj->rpc_url            = $networks[ $issuer['network'] ]['registry'];
-		$call_obj->registryAddress    = $networks[ $issuer['network'] ]['registry'];
+		$call_obj->registry_address    = $networks[ $issuer['network'] ]['registry'];
 		$call_obj->function_signature = '0x447885f0';
 		$call_obj->call_string        = $this->encode_function_call( $call_obj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
 
@@ -386,14 +377,14 @@ class JwtTools
 	public function make_http_call( $url, $body, $is_post ) {
 
 		$options = array(
-					CURLOPT_URL            => $url,
-					CURLOPT_HEADER         => false,
-					CURLOPT_FRESH_CONNECT  => true,
-					CURLOPT_POSTFIELDS     => $body,
-					CURLOPT_RETURNTRANSFER => true,
-					CURLOPT_POST           => $is_post,
-					CURLOPT_HTTPHEADER     => array( 'Content-Type: application/json' ),
-				);
+			CURLOPT_URL            => $url,
+			CURLOPT_HEADER         => false,
+			CURLOPT_FRESH_CONNECT  => true,
+			CURLOPT_POSTFIELDS     => $body,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_POST           => $is_post,
+			CURLOPT_HTTPHEADER     => array( 'Content-Type: application/json' ),
+		);
 
 		$ch = curl_init();
 
@@ -502,7 +493,7 @@ class JwtTools
 		return [
 			'address' => $address,
 			'network' => $network,
-		];              
+		];
 	}
 
 	/**
@@ -513,23 +504,23 @@ class JwtTools
 
 	private function get_networks() {
 		return [
-				'0x01' => [
-					'registry' => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
-					'rpc_url'  => 'https://mainnet.infura.io',
-				], 
-				'0x02' => [
-					'registry' => '0x41566e3a081f5032bdcad470adb797635ddfe1f0',
-					'rpc_url'  => 'https://ropsten.infura.io',
-				], 
-				'0x03' => [
-					'registry' => '0x5f8e9351dc2d238fb878b6ae43aa740d62fc9758',
-					'rpc_url'  => 'https://kovan.infura.io',
-				],
-				'0x04' => [
-					'registry' => '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
-					'rpc_url'  => 'https://rinkeby.infura.io',
-				],
-		    ];
+			'0x01' => [
+				'registry' => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
+				'rpc_url'  => 'https://mainnet.infura.io',
+			],
+			'0x02' => [
+				'registry' => '0x41566e3a081f5032bdcad470adb797635ddfe1f0',
+				'rpc_url'  => 'https://ropsten.infura.io',
+			],
+			'0x03' => [
+				'registry' => '0x5f8e9351dc2d238fb878b6ae43aa740d62fc9758',
+				'rpc_url'  => 'https://kovan.infura.io',
+			],
+			'0x04' => [
+				'registry' => '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
+				'rpc_url'  => 'https://rinkeby.infura.io',
+			],
+		];
 	}
 
 }
