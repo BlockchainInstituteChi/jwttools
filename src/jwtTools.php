@@ -97,12 +97,12 @@ class JwtTools {
 
 	public function verify_jwt( $jwt ) {
 
-		$ipfs_result   = $this->resolve_DID_from_JWT( $jwt );
+		$ipfs_result   = $this->resolve_did_from_jwt( $jwt );
 		$public_key    = substr( $ipfs_result->publicKey, 2 );
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
 		$signature_set = $this->create_signature_object( $opt['signature'] );
-		$signature_k   = new kSig( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v']);
+		$signature_k   = new kSig( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v'] );
 		$hash          = hash( 'sha256', $opt['header'] . '.' . $opt['body'] );
 
 		return $secp256k1->verify( $hash, $signature_k, $public_key );
@@ -111,14 +111,14 @@ class JwtTools {
 
 
 	/**
-	 * resolve_DID_from_JWT
+	 * resolve_did_from_jwt
 	 *
 	 * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
 	 *
 	 * @return string Returns the full DID payload from IPFS in JSON encoded format
 	 */
 
-	public function resolve_DID_from_JWT( $jwt ) {
+	public function resolve_did_from_jwt( $jwt ) {
 
 		$infura_payload = $this->resolve_did( 'uPortProfileIPFS1220', $jwt );
 		$ipfs_record    = json_decode( $this->resolve_infura_payload( $infura_payload ), false );
@@ -130,7 +130,7 @@ class JwtTools {
 
 	/**
 	 * resolve_infura_payload
-	 * 
+	 *
 	 * @param string $infura_payload Passes a JSON encoded request payload to call via HTTP
 	 *
 	 * @return object Returns whatever is found after calling infura
@@ -222,7 +222,7 @@ class JwtTools {
 		$sender_mnid = $this->get_mnid( $jwt, 'nad' );
 		$signer_mnid = $this->get_mnid( $jwt, 'aud' );
 
-		if ( ( $sender_mnid === null ) || ( $signer_mnid === null ) ) {
+		if ( ( null === $sender_mnid ) || ( null === $signer_mnid ) ) {
 			return $this->prepare_registry_call_string( $profile_id, $this->get_mnid( $jwt, 'iss' ), $this->get_mnid( $jwt, 'iss' ) );
 		} else {
 			return $this->prepare_registry_call_string( $profile_id, $sender_mnid, $sender_mnid );
@@ -241,7 +241,7 @@ class JwtTools {
 
 	public function get_mnid( $jwt, $mode ) {
 
-		$json_body = base64_decode( urldecode( ( $this->deconstruct_and_decode( $jwt ) )['body'] ));
+		$json_body = base64_decode( urldecode( ( $this->deconstruct_and_decode( $jwt ) )['body'] ) );
 		if ( isset( ( json_decode( $json_body, true ) )[ $mode ] ) ) {
 			$sender = ( json_decode( $json_body, true ) )[ $mode ];
 			return $sender;
@@ -250,7 +250,7 @@ class JwtTools {
 		}
 
 	}
-	
+
 	/**
 	 * base64url_decode
 	 *
@@ -316,11 +316,11 @@ class JwtTools {
 		$raw_sig     = $this->base64url_decode( $signature );
 		$first_half  = $this->string_to_hex( substr( $raw_sig, 0, 32 ) );
 		$second_half = $this->string_to_hex( substr( $raw_sig, 32, 64 ) );
-				
+
 		return [
 			'v'    => 0,
 			'rGMP' => gmp_init( '0x' . $first_half, 16 ),
-			'sGMP' => gmp_init( '0x' . $second_half, 16 )
+			'sGMP' => gmp_init( '0x' . $second_half, 16 ),
 		];
 
 	}
@@ -351,9 +351,9 @@ class JwtTools {
 		if ( ! $networks[ $issuer['network'] ] ) {
 			return 'Network id ' . $issuer['network'] . ' is not configured';
 		}
-		
+
 		$call_obj->rpc_url            = $networks[ $issuer['network'] ]['registry'];
-		$call_obj->registry_address    = $networks[ $issuer['network'] ]['registry'];
+		$call_obj->registry_address   = $networks[ $issuer['network'] ]['registry'];
 		$call_obj->function_signature = '0x447885f0';
 		$call_obj->call_string        = $this->encode_function_call( $call_obj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
 
