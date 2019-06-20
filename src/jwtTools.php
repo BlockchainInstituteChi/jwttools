@@ -66,29 +66,29 @@ class jwtTools
 	protected $http_caller = null;
 
 	/**
-	 * create_JWT
+	 * create_jwt
 	 *
-	 * @param string $headerJSON Passes a JSON encoded string to act as the header of the JWT
+	 * @param string $header_json Passes a JSON encoded string to act as the header of the JWT
 	 *
-	 * @param string $bodyJSON Passes a JSON encoded string to act as the body of the JWT
+	 * @param string $body_json Passes a JSON encoded string to act as the body of the JWT
 	 *
-	 * @param string $privateKeyString Passes a string which will be used as the private key to sign the payload
+	 * @param string $private_key_string Passes a string which will be used as the private key to sign the payload
 	 *
 	 * @return string Returns the base 64 encoded and trimmed JWT with a signature generated using the given private key string
 	 */
 
-	public function create_JWT( $headerJSON, $bodyJSON, $privateKeyString ) {
+	public function create_jwt( $header_json, $body_json, $private_key_string ) {
 
 		$secp256k1 = new Secp256k1();
 		$CurveFactory = new CurveFactory;
 		$adapter = EccFactory::getAdapter();
 		$generator = CurveFactory::getGeneratorByName( 'secp256k1' );
 
-		$jwt           = $this->sp_encode_and_trim( $headerJSON ) . "." . $this->sp_encode_and_trim( $bodyJSON );
+		$jwt           = $this->sp_encode_and_trim( $header_json ) . "." . $this->sp_encode_and_trim( $body_json );
 		
 		$keySerializer = new HexPrivateKeySerializer( $generator );
 
-		$signature = $secp256k1->sign( hash( 'sha256', $jwt ), $privateKeyString, [] );
+		$signature = $secp256k1->sign( hash( 'sha256', $jwt ), $private_key_string, [] );
 
 		return $jwt . '.' . $this->sp_encode_and_trim( hex2bin( $signature->toHex() ) );
 
@@ -96,29 +96,29 @@ class jwtTools
 
 
 	/**
-	 * verify_JWT
+	 * verify_jwt
 	 *
 	 * @param string $jwt Passes a properly formed JWT String containing a base 64 url encoded header and body and a valid signature element
 	 *
 	 * @return string Returns either a 1 or 0 to indicate whether the JWT signature was valid
 	 */
 
-	public function verify_JWT( $jwt ) {
+	public function verify_jwt( $jwt ) {
 
-		$ipfsResult = $this->resolve_DID_from_JWT( $jwt );
+		$ipfs_result = $this->resolve_DID_from_JWT( $jwt );
 
-		$public_key =  substr( $ipfsResult->publicKey, 2 );
+		$public_key =  substr( $ipfs_result->publicKey, 2 );
 
 		$opt = $this->deconstruct_and_decode( $jwt );
 
-		$secp256k1 = new Secp256k1();
-		$CurveFactory = new CurveFactory;
-		$adapter = EccFactory::getAdapter();
-		$generator = CurveFactory::getGeneratorByName( 'secp256k1' );
+		$secp256k1 		= new Secp256k1();
+		$CurveFactory 	= new CurveFactory;
+		$adapter 		= EccFactory::getAdapter();
+		$generator 		= CurveFactory::getGeneratorByName( 'secp256k1' );
 		
-		$signature_set = $this->create_signature_object( $opt['signature'] ); 
+		$signature_set 	= $this->create_signature_object( $opt['signature'] ); 
 
-		$signatureK = new kSig ( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v']);
+		$signatureK	 	= new kSig ( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v']);
 
 		$hash = hash( 'sha256', $opt['header'] . '.' . $opt['body'] );
 
@@ -162,8 +162,8 @@ class jwtTools
 		$payload_options = ( object ) [];
 
 		$payload_options->method     = 'eth_call';
-		$payload_options->id         = 1         ;
-		$payload_options->jsonrpc    = '2.0'     ;
+		$payload_options->id         = 1;
+		$payload_options->jsonrpc    = '2.0';
 		$payload_options->params     = array( $params, 'latest' );
 
 		$payload_options = json_encode( $payload_options );
@@ -217,11 +217,11 @@ class jwtTools
 
 	public function deconstruct_and_decode( $jwt ) {
 
-		$exp = explode( ".", $jwt );
+		$exp = explode( '.', $jwt );
 		return [
-			"header"    => $exp[0],
-			"body"      => $exp[1],
-			"signature" => $exp[2]
+			'header'    => $exp[0],
+			'body'      => $exp[1],
+			'signature' => $exp[2]
 		];
 
 	}
@@ -315,15 +315,15 @@ class jwtTools
 	 */
 
 	public function string_to_hex( $string ){
-		$hex='';
-		for ( $i=0; $i < strlen( $string ); $i++ ){
-			$newBit = dechex( ord( $string[ $i ] ) );
+		$hex = '';
+		for ( $i = 0; $i < strlen( $string ); $i++ ) {
+			$new_bit = dechex( ord( $string[ $i ] ) );
 
-			if ( strlen( $newBit ) == 1 ) {
-				$newBit = '0' . $newBit;
+			if ( strlen( $new_bit ) == 1 ) {
+				$new_bit = '0' . $new_bit;
 			}
 
-			$hex .= $newBit;
+			$hex .= $new_bit;
 		}
 		return $hex;
 	}
@@ -338,39 +338,15 @@ class jwtTools
 
 	public function create_signature_object( $signature ) {
 
-		$rawSig = $this->base64url_decode( $signature );
+		$raw_sig = $this->base64url_decode( $signature );
 				
-		$first_half = $this->string_to_hex( substr( $rawSig, 0, 32 ) );
-		$second_half = $this->string_to_hex( substr( $rawSig, 32, 64 ) );
+		$first_half = $this->string_to_hex( substr( $raw_sig, 0, 32 ) );
+		$second_half = $this->string_to_hex( substr( $raw_sig, 32, 64 ) );
 				
 		return [
 			'v' => 0,
 			'rGMP' => gmp_init( '0x' . $first_half, 16 ),
 			'sGMP' => gmp_init( '0x' . $second_half, 16 )
-		];
-
-	}
-
-	/**
-	 * create_signature_objectFromHex
-	 *
-	 * @param string $signature Passes a string signature from a JWT in hex format
-	 *
-	 * @return string Returns an array containing GMP encoded r and s values to represent the signature for mathematical use 
-	 */
-
-	public function create_signature_objectFromHex( $signature ) {
-
-
-		$rawSig = $this->base64url_decode( $signature );
-
-		$firstHalf  = bin2hex( substr( $rawSig,  0, 32 ) );
-		$secondHalf = bin2hex( substr( $rawSig, 32, 64 ) );
-
-		return  [
-			'v' => 0,
-			'rGMP' => gmp_init( $firstHalf, 16 ),
-			'sGMP' => gmp_init( $secondHalf, 16 )
 		];
 
 	}
@@ -389,7 +365,7 @@ class jwtTools
 
 	private function prepare_registry_callstring( $registration_identifier, $issuer_id, $subject_id ) {
 
-		$callObj    = ( object ) [];
+		$call_obj   = ( object ) [];
 		$issuer     = $this->eae_decode( $issuer_id );
 		$subject    = $this->eae_decode( $subject_id );
 		$networks   = $this->get_networks();
@@ -399,15 +375,15 @@ class jwtTools
 		}
 
 		if ( !$networks[ $issuer['network'] ] ) {
-		   return 'Network id ' . $issuer['network'] . ' is not configured';
+		   	return 'Network id ' . $issuer['network'] . ' is not configured';
 		} 
 		
-		$callObj->rpcUrl             = $networks[ $issuer['network'] ]['registry'];
-		$callObj->registryAddress    = $networks[ $issuer['network'] ]['registry'];
-		$callObj->function_signature = '0x447885f0';
-		$callObj->callString         = $this->encode_function_call( $callObj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
+		$call_obj->rpcUrl             = $networks[ $issuer['network'] ]['registry'];
+		$call_obj->registryAddress    = $networks[ $issuer['network'] ]['registry'];
+		$call_obj->function_signature = '0x447885f0';
+		$call_obj->callString         = $this->encode_function_call( $call_obj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
 
-		return $callObj;
+		return $call_obj;
 
 	}
 
@@ -427,14 +403,14 @@ class jwtTools
 	public function make_http_call( $url, $body, $is_post ) {
 
 		$options = array(
-					 CURLOPT_URL => $url,
-					 CURLOPT_HEADER => false,
-					 CURLOPT_FRESH_CONNECT => true,
-					 CURLOPT_POSTFIELDS => $body,
-					 CURLOPT_RETURNTRANSFER => true,
-					 CURLOPT_POST => $is_post,
-					 CURLOPT_HTTPHEADER => array( 'Content-Type: application/json' )
-					);
+					CURLOPT_URL 			=> $url,
+					CURLOPT_HEADER 		=> false,
+					CURLOPT_FRESH_CONNECT 	=> true,
+					CURLOPT_POSTFIELDS 	=> $body,
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_POST 			=> $is_post,
+					CURLOPT_HTTPHEADER 	=> array( 'Content-Type: application/json' )
+				);
 
 		$ch = curl_init();
 
@@ -458,11 +434,13 @@ class jwtTools
 	private function sp_encode_and_trim( $payload ) {
 
 		$encoded = base64_encode( $payload );
+
 		if ( sizeof( explode( "=", $encoded ) ) > 1 ) {
 			$trimmed = explode( "=", $encoded )[ 0 ];
 		} else {
 			$trimmed = $encoded;
 		}
+
 		return strtr( $trimmed, '+/', '-_' );
 	}
 
@@ -524,10 +502,10 @@ class jwtTools
 	 */
 
 	private function pad( $pad, $str, $pad_left ) {
-		if ( gettype( $str ) == 'undefined' ) {
+		if ( 'undefined' == gettype( $str ) ) {
 			return $pad;
 		}
-		if ( $pad_left === true ) {
+		if ( true === $pad_left ) {
 			return substr( ( $pad . $str ), ( -1 ) * strlen( $pad ) );
 		} else {
 			return substr( ( $str . $pad ), 0, strlen( $pad ) );
@@ -545,18 +523,18 @@ class jwtTools
 	private function eae_decode( $payload ) {
 		$base58 = new Base58( [
 			'characters' => Base58::IPFS,
-			'version'    => 0x00
+			'version'    => 0x00,
 		] );
 
-		$data       = unpack( "C*", $base58->decode( $payload ) );
-		$netLength  = sizeof( $data ) - 24;
-		$network    = array_slice( $data, 1, $netLength - 1 );
-		$address    = array_slice( $data, $netLength, 20 + $netLength - 2 );
-		$network    = '0x' . $this->encode_byte_array_to_hex( $network );
-		$address    = '0x' . $this->encode_byte_array_to_hex( $address );
+		$data       	= unpack( "C*", $base58->decode( $payload ) );
+		$net_length  	= sizeof( $data ) - 24;
+		$network    	= array_slice( $data, 1, $net_length - 1 );
+		$address    	= array_slice( $data, $net_length, 20 + $net_length - 2 );
+		$network    	= '0x' . $this->encode_byte_array_to_hex( $network );
+		$address    	= '0x' . $this->encode_byte_array_to_hex( $address );
 		return [
 			'address' => $address,
-			'network' => $network
+			'network' => $network,
 		];              
 	}
 
@@ -568,22 +546,22 @@ class jwtTools
 
 	private function get_networks() {
 		return [
-			  '0x01' => [
+			  	'0x01' => [
 					'registry'  => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
-					'rpcUrl'    => 'https://mainnet.infura.io'
+					'rpcUrl'    => 'https://mainnet.infura.io',
 			  ], 
-			  '0x02' => [
+			  	'0x02' => [
 					'registry'  => '0x41566e3a081f5032bdcad470adb797635ddfe1f0',
-					'rpcUrl'    => 'https://ropsten.infura.io'
+					'rpcUrl'    => 'https://ropsten.infura.io',
 			  ], 
-			  '0x03' => [
+			  	'0x03' => [
 					'registry'  => '0x5f8e9351dc2d238fb878b6ae43aa740d62fc9758',
-					'rpcUrl'    => 'https://kovan.infura.io'
+					'rpcUrl'    => 'https://kovan.infura.io',
 			  ],
-			  '0x04' => [
+			  	'0x04' => [
 					'registry'  => '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
-					'rpcUrl'    => 'https://rinkeby.infura.io'
-			  ]
+					'rpcUrl'    => 'https://rinkeby.infura.io',
+			  ],
 		];
 	}
 
