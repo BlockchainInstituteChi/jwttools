@@ -174,7 +174,7 @@ class JwtTools {
 	}
 
 	/**
-	 * registry_encoding_to_ipfs
+	 * fetch_ipfs
 	 *
 	 * @param string $ipfs_hash The address of the IPFS record to retrieve
 	 *
