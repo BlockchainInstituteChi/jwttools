@@ -50,13 +50,11 @@ class JwtTools {
 	 */
 	public function __construct( $http_caller ) {
 
-		$this->http_caller = 'make_http_call';
-
-		// if (isset($http_caller)) {
-		//     $this->http_caller = $http_caller;
-		// } else {
-		//     $this->http_caller = 'make_http_call';
-		// }
+		if (isset($http_caller)) {
+		    $this->http_caller = $http_caller;
+		} else {
+		    $this->http_caller = null;
+		}
 	}
 
 	/**
@@ -174,7 +172,7 @@ class JwtTools {
 	}
 
 	/**
-	 * registry_encoding_to_ipfs
+	 * fetch_ipfs
 	 *
 	 * @param string $ipfs_hash The address of the IPFS record to retrieve
 	 *
@@ -375,6 +373,10 @@ class JwtTools {
 	 */
 
 	public function make_http_call( $url, $body, $is_post ) {
+
+		if ( null != $this->http_caller ) {
+			return call_user_func( $this->http_caller, $url, $body, $is_post );
+		}
 
 		$options = array(
 			CURLOPT_URL            => $url,

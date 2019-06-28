@@ -26,6 +26,27 @@ This repo can be installed as a composer module with the command below:
 *This function returns a valid signed JWT using a hex encoded signing key. See the jwtComposer.php example file for further details.*
 
 
+## Dependancies 
+
+PHP GMP Math Tools:
+
+```apt-get install php7.0-gmp```
+
+
+
+PHP CURL Tools:
+
+```apt-get install php-curl```
+
+
+
+## Troubleshooting
+
+If you get an error message like "CURLOPT_URL is not defined" then you probably need to install php curl as shown above.
+
+If you get an error like "GMP is not defined" you probably need to install GMP tools as shown above.
+
+
 ## Payload Formats
 
 **The JWT:**
@@ -85,6 +106,17 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   print_r($DID);
 
+  /**
+   * make_http_call - example of http callback format
+   *
+   * @param string $url Accepts a URL to call to retrieve a result
+   *
+   * @param string $body JSON Encoded payload (if POST = true)
+   *
+   * @param string $is_post Passes a Bool -> true means this is a post call
+   *
+   * @return string Returns the resulting HTTP payload  
+   */
   function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
@@ -178,7 +210,18 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
       }
       return $trimmed;
     }
-    
+
+  /**
+   * make_http_call - example of http callback format
+   *
+   * @param string $url Accepts a URL to call to retrieve a result
+   *
+   * @param string $body JSON Encoded payload (if POST = true)
+   *
+   * @param string $is_post Passes a Bool -> true means this is a post call
+   *
+   * @return string Returns the resulting HTTP payload  
+   */    
   function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
@@ -221,7 +264,17 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   echo $address;
 
-
+  /**
+   * make_http_call - example of http callback format
+   *
+   * @param string $url Accepts a URL to call to retrieve a result
+   *
+   * @param string $body JSON Encoded payload (if POST = true)
+   *
+   * @param string $is_post Passes a Bool -> true means this is a post call
+   *
+   * @return string Returns the resulting HTTP payload  
+   */
   function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
@@ -266,6 +319,18 @@ To resolve the DID to a public key, it's necessary to make a call to the infura 
 
   echo "\r\n\r\n";
 
+
+  /**
+   * make_http_call - example of http callback format
+   *
+   * @param string $url Accepts a URL to call to retrieve a result
+   *
+   * @param string $body JSON Encoded payload (if POST = true)
+   *
+   * @param string $is_post Passes a Bool -> true means this is a post call
+   *
+   * @return string Returns the resulting HTTP payload  
+   */
   function make_http_call ($url, $body, $is_post) {
 
         $options = array(CURLOPT_URL => $url,
