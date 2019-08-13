@@ -97,8 +97,14 @@ class JwtTools {
 
 	public function verify_jwt( $jwt ) {
 
-		$ipfs_result   = $this->resolve_did_from_jwt( $jwt );
-		$public_key    = substr( $ipfs_result->publicKey, 2 );
+		// $ipfs_result   = $this->resolve_did_from_jwt( $jwt );
+		// $public_key    = substr( $ipfs_result->publicKey, 2 );
+
+		$did           = json_decode(base64_decode( urldecode(($this->deconstruct_and_decode( $jwt ))['body'])));
+		error_log('did is');
+		error_log($did->iss);
+		$public_key    = substr( explode(":", $did->iss)[2], 2);
+		error_log('public key is ' . $public_key);
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
 		$signature_set = $this->create_signature_object( $opt['signature'] );
@@ -122,6 +128,7 @@ class JwtTools {
 
 		$infura_payload = $this->resolve_did( 'uPortProfileIPFS1220', $jwt );
 		$ipfs_record    = json_decode( $this->resolve_infura_payload( $infura_payload ), false );
+		error_log('ipfs ' . json_encode($ipfs_record));
 		$ipfs_encoded   = $this->registry_encoding_to_ipfs( $ipfs_record->result );
 
 		return json_decode( $this->fetch_ipfs( $ipfs_encoded ) );
@@ -139,7 +146,7 @@ class JwtTools {
 	public function resolve_infura_payload( $infura_payload ) {
 
 		$params       = (object) [];
-		$params->to   = $infura_payload->rpc_url;
+		$params->to   = $infura_payload->registry_address;
 		$params->data = $infura_payload->call_string;
 
 		$payload_options          = (object) [];
@@ -221,10 +228,12 @@ class JwtTools {
 	public function resolve_did( $profile_id, $jwt ) {
 		$sender_mnid = $this->get_mnid( $jwt, 'nad' );
 		$signer_mnid = $this->get_mnid( $jwt, 'aud' );
-
+		error_log('sender: ' . $sender_mnid . " signer: " . $signer_mnid . "\r\n\r\n");
 		if ( ( null === $sender_mnid ) || ( null === $signer_mnid ) ) {
+			error_log('------------------ Path 1 -----------------');
 			return $this->prepare_registry_call_string( $profile_id, $this->get_mnid( $jwt, 'iss' ), $this->get_mnid( $jwt, 'iss' ) );
 		} else {
+			error_log('------------------ Path 2 -----------------');
 			return $this->prepare_registry_call_string( $profile_id, $sender_mnid, $sender_mnid );
 		}
 	}
@@ -242,6 +251,7 @@ class JwtTools {
 	public function get_mnid( $jwt, $mode ) {
 
 		$json_body = base64_decode( urldecode( ( $this->deconstruct_and_decode( $jwt ) )['body'] ) );
+		error_log( 'body: ' . $json_body . "\r\n\r\n" );
 		if ( isset( ( json_decode( $json_body, true ) )[ $mode ] ) ) {
 			$sender = ( json_decode( $json_body, true ) )[ $mode ];
 			return $sender;
@@ -344,6 +354,7 @@ class JwtTools {
 		$subject  = $this->eae_decode( $subject_id );
 		$networks = $this->get_networks();
 
+
 		if ( $issuer['network'] !== $subject['network'] ) {
 			return 'Error: Subject and Issuer must be in the same network!';
 		}
@@ -352,10 +363,12 @@ class JwtTools {
 			return 'Network id ' . $issuer['network'] . ' is not configured';
 		}
 
-		$call_obj->rpc_url            = $networks[ $issuer['network'] ]['registry'];
+		$call_obj->rpc_url            = $networks[ $issuer['network'] ]['rpc_url'];
 		$call_obj->registry_address   = $networks[ $issuer['network'] ]['registry'];
 		$call_obj->function_signature = '0x447885f0';
 		$call_obj->call_string        = $this->encode_function_call( $call_obj->function_signature, $registration_identifier, $issuer['address'], $subject['address'] );
+
+		error_log("\r\n\r\ncall_obj " . json_encode($call_obj) . "\r\n");
 
 		return $call_obj;
 
@@ -484,12 +497,17 @@ class JwtTools {
 			'version'    => 0x00,
 		] );
 
+		error_log('payload is ' . $payload . "\r\n");
+
 		$data       = unpack( 'C*', $base58->decode( $payload ) );
 		$net_length = sizeof( $data ) - 24;
 		$network    = array_slice( $data, 1, $net_length - 1 );
 		$address    = array_slice( $data, $net_length, 20 + $net_length - 2 );
 		$network    = '0x' . $this->encode_byte_array_to_hex( $network );
 		$address    = '0x' . $this->encode_byte_array_to_hex( $address );
+
+		error_log(json_encode([ 'address' => $address,	'network' => $network ]));
+
 		return [
 			'address' => $address,
 			'network' => $network,
