@@ -97,14 +97,8 @@ class JwtTools {
 
 	public function verify_jwt( $jwt ) {
 
-		// $ipfs_result   = $this->resolve_did_from_jwt( $jwt );
-		// $public_key    = substr( $ipfs_result->publicKey, 2 );
-
-		$did           = json_decode(base64_decode( urldecode(($this->deconstruct_and_decode( $jwt ))['body'])));
-		error_log('did is');
-		error_log($did->iss);
-		$public_key    = substr( explode(":", $did->iss)[2], 2);
-		error_log('public key is ' . $public_key);
+		$ipfs_result   = $this->resolve_did_from_jwt( $jwt );
+		$public_key    = substr( $ipfs_result->publicKey, 2 );
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
 		$signature_set = $this->create_signature_object( $opt['signature'] );
@@ -155,7 +149,7 @@ class JwtTools {
 		$payload_options->jsonrpc = '2.0';
 		$payload_options->params  = array( $params, 'latest' );
 
-		return $this->make_http_call( 'https://rinkeby.infura.io/uport-lite-library', json_encode( $payload_options ), 1 );
+		return $this->make_http_call( 'https://rinkeby.infura.io/ethr-did', json_encode( $payload_options ), 1 );
 
 	}
 
@@ -226,8 +220,8 @@ class JwtTools {
 	 */
 
 	public function resolve_did( $profile_id, $jwt ) {
-		$sender_mnid = $this->get_mnid( $jwt, 'nad' );
-		$signer_mnid = $this->get_mnid( $jwt, 'aud' );
+		$sender_mnid = $this->get_mnid( $jwt, 'aud' );
+		$signer_mnid = $this->get_mnid( $jwt, 'nad' );
 		error_log('sender: ' . $sender_mnid . " signer: " . $signer_mnid . "\r\n\r\n");
 		if ( ( null === $sender_mnid ) || ( null === $signer_mnid ) ) {
 			error_log('------------------ Path 1 -----------------');
@@ -506,6 +500,7 @@ class JwtTools {
 		$network    = '0x' . $this->encode_byte_array_to_hex( $network );
 		$address    = '0x' . $this->encode_byte_array_to_hex( $address );
 
+		error_log('PENIS PENIS PENIS PENIS');
 		error_log(json_encode([ 'address' => $address,	'network' => $network ]));
 
 		return [
@@ -524,22 +519,21 @@ class JwtTools {
 		return [
 			'0x01' => [
 				'registry' => '0xab5c8051b9a1df1aab0149f8b0630848b7ecabf6',
-				'rpc_url'  => 'https://mainnet.infura.io',
+				'rpc_url'  => 'https://mainnet.infura.io/ethr-did',
 			],
 			'0x02' => [
 				'registry' => '0x41566e3a081f5032bdcad470adb797635ddfe1f0',
-				'rpc_url'  => 'https://ropsten.infura.io',
+				'rpc_url'  => 'https://ropsten.infura.io/ethr-did',
 			],
 			'0x03' => [
 				'registry' => '0x5f8e9351dc2d238fb878b6ae43aa740d62fc9758',
-				'rpc_url'  => 'https://kovan.infura.io',
+				'rpc_url'  => 'https://kovan.infura.io/ethr-did',
 			],
 			'0x04' => [
 				'registry' => '0x2cc31912b2b0f3075a87b3640923d45a26cef3ee',
-				'rpc_url'  => 'https://rinkeby.infura.io',
+				'rpc_url'  => 'https://rinkeby.infura.io/ethr-did',
 			],
 		];
 	}
 
 }
-
