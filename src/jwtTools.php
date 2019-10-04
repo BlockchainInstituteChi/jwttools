@@ -98,7 +98,11 @@ class JwtTools {
 	public function verify_jwt( $jwt ) {
 
 		$ipfs_result   = $this->resolve_did_from_jwt( $jwt );
+
 		$public_key    = substr( $ipfs_result->publicKey, 2 );
+
+		error_log( 'puk_key is ' . $public_key );
+
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
 		$signature_set = $this->create_signature_object( $opt['signature'] );
