@@ -97,15 +97,23 @@ class JwtTools {
 
 	public function verify_jwt( $jwt ) {
 
-		$ipfs_result   = $this->resolve_did_from_jwt( $jwt );
-		$public_key    = substr( $ipfs_result->publicKey, 2 );
+		// $ipfs_result   = $this->resolve_did_from_jwt( $jwt );
+
+		// error_log("ipfsResult is \r\n\r\n" . json_encode($ipfs_result)) . "\r\n\r\n";
+
+		$eth_address   = $this->resolve_did( 'uPortProfileIPFS1220', $jwt );
+
+		// $eth_address    = substr( $ipfs_result->publicKey, 2 );
+
+		error_log('public key is ' . $eth_address);
+
 		$opt           = $this->deconstruct_and_decode( $jwt );
 		$secp256k1     = new Secp256k1();
 		$signature_set = $this->create_signature_object( $opt['signature'] );
 		$signature_k   = new kSig( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v'] );
 		$hash          = hash( 'sha256', $opt['header'] . '.' . $opt['body'] );
 
-		return $secp256k1->verify( $hash, $signature_k, $public_key );
+		return $secp256k1->verify( $hash, $signature_k, $eth_address );
 
 	}
 
@@ -122,8 +130,10 @@ class JwtTools {
 
 		$infura_payload = $this->resolve_did( 'uPortProfileIPFS1220', $jwt );
 		$ipfs_record    = json_decode( $this->resolve_infura_payload( $infura_payload ), false );
-		error_log('ipfs ' . json_encode($ipfs_record));
+		// error_log('ipfs ' . json_encode($ipfs_record));
 		$ipfs_encoded   = $this->registry_encoding_to_ipfs( $ipfs_record->result );
+
+		// error_log('ipfs encoded was  ' . $ipfs_encoded);
 
 		return json_decode( $this->fetch_ipfs( $ipfs_encoded ) );
 
@@ -149,7 +159,7 @@ class JwtTools {
 		$payload_options->jsonrpc = '2.0';
 		$payload_options->params  = array( $params, 'latest' );
 
-		return $this->make_http_call( 'https://rinkeby.infura.io/ethr-did', json_encode( $payload_options ), 1 );
+		return $this->make_http_call( 'https://rinkeby.infura.io/', json_encode( $payload_options ), 1 );
 
 	}
 
@@ -162,6 +172,7 @@ class JwtTools {
 	 */
 
 	public function registry_encoding_to_ipfs( $hex_str ) {
+		// error_log('registry_encoding_to_ipfs received ' . $hex_str);
 
 		$base58 = new Base58( [
 			'characters' => Base58::IPFS,
@@ -175,7 +186,7 @@ class JwtTools {
 	}
 
 	/**
-	 * registry_encoding_to_ipfs
+	 * fetch_ipfs
 	 *
 	 * @param string $ipfs_hash The address of the IPFS record to retrieve
 	 *
@@ -185,6 +196,7 @@ class JwtTools {
 	public function fetch_ipfs( $ipfs_hash ) {
 
 		$uri = 'https://ipfs.infura.io/ipfs/' . $ipfs_hash;
+		// error_log('ipfs url is ' . $uri );
 
 		return $this->make_http_call( $uri, json_encode( [] ), 0 );
 
@@ -220,16 +232,35 @@ class JwtTools {
 	 */
 
 	public function resolve_did( $profile_id, $jwt ) {
-		$sender_mnid = $this->get_mnid( $jwt, 'aud' );
-		$signer_mnid = $this->get_mnid( $jwt, 'nad' );
-		error_log('sender: ' . $sender_mnid . " signer: " . $signer_mnid . "\r\n\r\n");
-		if ( ( null === $sender_mnid ) || ( null === $signer_mnid ) ) {
-			error_log('------------------ Path 1 -----------------');
-			return $this->prepare_registry_call_string( $profile_id, $this->get_mnid( $jwt, 'iss' ), $this->get_mnid( $jwt, 'iss' ) );
-		} else {
-			error_log('------------------ Path 2 -----------------');
-			return $this->prepare_registry_call_string( $profile_id, $sender_mnid, $sender_mnid );
-		}
+		$sender_mnid = $this->get_mnid( $jwt, 'nad' );
+		$signer_mnid = $this->get_mnid( $jwt, 'aud' );
+		$signer_iss  = $this->get_mnid( $jwt, 'iss' );
+	
+		error_log('issuer: ' . $signer_iss . " length: " . sizeof(explode( ":", $signer_iss )) ); 
+
+		// error_log('sender: ' . $sender_mnid . " signer: " . $signer_mnid . "\r\n\r\n");
+
+		$pub_key = explode(":", $signer_iss)[2];
+
+		error_log("pubkey is " . $pub_key);
+
+		return $pub_key;
+
+		// if ( ) {
+
+		// 	return $pub_key;
+
+		// 	// return $this->prepare_registry_call_string( $profile_id, $this->get_mnid( $jwt, 'iss' ), $this->get_mnid( $jwt, 'iss' ) );
+			
+			
+		// } 
+		// else if ( ( null === $sender_mnid ) || ( null === $signer_mnid ) ) {
+		// 	error_log('------------------ Path 1 -----------------');
+		// 	return $this->prepare_registry_call_string( $profile_id, $this->get_mnid( $jwt, 'iss' ), $this->get_mnid( $jwt, 'iss' ) );
+		// } else {
+		// 	error_log('------------------ Path 2 -----------------');
+		// 	return $this->prepare_registry_call_string( $profile_id, $sender_mnid, $sender_mnid );
+		// }
 	}
 
 	/**
@@ -491,7 +522,7 @@ class JwtTools {
 			'version'    => 0x00,
 		] );
 
-		error_log('payload is ' . $payload . "\r\n");
+		// error_log('payload is ' . $payload . "\r\n");
 
 		$data       = unpack( 'C*', $base58->decode( $payload ) );
 		$net_length = sizeof( $data ) - 24;
@@ -500,8 +531,7 @@ class JwtTools {
 		$network    = '0x' . $this->encode_byte_array_to_hex( $network );
 		$address    = '0x' . $this->encode_byte_array_to_hex( $address );
 
-		error_log('PENIS PENIS PENIS PENIS');
-		error_log(json_encode([ 'address' => $address,	'network' => $network ]));
+		// error_log(json_encode([ 'address' => $address,	'network' => $network ]));
 
 		return [
 			'address' => $address,
