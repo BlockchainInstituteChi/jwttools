@@ -32,11 +32,6 @@ use Mdanter\Ecc\Curves\CurveFactory;
 use Mdanter\Ecc\Curves\SecgCurve;
 use Mdanter\Ecc\Math\GmpMathInterface;
 use Mdanter\Ecc\Crypto\Signature\Signer;
-use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
-use Mdanter\Ecc\Util\BinaryString;
-use Pelieth\LaravelEcrecover\EthSigRecover;
-use Pelieth\LaravelEcrecover\Signature as pSig;
 
 use kornrunner\Secp256k1;
 use kornrunner\Signature\Signature as kSig;
@@ -50,26 +45,14 @@ use kornrunner\Serializer\HexPrivateKeySerializer;
 // include 'vendor/psychob/crypto-currency-php/src/Wallet.class.php';
 // include 'vendor/psychob/crypto-currency-php/src/Signature.class.php';
 
-use InvalidArgumentException;
-use RuntimeException;
-use kornrunner\Keccak;
-use Elliptic\EC;
-use Elliptic\EC\KeyPair;
-use Elliptic\EC\Signature;
+use PsychoB\CryptoCurrencyPHP\Signature as Signature;
+use PsychoB\CryptoCurrencyPHP\AddressCodec as AddressCodec;
+
+// use psychob\CryptoCurrencyPhp as Signature;
 
 use Tuupola\Base58;
 
 class JwtTools {
-
-    protected $adapter;
-
-    protected $generator;
-
-    protected $curve;
-
-    protected $deserializer;
-
-    protected $algorithm;
 
 	/**
 	 * Construct
@@ -79,123 +62,15 @@ class JwtTools {
 	 * @return string Returns the base 64 encoded and trimmed JWT with a signature generated using the given private key string
 	 */
 	public function __construct( $http_caller ) {
-		$hashAlgorithm='sha256';
+
 		$this->http_caller = 'make_http_call';
-		$this->adapter = EccFactory::getAdapter();
-        $this->generator = CurveFactory::getGeneratorByName(SecgCurve::NAME_SECP_256K1);
-        $this->curve = $this->generator->getCurve();
-        $this->deserializer = new HexPrivateKeySerializer($this->generator);
-        $this->algorithm = $hashAlgorithm;
+
 		// if (isset($http_caller)) {
 		//     $this->http_caller = $http_caller;
 		// } else {
 		//     $this->http_caller = 'make_http_call';
 		// }
 	}
-
-    /**
-     * sha3
-     * keccak256
-     * 
-     * @param string $value
-     * @return string
-     */
-    public function sha3(string $value)
-    {
-        $hash = Keccak::hash($value, 256);
-        if ($hash === $this::SHA3_NULL_HASH) {
-            return null;
-        }
-        return $hash;
-    }
-    /**
-     * isZeroPrefixed
-     * 
-     * @param string $value
-     * @return bool
-     */
-    public function isZeroPrefixed(string $value)
-    {
-        return (strpos($value, '0x') === 0);
-    }
-
-    /**
-     * isHex
-     * 
-     * @param string $value
-     * @return bool
-     */
-    public function isHex(string $value)
-    {
-        return (is_string($value) && preg_match('/^(0x)?[a-fA-F0-9]+$/', $value) === 1);
-    }
-
-    /**
-     * publicKeyToAddress
-     * 
-     * @param string $publicKey
-     * @return string
-     */
-    public function publicKeyToAddress(string $publicKey)
-    {
-        if ($this->isHex($publicKey) === false) {
-            throw new InvalidArgumentException('Invalid public key format.');
-        }
-        $publicKey = $this->stripZero($publicKey);
-        if (strlen($publicKey) !== 130) {
-            throw new InvalidArgumentException('Invalid public key length.');
-        }
-        return '0x' . substr($this->sha3(substr(hex2bin($publicKey), 1)), 24);
-    }
-
-
-    /**
-     * stripZero
-     * 
-     * @param string $value
-     * @return string
-     */
-    public function stripZero(string $value)
-    {
-        if ($this->isZeroPrefixed($value)) {
-            $count = 1;
-            return str_replace('0x', '', $value, $count);
-        }
-        return $value;
-    }
-
-
-    /**
-     * recoverPublicKey
-     *
-     * @param string $hash
-     * @param string $r
-     * @param string $s
-     * @param int $v
-     * @return string
-     */
-    public function recoverPublicKey(string $hash, string $r, string $s, int $v)
-    {
-        if ($this->isHex($hash) === false) {
-            throw new InvalidArgumentException('Invalid hash format.');
-        }
-        $hash = $this->stripZero($hash);
-        if ($this->isHex($r) === false || $this->isHex($s) === false) {
-            throw new InvalidArgumentException('Invalid signature format.');
-        }
-        $r = $this->stripZero($r);
-        $s = $this->stripZero($s);
-        if (strlen($r) !== 64 || strlen($s) !== 64) {
-            throw new InvalidArgumentException('Invalid signature length.');
-        }
-        $publicKey = $this->secp256k1->recoverPubKey($hash, [
-            'r' => $r,
-            's' => $s
-        ], $v);
-        $publicKey = $publicKey->encode('hex');
-        return '0x' . $publicKey;
-    }
-
 
 	/**
 	 * http_caller contains the function which should be used to make http calls
@@ -235,84 +110,58 @@ class JwtTools {
 
 	public function verify_jwt( $jwt ) {
 
-		error_log('received JWT ' . $jwt);
+		$public_address   = $this->get_mnid( $jwt, 'iss' );
 
-		$public_address   = explode(":", $this->get_mnid( $jwt, 'iss' ))[2];
+		// $public_key    = substr( $ipfs_result->publicKey, 2 );
 
-		// Returns an address like 0x4dce32e9382c4fb8722555399fe3151920186309
-		error_log( 'address is ' . $public_address );
+		error_log( 'puk_key is ' . $public_address );
 
-		// This splits the sections of the jwt payload into an array 
 		$opt           = $this->deconstruct_and_decode( $jwt );
-
-		error_log( json_encode($opt) );
-
-		$secp256k1     = new Secp256k1();
-		$signature_set = $this->create_signature_object( $opt['signature'] );
-
-		error_log( json_encode($signature_set) );
-
-		$signature_k   = new kSig( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v'] );
+		// $secp256k1     = new Secp256k1();
+		// $signature_set = $this->create_signature_object( $opt['signature'] );
+		// $signature_k   = new kSig( $signature_set['rGMP'], $signature_set['sGMP'], $signature_set['v'] );
 		$hash          = hash( 'sha256', $opt['header'] . '.' . $opt['body'] );
 
-		// $hex    = $this->keccak256($this->base64url_decode( $opt['header'] ) . "." . $this->base64url_decode( $opt['body'] ) );
-		$fullmessage = $opt['header'] . "." . $opt['body'];
-		
-		$hex    = $this->keccak256( $fullmessage );
-		
-		$signed = $this->base64url_decode( $opt['signature']);
+		$messageHex       = $hash;
+		$messageByteArray = unpack('C*', hex2bin($messageHex));
+		$messageGmp       = gmp_init("0x" . $messageHex);
 
-		error_log("hex is " . $hex);
-		error_log("signed is " . $signed . " length is " . strlen($signed));
-      	
-      	$rHex   = $this->keccak256(substr($signed, 0, 32));
-        $sHex   = $this->keccak256(substr($signed, 32, 64));
+		error_log('\r\nMessageHex: ' . $messageHex);
 
-        error_log("\r\nrHex: (Length: " . strlen($rHex));
-        error_log($rHex);
-        error_log("\r\nsHex:(Length: " . strlen($sHex));
-        error_log($sHex);        
-        error_log("\r\nsigned is " . $signed);
+		$raw_sig     = $this->base64url_decode( $opt['signature'] );
 
-        $vValue = hexdec(substr($signed, 66, 2));
-        $messageHex       = substr($hex, 2);
-        $messageByteArray = unpack('C*', hex2bin($messageHex));
-        $messageGmp       = gmp_init("0x" . $messageHex);
+		error_log('\r\nSig: ' . $opt['signature']);
+		error_log('\r\nRaw_Sig: ' . $raw_sig);
 
-        $r = $rHex;		//hex string without 0x
-        $s = $sHex; 	//hex string without 0x
-        $v = $vValue; 	//27 or 28
+		$r = $this->string_to_hex( substr( $raw_sig, 0, 32 ) ); //hex string without 0x
+		$s = $this->string_to_hex( substr( $raw_sig, 32, 64 ) ); 	//hex string without 0x
 
-        //with hex2bin it gives the same byte array as the javascript
-        $rByteArray = unpack('C*', hex2bin($r));
-        $sByteArray = unpack('C*', hex2bin($s));
+		//with hex2bin it gives the same byte array as the javascript
+		$rByteArray = unpack('C*', hex2bin($r));
+		$sByteArray = unpack('C*', hex2bin($s));
 
-        $rGmp = gmp_init("0x" . $r);
-        $sGmp = gmp_init("0x" . $s);
-        $recovery = $v - 27;
+		$rGmp = gmp_init("0x" . $r);
+		$sGmp = gmp_init("0x" . $s);
 
-        error_log("\r\nr:");
-        error_log($r);
-        error_log("\r\ns:");
-        error_log($s);
-        error_log("\r\nv:");
-        error_log($v);
+		error_log('\r\nrGmp' . var_dump($rGmp) . '\r\nsGmp ' . var_dump($sGmp) . '\r\n');
 
-        if ($recovery !== 0 && $recovery !== 1) {
-        	error_log('Invalid signature v value');
-            return false;
-        }
-        $publicKey = pSig::recoverPublicKey($rGmp, $sGmp, $messageGmp, $recovery);
-        $publicKeyString = $publicKey["x"] . $publicKey["y"];
+		$v = 36 + gmp_sign($rGmp);
 
-        return $publicKeyString;
-        // return '0x'. substr($this->keccak256(hex2bin($publicKeyString)), -40);
+		$signature = array_merge($rByteArray, $sByteArray);
+
+		$recovery = $v - 36;
+
+		if ($recovery !== 0 && $recovery !== 1) {
+
+		    throw new Exception('Invalid signature v value');
+		}
+
+		$publicKey = Signature::recoverPublicKey($rGmp, $sGmp, $messageGmp, $recovery);
+
+		return AddressCodec::Compress( $publicKey );
 
 	}
 
-    public function keccak256($str) {
-        return '0x'. Keccak::hash($str, 256);
-    }
 
 	/**
 	 * resolve_did_from_jwt
@@ -465,7 +314,6 @@ class JwtTools {
 	 */
 
 	public function base64url_decode( $payload ) {
-		error_log('decoding: ' . $payload );
 		return base64_decode( strtr( $payload, '-_', '+/' ) . str_repeat( '=', 3 - ( 3 + strlen( $payload ) ) % 4 ) );
 	}
 
@@ -505,7 +353,6 @@ class JwtTools {
 
 			$hex .= $new_bit;
 		}
-		error_log('string to hex returning  ' . $hex);
 		return $hex;
 
 	}
@@ -521,21 +368,14 @@ class JwtTools {
 	public function create_signature_object( $signature ) {
 
 		$raw_sig     = $this->base64url_decode( $signature );
-		$first_half  = '0x'. $this->string_to_hex( substr( $raw_sig, 0, 32 ) );
-		$second_half = '0x' . $this->string_to_hex( substr( $raw_sig, 32, 64 ) );
+		$first_half  = $this->string_to_hex( substr( $raw_sig, 0, 32 ) );
+		$second_half = $this->string_to_hex( substr( $raw_sig, 32, 64 ) );
 
-		error_log("first:" . $first_half . " second:"  . $second_half);
-
-		$ret =  [
+		return [
 			'v'    => 0,
-			'rGMP' => gmp_init( $first_half, 16 ),
-			'sGMP' => gmp_init( $second_half, 16 ),
-			'rHex' => $first_half,
-			'sHex' => $second_half
+			'rGMP' => gmp_init( '0x' . $first_half, 16 ),
+			'sGMP' => gmp_init( '0x' . $second_half, 16 ),
 		];
-		error_log("\r\nret");
-		error_log( json_encode($ret) );
-		return $ret;
 
 	}
 
@@ -723,11 +563,11 @@ class JwtTools {
 				'rpc_url'  => 'https://mainnet.infura.io/ethr-did',
 			],
 			'0x03' => [
-				'registry' => '0xdca7ef03e98e0dc2b855be647c39abe984fcf21b',
+				'registry' => '	0xdca7ef03e98e0dc2b855be647c39abe984fcf21b',
 				'rpc_url'  => 'https://ropsten.infura.io/ethr-did',
 			],
 			'0x42' => [
-				'registry' => '0xdca7ef03e98e0dc2b855be647c39abe984fcf21b',
+				'registry' => '	0xdca7ef03e98e0dc2b855be647c39abe984fcf21b',
 				'rpc_url'  => 'https://kovan.infura.io/ethr-did',
 			],
 			'0x04' => [
